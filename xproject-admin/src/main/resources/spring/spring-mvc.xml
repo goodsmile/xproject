@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+						http://www.springframework.org/schema/context 
+						http://www.springframework.org/schema/context/spring-context-4.3.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+						http://www.springframework.org/schema/mvc 
+						http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+						http://www.springframework.org/schema/util
+						http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+	
+	<mvc:resources location="/resources/css/" mapping="/resources/css/**"/>
+	<mvc:resources location="/resources/images/" mapping="/resources/images/**"/>
+	<mvc:resources location="/resources/js/" mapping="/resources/js/**"/>
+	<mvc:resources location="/resources/components/" mapping="/resources/components/**"/>
+	<mvc:resources location="/resources/scripts/" mapping="/resources/scripts/**"/>
+	<mvc:resources location="/upload/" mapping="/upload/**"/>
+	
+	<!-- 扫描@Controller控制器类注解 -->
+	<context:component-scan base-package="com.certusnet.xproject" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+		<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+	</context:component-scan>
+	
+	<!-- mvc:annotation-driven自动注册DefaultAnnotationHandlerMapping、AnnotationMethodHandlerAdapter两个bean -->
+	<mvc:annotation-driven/>
+	
+	<!-- 防表单重复提交拦截器 -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean id="tokenInterceptor" class="com.certusnet.xproject.common.web.interceptor.TokenInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+	<!-- 后台管理默认的异常处理器 -->
+	<bean id="defaultApiHandlerExceptionResolver" class="com.certusnet.xproject.common.web.handler.DefaultMvcHandlerExceptionResolver">
+		<property name="defaultExceptionView" value="/common/error/500.html"/>
+	</bean>
+	
+	<!-- jsp视图解析器 -->
+    <bean id="viewResolver" class="com.certusnet.xproject.common.web.view.MultiViewResover">
+        <property name="defaultViewType" value="html"/>
+        <property name="order" value="1"/>
+        <property name="viewResolvers">
+        	<map>
+                <entry key="jsp">
+                    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+                        <property name="contentType" value="text/html"/>
+                        <property name="prefix" value="/WEB-INF/jsp/"/>
+                        <property name="suffix" value=".jsp"/>
+                    </bean>
+                </entry>
+                <entry key="html">
+                    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                    	<property name="viewClass" value="org.springframework.web.servlet.view.InternalResourceView"/>
+                    	<property name="contentType" value="text/html"/>
+                        <property name="prefix" value="/"/>
+                        <property name="suffix" value=".html"/>
+                    </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+	
+	<!-- 文件上传 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"/>
+		<!-- default maxUploadSize is 5MB-->
+		<property name="maxUploadSize" value="5242880"/>
+	</bean>
+	
+	<!-- 应用中依赖于Servlet环境的系统常量初始化 -->
+	<bean id="servletBootingInitializer" class="com.certusnet.xproject.common.initializer.ServletBootingInitializer"/>
+	
+	<!-- 应用中被@ServletContextAttribute注解的系统常量放入Servlet上下文中 -->
+	<bean id="servletContextAttributeInitializer" class="com.certusnet.xproject.common.initializer.ServletContextAttributeInitializer">
+		<property name="basePackage" value="com.certusnet.xproject"/>
+	</bean>
+
+    <!-- Spring ApplicationContext启动监听器 -->
+    <bean class="com.certusnet.xproject.common.initializer.ApplicationInitializeListener">
+    	<property name="applicationInitializers">
+    		<list>
+    			<ref bean="servletBootingInitializer"/>
+    			<ref bean="servletContextAttributeInitializer"/>
+    		</list>
+    	</property>
+    </bean>
+	
+</beans>

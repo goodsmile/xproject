@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.certusnet</groupId>
+		<artifactId>xproject</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>xproject-admin</artifactId>
+	<packaging>war</packaging>
+	<name>xproject-admin</name>
+	<description>基础后台管理系统</description>
+	
+	<dependencies>
+		<!-- xproject-base -->
+		<dependency>
+			<groupId>com.certusnet</groupId>
+			<artifactId>xproject-base</artifactId>
+			<version>${xproject.version}</version>
+		</dependency>
+
+		<!-- xproject-iface -->
+		<dependency>
+			<groupId>com.certusnet</groupId>
+			<artifactId>xproject-iface</artifactId>
+			<version>${xproject.version}</version>
+		</dependency>
+
+		<!-- xproject-common -->
+		<dependency>
+			<groupId>com.certusnet</groupId>
+			<artifactId>xproject-common</artifactId>
+			<version>${xproject.version}</version>
+		</dependency>
+
+		<!-- xproject-service -->
+		<dependency>
+			<groupId>com.certusnet</groupId>
+			<artifactId>xproject-service</artifactId>
+			<version>${xproject.version}</version>
+		</dependency>
+		
+		<!-- junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- logging -->
+		<!-- slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+
+		<!-- log4j -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+		</dependency>
+
+		<!-- cglib -->
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+		</dependency>
+
+		<!-- javassist -->
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+		</dependency>
+
+		<!-- aop -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Mysql -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<!-- DataSource Pool -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+		</dependency>
+
+		<!-- redis -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+		</dependency>
+		
+		<!-- j2ee web spec -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<finalName>xproject-admin</finalName>
+		<plugins>
+		</plugins>
+	</build>
+</project>

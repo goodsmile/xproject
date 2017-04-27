@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.certusnet.xproject.admin.model.AdminResourceMapper">
+	
+	<insert id="insertResource" parameterType="AdminResource" statementType="PREPARED">
+		INSERT INTO admin_resource(
+			resource_id,
+			resource_name,
+			parent_resource_id,
+			permission_expression,
+			resource_type,
+			action_type,
+			resource_url,
+			resource_icon,
+			siblings_index,
+			create_time,
+			create_by
+		) VALUES (
+			#{resourceId, jdbcType=BIGINT},
+			#{resourceName, jdbcType=VARCHAR},
+			#{parentResourceId, jdbcType=BIGINT},
+			#{permissionExpression, jdbcType=VARCHAR},
+			#{resourceType, jdbcType=INTEGER},
+			#{actionType, jdbcType=INTEGER},
+			#{resourceUrl, jdbcType=VARCHAR},
+			#{resourceIcon, jdbcType=VARCHAR},
+			#{siblingsIndex, jdbcType=INTEGER},
+			#{createTime, jdbcType=VARCHAR},
+			#{createBy, jdbcType=BIGINT}
+		)
+	</insert>
+	
+	<update id="updateResource" parameterType="AdminResource" statementType="PREPARED">
+		UPDATE admin_resource a
+		   SET a.resource_name 			= #{resourceName, jdbcType=VARCHAR},
+		   	   a.parent_resource_id 	= #{parentResourceId, jdbcType=BIGINT},
+		   	   a.permission_expression 	= #{permissionExpression, jdbcType=VARCHAR},
+		   	   a.action_type 			= #{actionType, jdbcType=INTEGER},
+		   	   a.resource_url 			= #{resourceUrl, jdbcType=VARCHAR},
+		   	   a.resource_icon			= #{resourceIcon, jdbcType=VARCHAR},
+		   	   a.siblings_index 		= #{siblingsIndex, jdbcType=INTEGER},
+		   	   a.update_time			= #{updateTime, jdbcType=VARCHAR},
+		   	   a.update_by				= #{updateBy, jdbcType=BIGINT}
+		 WHERE a.resource_id = #{resourceId, jdbcType=BIGINT}
+	</update>
+	
+	<delete id="deleteResourceById" parameterType="java.lang.Long" statementType="PREPARED">
+		DELETE a FROM admin_resource a
+		 WHERE a.resource_id = #{resourceId, jdbcType=BIGINT}
+	</delete>
+	
+	<select id="selectResourceById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
+		SELECT a.resource_id			resourceId,
+			   a.resource_name			resourceName,
+			   a.parent_resource_id		parentResourceId,
+			   c.resource_name			parentResourceName,
+			   a.permission_expression	permissionExpression,
+			   a.resource_type			resourceType,
+			   a.action_type			actionType,
+			   a.resource_url			resourceUrl,
+			   a.resource_icon			resourceIcon,
+			   a.siblings_index			siblingsIndex,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   a.create_by				createBy,
+			   DATE_FORMAT(a.update_time, '%Y-%m-%d %T')	updateTime,
+			   a.update_by				updateBy,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) 	createByName,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.update_by) 	updateByName,
+			   (SELECT count(*) FROM admin_role_resource b WHERE a.resource_id = b.resource_id) inuse
+		  FROM admin_resource a LEFT JOIN admin_resource c ON (a.parent_resource_id = c.resource_id)
+		 WHERE a.resource_id = #{resourceId, jdbcType=BIGINT}
+	</select>
+	
+	<select id="selectThinResourceById" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
+		SELECT a.resource_id			resourceId,
+			   a.resource_name			resourceName,
+			   a.parent_resource_id		parentResourceId,
+			   a.permission_expression	permissionExpression,
+			   a.resource_type			resourceType
+			<if test="fetchInuse">
+			   ,(SELECT count(*) FROM admin_role_resource b WHERE a.resource_id = b.resource_id) inuse
+			</if>
+		  FROM admin_resource a
+		 WHERE a.resource_id = #{resourceId, jdbcType=BIGINT}
+	</select>
+	
+	<select id="selectAllResourceList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
+		SELECT a.resource_id			resourceId,
+			   a.resource_name			resourceName,
+			   a.parent_resource_id		parentResourceId,
+			   c.resource_name			parentResourceName,
+			   a.permission_expression	permissionExpression,
+			   a.resource_type			resourceType,
+			   a.action_type			actionType,
+			   a.resource_url			resourceUrl,
+			   a.resource_icon			resourceIcon,
+			   a.siblings_index			siblingsIndex,
+			   (SELECT count(*) FROM admin_role_resource b WHERE a.resource_id = b.resource_id) inuse
+		  FROM admin_resource a LEFT JOIN admin_resource c ON (a.parent_resource_id = c.resource_id)
+		 WHERE 1=1
+		<if test="actionType != null">
+		   AND a.action_type = #{actionType, jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="selectAllThinResourceList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
+		SELECT a.resource_id			resourceId,
+			   a.resource_name			resourceName,
+			   a.parent_resource_id		parentResourceId,
+			   a.resource_type			resourceType
+			<if test="fetchInuse">
+			   ,(SELECT count(*) FROM admin_role_resource b WHERE a.resource_id = b.resource_id) inuse
+			</if>
+		  FROM admin_resource a
+	</select>
+	
+</mapper>

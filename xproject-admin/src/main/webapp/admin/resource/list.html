@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>资源管理</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="shortcut icon" href="../../resources/images/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.min.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.custom.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/font-awesome.min.css">
+		<style type="text/css">
+			.el-tree-node__content {
+				position: relative;
+				height: auto;
+				min-height: 30px;
+			}
+			.el-tree-node__content > .el-checkbox {
+				vertical-align: top;
+			}
+			.el-tree-custom-resource {
+				display: inline-block;
+				vertical-align: middle;
+				white-space: normal;
+				font-size: 14px;
+				width: 100%;
+				margin-left: -50px;
+			    padding-left: 50px;
+			    box-sizing: border-box;
+			}
+			.el-tree-custom-resource > .custom-label {
+				display: inline-block;
+				vertical-align: middle;
+				float: left;
+			}
+			.el-tree-custom-resource > .custom-siblings-index, .el-tree-custom-resource > .custom-action-type, .el-tree-custom-resource > .custom-resource-url, .el-tree-custom-resource > .custom-permission-exp, .el-tree-custom-resource > .custom-options {
+				display: inline-block;
+				vertical-align: middle;
+				float: right;
+				padding: 5px;
+				box-sizing: border-box;
+				line-height: 1;
+				min-height: 30px;
+			}
+			.el-tree-custom-resource > .custom-label {
+				width: auto;
+			}
+			.el-tree-custom-resource > .custom-siblings-index {
+				width: 40px;
+				text-align: center;
+			}
+			.el-tree-custom-resource > .custom-action-type {
+				width: 80px;
+				text-align: center;
+			}
+			.el-tree-custom-resource > .custom-resource-url {
+				width: 220px;
+				text-align: left;
+			}
+			.el-tree-custom-resource > .custom-permission-exp {
+				width: 180px;
+				text-align: left;
+			}
+			.el-tree-custom-resource > .custom-options {
+				width: 140px;
+				text-align: center;
+			}
+			.el-tree-custom-resource > .custom-options > .el-button {
+				vertical-align: middle;
+				margin-bottom: 4px;
+			}
+			.el-tag-action-type {
+				border-radius: 12px;
+			}
+		</style>
+	</head>
+<body>
+	<div id="app" class="el-container el-hidden">
+		<div class="el-container-inner">
+			<el-breadcrumb class="el-breadcrumb-admin" separator="/">
+				<i class="el-icon-fa-home"></i>
+			  	<el-breadcrumb-item>系统管理</el-breadcrumb-item>
+			  	<el-breadcrumb-item>资源管理</el-breadcrumb-item>
+			</el-breadcrumb>
+			<div class="el-container-content">
+				<div style="height:34px;padding:0 0 15px 0;">
+					<el-button type="primary" icon="fa-refresh" @click="refreshResourceTree">刷新资源树</el-button>
+				</div>
+				<div class="el-tree-loading" v-loading="loadingResourceTreeDataList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingResourceTreeDataList}">
+					<el-tree :style="fixedTreeHeightStyle" :data="resourceTreeDataList" :props="defaultProps" :show-checkbox="true" :default-expand-all="true" :expand-on-click-node="false" :check-strictly="true" :render-content="renderResourceTreeNode"></el-tree>
+				</div>
+				<el-dialog v-model="editDialogVisible" class="el-dialog-form el-dialog-center-top" size="large" @close="closeEditDialog">
+					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-large"></i>{{editDialogTitle}}</span>
+					<div>
+						<el-form ref="resourceEditForm" :model="resourceEditForm" :rules="resourceEditRules" label-width="120px">
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="父级资源" prop="parentResourceId">
+										<el-col :span="12">
+											<el-input v-model="resourceEditForm.parentResourceName" readonly @focus="onFocus4ReadOnly"></el-input>
+											<input type="hidden" v-model="resourceEditForm.parentResourceId"/>
+										</el-col>
+										<el-col :span="12">
+											<p class="el-form-item-tips"></p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+						      	</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="资源名称" prop="resourceName">
+										<el-col :span="12">
+											<el-input v-model="resourceEditForm.resourceName" :maxlength="20"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">不超过20个字符.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="权限表达式" prop="permissionExpression">
+								    	<el-col :span="12">
+											<el-input v-model="resourceEditForm.permissionExpression" :maxlength="100"></el-input>
+										</el-col>
+								      	<el-col :span="12">
+								      		<p class="el-form-item-tips">例如: admin:user:add、order:check等.</p>
+								      	</el-col>
+								    </el-form-item>
+						      	</el-col>
+							</el-row>
+						   <el-row>
+								<el-col :span="12">
+									<el-form-item label="资源功能类型" prop="actionType">
+								    	<el-col :span="12">
+								    		<el-select v-model="resourceEditForm.actionType" class="el-block">
+							  					<el-option label="菜单" :value="0"></el-option>
+				 								<el-option label="按钮" :value="1"></el-option>
+							  				</el-select>
+										</el-col>
+								      	<el-col :span="12">
+								      	</el-col>
+								    </el-form-item>
+								</el-col>
+								<el-col :span="12">
+									 <el-form-item label="排序号" prop="siblingsIndex">
+								    	<el-col :span="12">
+											<el-input v-model="resourceEditForm.siblingsIndex" :maxlength="10"></el-input>
+										</el-col>
+								      	<el-col :span="12">
+								      		<p class="el-form-item-tips">兄弟节点间的顺序.</p>
+								      	</el-col>
+								    </el-form-item>
+						      	</el-col>
+							</el-row>
+						    <el-row>
+								<el-col :span="12">
+									<el-form-item label="资源URL" prop="resourceUrl">
+								    	<el-col :span="12">
+											<el-input type="textarea" v-model="resourceEditForm.resourceUrl" :maxlength="500"></el-input>
+										</el-col>
+								      	<el-col :span="12">
+								      		<p class="el-form-item-tips">多个请用分号隔开并且换行.</p>
+								      	</el-col>
+								    </el-form-item>
+								</el-col>
+								<el-col :span="12">
+									 <el-form-item label="资源图标类名" prop="resourceIcon">
+								    	<el-col :span="12">
+											<el-input v-model="resourceEditForm.resourceIcon" :maxlength="50"></el-input>
+										</el-col>
+								      	<el-col :span="12">
+								      		<p class="el-form-item-tips">例如：'fa-home' (来自http://www.fontawesome.com.cn/faicons)</p>
+								      	</el-col>
+								    </el-form-item>
+						      	</el-col>
+							</el-row>
+						</el-form>
+					</div>
+					<div slot="footer">
+						<el-button icon="fa-ban" @click="closeEditDialog">取 消</el-button>
+					    <el-button type="primary" icon="fa-save" @click="saveResource" :loading="submiting">确 定</el-button>
+					</div>
+				</el-dialog>
+				<el-dialog v-model="viewDialogVisible" class="el-dialog-form el-dialog-center-top" size="large">
+					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-list"></i>查看资源</span>
+					<div>
+						<el-row>
+							<el-col :span="3" class="el-form-item-label">父级资源：</el-col>
+							<el-col :span="21" class="el-form-item-content">{{resourceViewForm.parentResourceName}}</el-col>
+						</el-row>
+						<el-row>
+							<el-col :span="3" class="el-form-item-label">资源名称：</el-col>
+							<el-col :span="9" class="el-form-item-content">{{resourceViewForm.resourceName}}</el-col>
+							<el-col :span="3" class="el-form-item-label">权限表达式：</el-col>
+							<el-col :span="9" class="el-form-item-content">
+								<p>{{resourceViewForm.permissionExpression}}</p>
+							</el-col>
+						</el-row>
+						<el-row>
+							<el-col :span="3" class="el-form-item-label">资源功能类型：</el-col>
+							<el-col :span="9" class="el-form-item-content">
+								<el-tag class="el-tag-action-type" :type="getTagType4ActionType(resourceViewForm.actionType)">{{formatActionType(resourceViewForm.actionType)}}</el-tag>
+							</el-col>
+							<el-col :span="3" class="el-form-item-label">排序号：</el-col>
+							<el-col :span="9" class="el-form-item-content">{{resourceViewForm.siblingsIndex}}</el-col>
+						</el-row>
+						<el-row>
+							<el-col :span="3" class="el-form-item-label">资源URL：</el-col>
+							<el-col :span="9" class="el-form-item-content">
+								<p v-html="formatResourceUrl(resourceViewForm.resourceUrl)"></p>
+							</el-col>
+							<el-col :span="3" class="el-form-item-label">资源图标类名：</el-col>
+							<el-col :span="9" class="el-form-item-content">{{resourceViewForm.resourceIcon}}</el-col>
+						</el-row>
+					</div>
+					<div slot="footer">
+						<el-button icon="fa-ban" @click="viewDialogVisible = false">关 闭</el-button>
+					</div>
+				</el-dialog>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../resources/js/vue.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue.pageloading.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue-router.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/axios.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.extensional.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/common.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/admin/resource/list.js"></script>
+</body>
+</html>

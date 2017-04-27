@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+	
+	<!-- 全局类型转换器工厂Bean -->
+	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean"></bean>
+
+	<!-- 全局properties属性源 -->
+    <bean id="globalPropertySources" class="com.certusnet.xproject.common.support.GlobalPropertySources">
+		<property name="ignoreResourceNotFound" value="true"/>
+		<property name="fileEncoding" value="UTF-8"/>
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:redis.properties</value>
+				<value>classpath:config.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 
+		一个全局工具,用于解析占位符形式的属性值,
+		globalPropertyResolver.resolvePlaceholders("${img.domain}${img.domain.sub:defaultIfNotFound}") -> "http://www.xxx.com/img/defaultIfNotFound"
+		globalPropertyResolver.getProperty("img.domain")			-> "http://www.xxx.com/img"
+	 -->
+	<bean id="globalPropertyResolver" class="org.springframework.core.env.PropertySourcesPropertyResolver">
+		<constructor-arg index="0" ref="globalPropertySources"/>
+		<property name="conversionService" ref="conversionService"/>
+	</bean>
+	
+	<bean id="propertyConfigurer" class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true"/>
+		<property name="propertySources" ref="globalPropertySources"/>
+	</bean>
+	
+	<!-- 全局国际化资源文件 -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="useCodeAsDefaultMessage" value="false"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="basenames">
+            <list>
+                <value>classpath:message-admin</value>
+            </list>
+        </property>
+    </bean>
+	
+	<!-- 应用中不依赖于Servlet环境的系统常量初始化 -->
+	<bean id="applicationBootingInitializer" class="com.certusnet.xproject.common.initializer.ApplicationBootingInitializer"/>
+	
+	<!-- 应用中全局常量值由注入的初始化,e.g
+		public class URLConstants extends AbstractConstants {
+			@Value("${url.alipay_gateway}")
+			public static final String ALIPAY_DATEWAY = valueOf("https://mapi.alipay.com/gateway.do");
+		}
+	 -->
+	<bean id="constValueInitializer" class="com.certusnet.xproject.common.initializer.ConstValueInitializer">
+		<property name="globalPropertyResolver" ref="globalPropertyResolver"/>
+		<property name="basePackage" value="com.certusnet.xproject"/>
+	</bean>
+
+    <!-- Spring ApplicationContext启动监听器 -->
+    <bean class="com.certusnet.xproject.common.initializer.ApplicationInitializeListener">
+    	<property name="applicationInitializers">
+    		<list>
+    			<ref bean="applicationBootingInitializer"/>
+    			<ref bean="constValueInitializer"/>
+    		</list>
+    	</property>
+    </bean>
+
+</beans>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.certusnet.xproject.admin.model.AdminUserMapper">
+	
+	<insert id="insertUser" parameterType="AdminUser" statementType="PREPARED" keyProperty="userId" useGeneratedKeys="true">
+		INSERT INTO admin_user(
+			user_id,
+			user_name,
+			password,
+			user_type,
+			nick_name,
+			mobile_phone,
+			email,
+			status,
+			user_icon,
+			create_time,
+			create_by
+		) VALUES (
+			#{userId, jdbcType=BIGINT},
+			#{userName, jdbcType=VARCHAR},
+			#{encryptedPassword, jdbcType=VARCHAR},
+			#{userType, jdbcType=INTEGER},
+			#{nickName, jdbcType=VARCHAR},
+			#{mobilePhone, jdbcType=VARCHAR},
+			#{email, jdbcType=VARCHAR},
+			#{status, jdbcType=INTEGER},
+			#{userIcon, jdbcType=VARCHAR},
+			#{createTime, jdbcType=VARCHAR},
+			#{createBy, jdbcType=BIGINT}
+		)
+	</insert>
+	
+	<update id="updateUser" parameterType="AdminUser" statementType="PREPARED">
+		UPDATE admin_user a
+		   SET a.user_name 		= #{userName, jdbcType=VARCHAR},
+		   	   a.nick_name		= #{nickName, jdbcType=VARCHAR},
+		   	   a.mobile_phone	= #{mobilePhone, jdbcType=VARCHAR},
+		   	   a.email			= #{email, jdbcType=VARCHAR},
+		   	   a.user_icon		= #{userIcon, jdbcType=VARCHAR},
+		   	   a.update_time	= #{updateTime, jdbcType=VARCHAR},
+		   	   a.update_by		= #{updateBy, jdbcType=BIGINT}
+		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
+	</update>
+	
+	<update id="updateUserStatus" parameterType="java.util.Map" statementType="PREPARED">
+		UPDATE admin_user a
+		   SET a.status  = #{status, jdbcType=INTEGER}
+		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
+	</update>
+	
+	<update id="updatePassword" parameterType="AdminUser" statementType="PREPARED">
+		UPDATE admin_user a
+		   SET a.password  	= #{encryptedPassword, jdbcType=VARCHAR}
+		 WHERE a.user_id 	= #{userId, jdbcType=BIGINT}
+	</update>
+	
+	<update id="updateLoginTime" parameterType="java.util.Map" statementType="PREPARED">
+		UPDATE admin_user a
+		   SET a.last_login_time  	= #{lastLoginTime, jdbcType=VARCHAR},
+		   	   a.login_times  		= a.login_times + 1
+		 WHERE a.user_id 	= #{userId, jdbcType=BIGINT}
+	</update>
+	
+	<delete id="deleteUserById" parameterType="java.lang.Long" statementType="PREPARED">
+		DELETE a FROM admin_user a WHERE a.user_id = #{userId, jdbcType=BIGINT}
+	</delete>
+	
+	<select id="getUserById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUser">
+		SELECT a.user_id		userId,
+			   a.user_name		userName,
+			   a.password		password,
+			   a.user_type		userType,
+			   a.nick_name		nickName,
+			   a.mobile_phone	mobilePhone,
+			   a.email			email,
+			   a.status			status,
+			   a.user_icon		userIcon,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   a.create_by		createBy,
+			   DATE_FORMAT(a.update_time, '%Y-%m-%d %T')	updateTime,
+			   a.update_by		updateBy,
+			   DATE_FORMAT(a.last_login_time, '%Y-%m-%d %T') lastLoginTime,
+			   a.login_times	loginTimes,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) createByName,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.update_by) updateByName
+		  FROM admin_user a
+		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
+	</select>
+	
+	<select id="getThinUserById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUser">
+		SELECT a.user_id		userId,
+			   a.user_name		userName,
+			   a.password		password,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime
+		  FROM admin_user a
+		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
+	</select>
+	
+	<select id="getThinUserByUserName" parameterType="java.lang.String" statementType="PREPARED" resultType="AdminUser">
+		SELECT a.user_id		userId,
+			   a.user_name		userName,
+			   a.password		password,
+			   a.status			status,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime
+		  FROM admin_user a
+		 WHERE a.user_name = #{userName, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getUserByUserName" parameterType="java.lang.String" statementType="PREPARED" resultType="AdminUser">
+		SELECT a.user_id		userId,
+			   a.user_name		userName,
+			   a.password		password,
+			   a.user_type		userType,
+			   a.nick_name		nickName,
+			   a.mobile_phone	mobilePhone,
+			   a.email			email,
+			   a.status			status,
+			   a.user_icon		userIcon,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   a.create_by		createBy,
+			   DATE_FORMAT(a.update_time, '%Y-%m-%d %T')	updateTime,
+			   a.update_by		updateBy,
+			   DATE_FORMAT(a.last_login_time, '%Y-%m-%d %T') lastLoginTime,
+			   a.login_times	loginTimes,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) createByName,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.update_by) updateByName
+		  FROM admin_user a
+		 WHERE a.user_name = #{userName, jdbcType=VARCHAR}
+	</select>
+	
+	<select id="getUserList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminUser">
+		SELECT a.user_id		userId,
+			   a.user_name		userName,
+			   a.password		password,
+			   a.user_type		userType,
+			   a.nick_name		nickName,
+			   a.mobile_phone	mobilePhone,
+			   a.email			email,
+			   a.status			status,
+			   a.user_icon		userIcon,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   a.create_by		createBy,
+			   DATE_FORMAT(a.update_time, '%Y-%m-%d %T')	updateTime,
+			   a.update_by		updateBy,
+			   a.last_login_time lastLoginTime,
+			   a.login_times	loginTimes,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) createByName
+		  FROM admin_user a
+		 WHERE 1=1
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userName)">
+		   AND a.user_name like CONCAT('%', #{userName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(nickName)">
+		   AND a.nick_name like CONCAT('%', #{nickName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userType)">
+		   AND a.user_type = #{userType, jdbcType=INTEGER}
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(status)">
+		   AND a.status = #{status, jdbcType=INTEGER}
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderby)">
+		 ORDER BY ${orderby} ${order}
+		</if>
+	</select>
+	
+	<select id="getUserList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
+		SELECT count(*)
+		  FROM admin_user a
+		 WHERE 1=1
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userName)">
+		   AND a.user_name like CONCAT('%', #{userName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(nickName)">
+		   AND a.nick_name like CONCAT('%', #{nickName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userType)">
+		   AND a.user_type = #{userType, jdbcType=INTEGER}
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(status)">
+		   AND a.status = #{status, jdbcType=INTEGER}
+		</if>
+	</select>
+	
+	<select id="getUserRoleList" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+		SELECT a.role_id			roleId,
+			   a.role_name			roleName,
+			   a.role_code			roleCode,
+			   a.role_type			roleType,
+			   a.description 		description,
+			   DATE_FORMAT(b.create_time, '%Y-%m-%d %T')	createTime,
+			   b.create_by			createBy
+		  FROM admin_role a, admin_user_role b
+		 WHERE b.user_id = #{userId, jdbcType=BIGINT}
+		   AND a.role_id = b.role_id
+		 ORDER BY b.create_time DESC, a.role_name ASC
+	</select>
+	
+	<insert id="insertUserRoles" parameterType="java.util.Map" statementType="PREPARED">
+		REPLACE INTO admin_user_role(user_id, role_id, create_by, create_time)
+		SELECT #{userId, jdbcType=BIGINT},
+			   a.role_id,
+			   #{createBy, jdbcType=BIGINT},
+			   #{createTime, jdbcType=VARCHAR}
+		  FROM admin_role a
+		 WHERE a.role_id in 
+		<foreach item="item" index="index" collection="roleIdList" open="(" separator="," close=")">
+			#{item, jdbcType=BIGINT}
+        </foreach>
+	</insert>
+	
+	<delete id="deleteUserRoles" parameterType="java.util.Map" statementType="PREPARED">
+		DELETE a FROM admin_user_role a
+		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
+		   AND a.role_id in
+		<foreach item="item" index="index" collection="roleIdList" open="(" separator="," close=")">
+			#{item, jdbcType=BIGINT}
+        </foreach>
+	</delete>
+	
+	<select id="getUserResourceList" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
+		SELECT DISTINCT r.resource_id	resourceId,
+			   r.resource_name			resourceName,
+			   r.parent_resource_id		parentResourceId,
+			   r.permission_expression	permissionExpression,
+			   r.resource_type			resourceType,
+			   r.action_type			actionType,
+			   r.resource_url			resourceUrl,
+			   r.siblings_index			siblingsIndex
+		  FROM admin_user_role ur, admin_role_resource rr, admin_resource r
+		 WHERE ur.user_id = #{userId, jdbcType=BIGINT}
+		   AND ur.role_id = rr.role_id
+		   AND rr.resource_id = r.resource_id
+		 ORDER BY r.resource_id ASC
+	</select>
+	
+</mapper>

@@ -1,0 +1,341 @@
+@CHARSET "UTF-8";
+html, body, .el-container {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+.el-container {
+	margin: 0 auto;
+	max-width: 100%;
+	min-height: 100%;
+}
+.admin-header {
+	display: block;
+    position: relative;
+    height: 50px;
+    z-index: 999;
+}
+.admin-header .admin-logo {
+	display: block;
+	position: relative;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 20px;
+    font-weight: 300;
+    height: 50px;
+    line-height: 50px;
+    overflow: hidden;
+    padding: 0 15px;
+    text-align: center;
+    transition: all 0.3s ease-in-out 0s;
+    width: 230px;
+	z-index: 1;    
+    background-color: #667A98;
+    border-bottom: 0 none;
+    color: #fff;
+}
+.admin-header .admin-logo [class^="el-icon-"] {
+	display: block;
+	position: absolute;
+	top: 16px;
+	left: 30px;
+}
+.admin-header .admin-logo .logo-mini {
+	display: none;
+}
+.admin-header .admin-logo .logo-large {
+	display: block;
+	position: relative;
+}
+.admin-header .admin-navbar {
+	display: block;
+	position: relative;
+	border: 0 none;
+    height: 50px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-left: 230px;
+    margin-left: -230px;
+    background-color: #6886B7;
+}
+.admin-header .admin-navbar .sidebar-toggle {
+	display: block;
+	color: #fff;
+	text-decoration: none;
+	width: 50px;
+	text-align: center;
+	line-height: 50px;	
+}
+.admin-header .admin-navbar .sidebar-toggle:hover {
+	color: #fff;
+	text-decoration: none;
+	background-color: #667A98;
+}
+.admin-header .admin-navbar .nav-menu ul {
+	display: block;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.admin-header .admin-navbar .nav-menu ul li a {
+	display: block;
+	position: relative;
+	text-decoration: none;
+	outline: 0 none;
+	color: #fff;
+	height: 50px;
+	line-height: 50px;
+	text-align: center;
+	transition: all 0.3s ease-in-out 0s;
+}
+.admin-header .admin-navbar .nav-menu ul li:hover a {
+	text-decoration: none;
+	color: #fff;
+	background-color: #667A98;
+}
+.admin-header .admin-navbar .biz-menu ul li a {
+	min-width: 110px;
+}
+.admin-header .admin-navbar .tool-menu {
+	float: right;
+}
+.admin-header .admin-navbar .tool-menu ul li a {
+	width: 50px;
+}
+.admin-header .admin-navbar .tool-menu ul li a [class*=" el-icon-"], .admin-header .admin-navbar .tool-menu ul li a [class^="el-icon-"] {
+	font-size: 16px;
+}
+.admin-header .admin-navbar .tool-menu ul li.avatar a {
+	width: 50px;
+}
+.admin-header .admin-navbar .tool-menu ul li.avatar a img {
+	display: block;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	height: 30px;
+	width: 30px;
+	border-radius: 50%;
+	line-height: 50px;
+}
+.admin-badge-num, .admin-badge-avatar {
+	vertical-align: top;
+}
+.admin-badge-num .el-badge__content.is-fixed {
+	right: 25px;
+    top: 15px;
+    padding: 0;
+    width: 18px;
+}
+.admin-badge-avatar .el-badge__content.is-fixed {
+	right: 20px;
+    top: 15px;
+}
+.admin-badge-msg .el-badge__content {
+	background-color: #64B92A;
+}
+.admin-dropdown-userinfo, .admin-dropdown-userinfo .el-dropdown-menu__item {
+	padding: 0;
+}
+.admin-dropdown-userinfo {
+	border: 1px solid #6886B7;
+	background-color: #6886B7;
+	padding: 10px 10px 10px 5px;
+	box-shadow: 0 0 3px rgba(0, 0, 0, 0.12);
+	box-sizing: border-box;
+	color: #fff;
+	transition: all 0.3s ease-in-out 0s;
+}
+.admin-dropdown-userinfo .el-dropdown-menu__item:hover:not(.is-disabled) {
+	background-color: transparent;
+	color: #fff;
+}
+.admin-dropdownpanel-userinfo {
+	display: block;
+	position: relative;
+	width: 300px;
+}
+.admin-dropdownpanel-userinfo .userinfo {
+	padding-left: 5px;
+}
+.admin-dropdownpanel-userinfo .userinfo-avatar {
+	display: block;
+	border: 0 none;
+	margin: 0 auto;
+	width: 60px;
+	height: 60px;
+	border: 5px solid #667A98;
+	border-radius: 50%;
+}
+.admin-dropdownpanel-userinfo .userinfo-name, .admin-dropdownpanel-userinfo .userinfo-roles ,.admin-dropdownpanel-userinfo .userinfo-llt {
+	display: block;
+	text-align: left;
+	margin: 0;
+	padding: 0;
+	line-height: 20px;
+	height: 20px;
+	font-size: 14px;
+}
+.admin-dropdownpanel-userinfo .userinfo-name {
+	font-size: 16px;
+}
+.admin-dropdownpanel-userinfo .userinfo-roles {
+	font-size: 12px;
+	line-height: 16px;
+	overflow: hidden;
+}
+.admin-dropdownpanel-userinfo .userinfo-llt {
+	font-size: 12px;
+}
+.admin-dropdownpanel-userinfo .actions {
+	text-align: center;
+}
+.admin-dropdownpanel-userinfo .actions .el-button {
+	background-color: transparent;
+	border-radius: 2px;
+	border-color: #d9e9f4;
+	color: #d9e9f4;
+}
+.admin-dropdownpanel-userinfo .actions .el-button:hover, .admin-dropdownpanel-userinfo .actions .el-button:focus {
+	border-color: #fff;
+	color: #fff;
+}
+.el-menu-admin-top {
+	border-radius: 0;
+	background-color: transparent;
+}
+.el-menu-admin-top > .el-menu-item {
+	height: 50px;
+    line-height: 50px;
+    border-bottom: 0;
+    padding: 0;
+    background-color: transparent;
+}
+.el-menu-admin-top > .el-menu-item:hover {
+	border-bottom: 0;
+	background-color: transparent;
+}
+.el-menu-admin-top > .el-menu-item [class^="el-icon-"] {
+	margin: 0;
+}
+.el-menu-admin-top > .el-menu-item a {
+	font-weight: bold;
+}
+.el-menu-admin-top > .el-menu-item:hover a, .el-menu-admin-top > .el-menu-item.is-active a {
+	color: #fff;
+	background-color: #667A98;
+}
+
+.admin-sider {
+	display: block;
+	position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 50px;
+    min-height: 100%;
+    width: 230px;
+    background-color: #353844;
+    box-sizing: border-box;
+    z-index: 998;
+}
+
+.admin-sidebar {
+	display: block;
+	position: relative;
+	padding-bottom: 10px;
+	height: auto;
+}
+.admin-sidebar .user-panel {
+	position: relative;
+    width: 100%;
+    padding: 10px;
+	white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.admin-sidebar .user-panel .user-panel-image, .admin-sidebar .user-panel .user-panel-info {
+	display: block;
+	position: relative;
+	float: left;
+	height: 45px;
+	box-sizing: border-box;
+}
+.admin-sidebar .user-panel .user-panel-image {
+	width: 45px;
+}
+.admin-sidebar .user-panel .user-panel-image img {
+	display: block;
+	border: 0 none;
+	border-radius: 50%;
+	height: 45px;
+	width: 45px;
+}
+.admin-sidebar .user-panel .user-panel-info {
+	color: #fff;
+	width: 165px;
+	padding-left: 10px;
+}
+.admin-sidebar .user-panel .user-panel-info p {
+	display: block;
+	font-weight: 600;
+	line-height: 24px;
+	margin: 0;
+	padding: 0;
+}
+.admin-sidebar .user-panel .user-panel-info label {
+	display: block;
+	font-size: 12px;
+	line-height: 20px;
+}
+.admin-sidebar .user-panel .user-panel-info label i {
+	font-size: 14px;
+	margin-right: 5px;
+	color: #3c763d;
+}
+.el-menu-admin-side {
+	background-color: #2A2C36;
+}
+.el-menu-admin-side .el-submenu .el-menu {
+	background-color: #353844;
+}
+.el-menu-admin-side .el-submenu .el-menu .el-menu-item {
+	border-left-color: #353844;
+}
+.el-menu-admin-side .el-submenu__title, .el-menu-admin-side .el-menu-item {
+	border-left: 4px solid transparent;
+}
+.el-menu-admin-side .el-menu-item:hover, .el-menu-admin-side .el-menu-item.is-active, .el-menu-admin-side .el-submenu .el-menu .el-menu-item:hover, .el-menu-admin-side .el-submenu .el-menu .el-menu-item.is-active, .el-menu-admin-side .el-submenu__title:hover {
+	border-left-color: #2a94db;
+	background-color: #3F4559;
+}
+.admin-content-wrap {
+	display: block;
+	position: relative;
+    padding-left: 230px;
+    padding-top: 50px;
+    margin-top: -50px;
+    height: 100%;
+    background-color: transparent;
+    box-sizing: border-box;
+    z-index: 997;
+}
+.admin-content {
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.admin-content.loading {
+	overflow-y: hidden;
+}
+.admin-content-iframe, .admin-content-loading {
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.admin-content-iframe {
+	z-index: 998;
+}
+.admin-content-loading {
+	z-index: 999;
+}

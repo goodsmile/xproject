@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>用户登录</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="shortcut icon" href="resources/images/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="resources/components/element-ui/theme-default/element.min.css">
+		<link rel="stylesheet" type="text/css" href="resources/components/element-ui/theme-default/element.custom.css">
+		<link rel="stylesheet" type="text/css" href="resources/components/element-ui/theme-default/font-awesome.min.css">
+		<link rel="stylesheet" type="text/css" href="resources/css/admin-login.css">
+	</head>
+<body>
+	<div id="app" class="el-container">
+		<div class="admin-login">
+			<div class="admin-login-form">
+				<div class="admin-login-title">
+					<h3>用户登录</h3>
+				</div>
+				<div class="admin-login-error">
+					<p class="el-ellipsis" :title="errorMessage">{{errorMessage}}</p>
+				</div>
+				<el-form ref="loginForm" :rules="loginRules" :model="loginForm" label-width="0">
+					<el-form-item class="admin-login-item-input" prop="userName">
+						<el-input placeholder="请输入用户名" v-model="loginForm.userName">
+						    <template slot="prepend"><i class="el-icon-fa-user"></i></template>
+						</el-input>
+					</el-form-item>
+					<el-form-item class="admin-login-item-input" prop="password">
+						<el-input type="password" placeholder="请输入密码" v-model="loginForm.password">
+						    <template slot="prepend"><i class="el-icon-fa-lock"></i></template>
+						</el-input>
+					</el-form-item>
+					<el-form-item class="admin-login-item-btn">
+						<el-button class="admin-login-btn-submit" type="primary" @click="submitLogin" :loading="submiting">立即登录</el-button>
+					</el-form-item>
+					<el-form-item class="admin-login-item-btn">
+						<a class="admin-login-forgotpwd" href="javascript:;">Forgot password?</a>
+					</el-form-item>
+				</el-form>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="resources/js/vue.min.js"></script>
+	<script type="text/javascript" src="resources/js/vue-router.min.js"></script>
+	<script type="text/javascript" src="resources/js/axios.min.js"></script>
+	<script type="text/javascript" src="resources/components/element-ui/element.min.js"></script>
+	<script type="text/javascript" src="resources/components/element-ui/element.extensional.js"></script>
+	<script type="text/javascript" src="resources/scripts/common.js"></script>
+	<script type="text/javascript" src="resources/scripts/admin-login.js"></script>
+</body>
+</html>

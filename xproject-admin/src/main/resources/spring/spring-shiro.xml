@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- shiro缓存管理器 -->
+    <bean id="cacheManager" class="com.certusnet.xproject.common.web.shiro.cache.RedisCacheManager">
+    	<property name="redisTemplate" ref="shiroRedisTemplate"/>
+    	<property name="cacheExpire" value="true"/>
+    	<property name="cacheExpireSeconds" value="1800"/>
+    	<property name="cacheKeyPrefix" value="shiro:"/>
+    </bean>
+	
+    <!-- 凭证匹配器 -->
+    <bean id="credentialsMatcher" class="com.certusnet.xproject.common.web.shiro.credentials.RetryLimitHashedCredentialsMatcher">
+        <property name="hashAlgorithmName" value="md5"/>
+        <property name="hashIterations" value="1"/>
+        <property name="storedCredentialsHexEncoded" value="true"/>
+        <property name="redisTemplate" ref="shiroRedisTemplate"/>
+    </bean>
+
+	<!-- Realm实现 -->
+    <bean id="userRealm" class="com.certusnet.xproject.admin.web.shiro.realm.AdminUserRealm">
+        <property name="credentialsMatcher" ref="credentialsMatcher"/>
+        <property name="cachingEnabled" value="true"/>
+        <property name="authenticationCachingEnabled" value="true"/>
+        <property name="authenticationCacheName" value="adminAuthenticationCache"/>
+        <property name="authorizationCachingEnabled" value="true"/>
+        <property name="authorizationCacheName" value="adminAuthorizationCache"/>
+        <property name="principalService" ref="adminUserFacadeService"/>
+    </bean>
+
+	<!-- 会话ID生成器 -->
+    <bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
+	
+	<!-- 会话Cookie模板 -->
+    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="SESSION_ID"/>
+        <property name="httpOnly" value="true"/>
+        <property name="maxAge" value="-1"/>
+        <property name="path" value="/"/>
+    </bean>
+	
+	<!-- 会话工厂 -->
+	<bean id="sessionFactory" class="com.certusnet.xproject.common.web.shiro.session.SimpleSessionFactory"/>
+	
+	<!-- 会话DAO,用于会话的CRUD -->
+    <bean id="sessionDAO" class="com.certusnet.xproject.common.web.shiro.session.SimpleSessionDAO">
+    	<property name="activeSessionsCacheName" value="adminActiveSessionCache"/>
+        <property name="sessionIdGenerator" ref="sessionIdGenerator"/>
+    </bean>
+
+    <!-- 会话管理器 -->
+    <bean id="sessionManager" class="com.certusnet.xproject.common.web.shiro.session.CustomWebSessionManager">
+        <property name="globalSessionTimeout" value="1800000"/>
+        <property name="deleteInvalidSessions" value="true"/>
+        <property name="sessionValidationSchedulerEnabled" value="false"/>
+        <property name="sessionDAO" ref="sessionDAO"/>
+        <property name="sessionIdCookieEnabled" value="true"/>
+        <property name="sessionIdCookie" ref="sessionIdCookie"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+	<!-- 安全管理器 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="userRealm"/>
+        <property name="sessionManager" ref="sessionManager"/>
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
+    <!-- 相当于调用SecurityUtils.setSecurityManager(securityManager) -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="org.apache.shiro.SecurityUtils.setSecurityManager"/>
+        <property name="arguments" ref="securityManager"/>
+    </bean>
+	
+	<!-- 基于Form表单的身份验证过滤器 -->
+    <bean id="formAuthenticationFilter" class="com.certusnet.xproject.common.web.shiro.filter.GlobalFormAuthenticationFilter">
+        <property name="usernameParam" value="userName"/>
+        <property name="passwordParam" value="password"/>
+    </bean>
+	
+	<!-- 基于动态URL-权限的身份验证过滤器 -->
+	<bean id="urlPermissionFilter" class="com.certusnet.xproject.common.web.shiro.perm.GlobalUrlPermissionFilter"/>
+	
+	<!-- 动态URL-权限配置 -->
+	<bean id="filterChainDefinition" class="com.certusnet.xproject.common.web.shiro.perm.GlobalUrlPermissionFilterChainDefinition">
+		<property name="urlPermissionService" ref="adminResourceFacadeService"/>
+		<property name="placeHolderName" value="dynamicUrlPermissions"/>
+		<property name="filterChainDefinitions">
+			<value>
+				/resources/** = anon
+				/login/submit = anon
+				/login/captcha.png = anon
+				/upload/** = user
+				${dynamicUrlPermissions}
+				/** = authc
+            </value>
+		</property>
+	</bean>
+	
+	<!-- Shiro的Web过滤器 -->
+	<!-- 注意scope="prototype",这样才会重新加载filterChainDefinitions -->
+    <bean id="delegateShiroFilter" class="com.certusnet.xproject.common.web.shiro.filter.PrototypedShiroFilterFactoryBean" scope="prototype">
+    	<property name="loginUrl" value="/login"/>
+        <property name="successUrl" value="/"/>
+        <property name="unauthorizedUrl" value="/common/error/401.html"/>
+        <property name="securityManager" ref="securityManager"/>
+        <property name="filters">
+            <map>
+                <entry key="authc" value-ref="formAuthenticationFilter"/>
+                <entry key="perms" value-ref="urlPermissionFilter"/>
+            </map>
+        </property>
+    </bean>
+	
+	<!-- 代理的Shiro的Web过滤器 -->
+	<bean id="shiroFilter" class="com.certusnet.xproject.common.web.shiro.filter.DynamicUrlPermissionsShiroFilter">
+		<property name="delegateShiroFilter" ref="delegateShiroFilter"/>
+	</bean>
+	
+	<!-- Shiro生命周期处理器-->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+    
+</beans>

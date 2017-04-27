@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.certusnet.xproject.admin.model.AdminRoleMapper">
+	
+	<insert id="insertRole" parameterType="AdminRole" statementType="PREPARED">
+		INSERT INTO admin_role(
+			role_id,
+			role_name,
+			role_code,
+			role_type,
+			description,
+			create_time,
+			create_by
+		) VALUES (
+			#{roleId, jdbcType=BIGINT},
+			#{roleName, jdbcType=VARCHAR},
+			#{roleCode, jdbcType=VARCHAR},
+			#{roleType, jdbcType=INTEGER},
+			#{description, jdbcType=VARCHAR},
+			#{createTime, jdbcType=VARCHAR},
+			#{createBy, jdbcType=BIGINT}
+		)
+	</insert>
+	
+	<update id="updateRole" parameterType="AdminRole" statementType="PREPARED">
+		UPDATE admin_role a
+		   SET a.role_name = #{roleName, jdbcType=VARCHAR},
+		   	   a.role_code = #{roleCode, jdbcType=VARCHAR},
+		   	   a.description = #{description, jdbcType=VARCHAR},
+		   	   a.update_time = #{updateTime, jdbcType=VARCHAR},
+		   	   a.update_by	 = #{updateBy, jdbcType=BIGINT}
+		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
+	</update>
+	
+	<delete id="deleteRoleById" parameterType="java.lang.Long" statementType="PREPARED">
+		DELETE a FROM admin_role a
+		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
+	</delete>
+	
+	<select id="selectThinRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+		SELECT a.role_id			roleId,
+			   a.role_name			roleName,
+			   a.role_code			roleCode,
+			   a.role_type			roleType,
+			   (SELECT count(*) FROM admin_user_role b WHERE a.role_id = b.role_id) inuse
+		  FROM admin_role a
+		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
+	</select>
+	
+	<select id="selectRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+		SELECT a.role_id			roleId,
+			   a.role_name			roleName,
+			   a.role_code			roleCode,
+			   a.role_type			roleType,
+			   a.description 		description,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   a.create_by			createBy,
+			   DATE_FORMAT(a.update_time, '%Y-%m-%d %T')	updateTime,
+			   a.update_by			updateBy,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) createByName,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.update_by) updateByName,
+			   (SELECT count(*) FROM admin_user_role b WHERE a.role_id = b.role_id) inuse
+		  FROM admin_role a
+		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
+	</select>
+	
+	<select id="selectRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
+		SELECT a.role_id			roleId,
+			   a.role_name			roleName,
+			   a.role_code			roleCode,
+			   a.role_type			roleType,
+			   a.description 		description,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   a.create_by			createBy,
+			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) createByName,
+			   (SELECT count(*) FROM admin_user_role b WHERE a.role_id = b.role_id) inuse
+		  FROM admin_role a
+		 WHERE 1=1
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleName)">
+		   AND a.role_name like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleCode)">
+		   AND a.role_code like CONCAT('%', #{roleCode, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderby)">
+		 ORDER BY ${orderby} ${order}
+		</if>
+	</select>
+	
+	<select id="selectRoleList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
+		SELECT count(*)
+		  FROM admin_role a
+		 WHERE 1=1
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleName)">
+		   AND a.role_name like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleCode)">
+		   AND a.role_code like CONCAT('%', #{roleCode, jdbcType=VARCHAR}, '%')
+		</if>
+	</select>
+	
+	<select id="selectResourceListByRoleId" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
+		SELECT a.resource_id			resourceId,
+			   a.resource_name			resourceName,
+			   a.parent_resource_id		parentResourceId,
+			   a.resource_type			resourceType
+		  FROM admin_resource a, admin_role_resource b
+		 WHERE b.role_id = #{roleId, jdbcType=BIGINT}
+		   AND a.resource_id = b.resource_id
+	</select>
+	
+	<delete id="deleteRoleResourcesByRoleId" parameterType="java.lang.Long" statementType="PREPARED">
+		DELETE a FROM admin_role_resource a WHERE a.role_id = #{roleId, jdbcType=BIGINT}
+	</delete>
+	
+	<insert id="insertRoleResources" parameterType="java.util.Map" statementType="PREPARED">
+		INSERT INTO admin_role_resource(role_id, resource_id, create_by, create_time)
+		SELECT #{roleId, jdbcType=BIGINT},
+			   a.resource_id,
+			   #{createBy, jdbcType=BIGINT},
+			   #{createTime, jdbcType=VARCHAR}
+		  FROM admin_resource a
+		 WHERE a.resource_id in 
+		<foreach item="item" index="index" collection="resourceIdList" open="(" separator="," close=")">
+			#{item, jdbcType=BIGINT}
+        </foreach>
+	</insert>
+	
+</mapper>
