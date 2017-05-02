@@ -18,91 +18,96 @@
 		<link rel="stylesheet" type="text/css" href="resources/css/admin-index.css">
 	</head>
 <body>
-	<div id="app" class="el-container el-hidden">
-		<header class="el-row admin-header">
-			<a class="el-col admin-logo">
-				<span class="logo-large"><i class="el-icon-fa-cloud"></i><b>Admin</b>LTE</span>
-			</a>
-			<nav class="el-col el-row admin-navbar">
-				<a class="el-col sidebar-toggle" href="javascript:;">
-					<i class="el-icon-fa-navicon"></i>
-				</a>
-				<div class="el-col nav-menu biz-menu">
-					<transition name="el-fade">
-						<el-menu v-if="menuDataLoaded" class="el-menu-admin-top" mode="horizontal" :router="true" :default-active="topNavMenuDefaultActiveIndex">
-							<el-menu-item v-for="menu in topNavMenus" :index="menu.menuPath" :route="menu.menuRoute"><a href="javascript:;">{{menu.menuName}}</a></el-menu-item>
-						</el-menu>
-					</transition>
+	<div id="app" class="admin-container el-hidden">
+		<div class="admin-container-inner">
+			<div class="admin-container-content">
+				<header class="el-row admin-header">
+					<a class="el-col admin-logo">
+						<span class="logo-large"><i class="el-icon-fa-cloud"></i><b>Admin</b>LTE</span>
+					</a>
+					<nav class="el-col el-row admin-navbar">
+						<a class="el-col sidebar-toggle" href="javascript:;">
+							<i class="el-icon-fa-navicon"></i>
+						</a>
+						<div class="el-col nav-menu biz-menu">
+							<transition name="el-fade">
+								<el-menu v-if="menuDataLoaded" class="el-menu-admin-top" mode="horizontal" :router="true" :default-active="topNavMenuDefaultActiveIndex">
+									<el-menu-item v-for="menu in topNavMenus" :index="menu.menuPath" :route="menu.menuRoute"><a href="javascript:;">{{menu.menuName}}</a></el-menu-item>
+								</el-menu>
+							</transition>
+						</div>
+						<div class="el-col nav-menu tool-menu">
+							<el-menu class="el-menu-admin-top" mode="horizontal">
+							  	<el-menu-item index="/admin/messages">
+							  		<el-badge class="admin-badge-num admin-badge-msg" :value="4">
+							  			<a href="javascript:;"><i class="el-icon-fa-envelope-o"></i></a>
+							  		</el-badge>
+							  	</el-menu-item>
+							  	<el-menu-item index="/admin/notifications">
+							  		<el-badge class="admin-badge-num admin-badge-todo" :value="10">
+							  			<a href="javascript:;"><i class="el-icon-fa-bell-o"></i></a>
+							  		</el-badge>
+							  	</el-menu-item>
+							  	<el-menu-item index="/admin/currentuser" class="avatar">
+							  		<el-dropdown trigger="click">
+							  			<a class="el-dropdown-link" href="javascript:;"><img :src="loginUser.userIconUrl"></a>
+							  			<el-dropdown-menu class="admin-dropdown-userinfo" slot="dropdown">
+							  				<el-dropdown-item>
+							  					<div class="admin-dropdownpanel-userinfo">
+							  						<div class="el-row">
+							  							<div class="el-col el-col-6">
+							  								<img class="userinfo-avatar" :src="loginUser.userIconUrl">
+							  							</div>
+							  							<div class="el-col el-col-18 userinfo">
+							  								<label class="userinfo-name el-ellipsis">{{loginUser.userName}}</label>
+							  								<p class="userinfo-roles">{{loginUser.userRoleNames}}</p>
+							  								<span class="userinfo-llt">上次登录时间：{{loginUser.lastLoginTime}}</span>
+							  							</div>
+							  						</div>
+							  						<div class="el-row">
+							  							<div class="el-col el-col-8 actions">
+							  								<router-link class="el-button el-button--default profile" tag="button" to="/admin/user/profile"><span>Profile</span></router-link>
+							  							</div>
+							  							<div class="el-col el-col-8 actions">
+							  								<router-link class="el-button el-button--default settings" tag="button" to="/admin/user/settings"><span>Settings</span></router-link>
+							  							</div>
+							  							<div class="el-col el-col-8 actions">
+							  								<router-link class="el-button el-button--default logout" tag="button" to="/logout"><span>Logout</span></router-link>
+							  							</div>
+							  						</div>
+							  					</div>
+							  				</el-dropdown-item>
+							  			</el-dropdown-menu>
+							  		</el-dropdown>
+							  	</el-menu-item>
+							  	<el-menu-item index="/admin/logout">
+							  		<router-link to="/logout"><i class="el-icon-fa-power-off"></i></router-link>
+							  	</el-menu-item>
+							</el-menu>
+						</div>
+					</nav>
+				</header>
+				<aside class="admin-sider">
+					<section class="admin-sidebar">
+						<div class="user-panel el-clearfix">
+							<div class="user-panel-image">
+								<img :src="loginUser.userIconUrl">
+							</div>
+							<div class="user-panel-info">
+								<p>{{loginUser.userName}}</p>
+								<label><i class="el-icon-fa-clock-o"></i>{{loginUser.lastLoginTime}}</label>
+							</div>
+						</div>
+						<router-view name="sideMenuView" :menu-list="sideNavMenus" ></router-view>
+					</section>
+				</aside>
+				<div class="admin-content-wrap">
+					<router-view name="mainContentView" :url="mainContentUrl"></router-view>
 				</div>
-				<div class="el-col nav-menu tool-menu">
-					<el-menu class="el-menu-admin-top" mode="horizontal">
-					  	<el-menu-item index="/admin/messages">
-					  		<el-badge class="admin-badge-num admin-badge-msg" :value="4">
-					  			<a href="javascript:;"><i class="el-icon-fa-envelope-o"></i></a>
-					  		</el-badge>
-					  	</el-menu-item>
-					  	<el-menu-item index="/admin/notifications">
-					  		<el-badge class="admin-badge-num admin-badge-todo" :value="10">
-					  			<a href="javascript:;"><i class="el-icon-fa-bell-o"></i></a>
-					  		</el-badge>
-					  	</el-menu-item>
-					  	<el-menu-item index="/admin/currentuser" class="avatar">
-					  		<el-dropdown trigger="click">
-					  			<a class="el-dropdown-link" href="javascript:;"><img :src="loginUser.userIconUrl"></a>
-					  			<el-dropdown-menu class="admin-dropdown-userinfo" slot="dropdown">
-					  				<el-dropdown-item>
-					  					<div class="admin-dropdownpanel-userinfo">
-					  						<div class="el-row">
-					  							<div class="el-col el-col-6">
-					  								<img class="userinfo-avatar" :src="loginUser.userIconUrl">
-					  							</div>
-					  							<div class="el-col el-col-18 userinfo">
-					  								<label class="userinfo-name el-ellipsis">{{loginUser.userName}}</label>
-					  								<p class="userinfo-roles">{{loginUser.userRoleNames}}</p>
-					  								<span class="userinfo-llt">上次登录时间：{{loginUser.lastLoginTime}}</span>
-					  							</div>
-					  						</div>
-					  						<div class="el-row">
-					  							<div class="el-col el-col-8 actions">
-					  								<router-link class="el-button el-button--default profile" tag="button" to="/admin/user/profile"><span>Profile</span></router-link>
-					  							</div>
-					  							<div class="el-col el-col-8 actions">
-					  								<router-link class="el-button el-button--default settings" tag="button" to="/admin/user/settings"><span>Settings</span></router-link>
-					  							</div>
-					  							<div class="el-col el-col-8 actions">
-					  								<router-link class="el-button el-button--default logout" tag="button" to="/logout"><span>Logout</span></router-link>
-					  							</div>
-					  						</div>
-					  					</div>
-					  				</el-dropdown-item>
-					  			</el-dropdown-menu>
-					  		</el-dropdown>
-					  	</el-menu-item>
-					  	<el-menu-item index="/admin/logout">
-					  		<router-link to="/logout"><i class="el-icon-fa-power-off"></i></router-link>
-					  	</el-menu-item>
-					</el-menu>
-				</div>
-			</nav>
-		</header>
-		<aside class="admin-sider">
-			<section class="admin-sidebar">
-				<div class="user-panel el-clearfix">
-					<div class="user-panel-image">
-						<img :src="loginUser.userIconUrl">
-					</div>
-					<div class="user-panel-info">
-						<p>{{loginUser.userName}}</p>
-						<label><i class="el-icon-fa-clock-o"></i>{{loginUser.lastLoginTime}}</label>
-					</div>
-				</div>
-				<router-view name="sideMenuView" :menu-list="sideNavMenus" ></router-view>
-			</section>
-		</aside>
-		<div class="admin-content-wrap">
-			<router-view name="mainContentView" :url="mainContentUrl"></router-view>
+			</div>
 		</div>
 	</div>
+	<script type="text/javascript" src="resources/js/polyfill.min.js"></script>
 	<script type="text/javascript" src="resources/js/vue.min.js"></script>
 	<script type="text/javascript" src="resources/js/vue.pageloading.js"></script>
 	<script type="text/javascript" src="resources/js/vue-router.min.js"></script>

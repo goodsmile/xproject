@@ -1,13 +1,30 @@
 @CHARSET "UTF-8";
-html, body, .el-container {
+html, body {
 	margin: 0;
 	padding: 0;
 	height: 100%;
 }
-.el-container {
-	margin: 0 auto;
-	max-width: 100%;
-	min-height: 100%;
+.admin-container, .admin-container-inner , .admin-container-content {
+	display: block;
+	position: relative;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+.admin-container {
+	height: 100%;
+	width: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+.admin-container-inner {
+	overflow-x: hidden;
+	overflow-y: scroll;
+	height:100%;
+	width: 102%;
+}
+.admin-container-content {
+	height: 100%;
 }
 .admin-header {
 	display: block;

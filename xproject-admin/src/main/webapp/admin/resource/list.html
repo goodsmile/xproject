@@ -90,7 +90,7 @@
 			</el-breadcrumb>
 			<div class="el-container-content">
 				<div style="height:34px;padding:0 0 15px 0;">
-					<el-button type="primary" icon="fa-refresh" @click="refreshResourceTree">刷新资源树</el-button>
+					<el-button type="primary" icon="fa-refresh" @click="refreshResourceTree(1000)">刷新资源树</el-button>
 				</div>
 				<div class="el-tree-loading" v-loading="loadingResourceTreeDataList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingResourceTreeDataList}">
 					<el-tree :style="fixedTreeHeightStyle" :data="resourceTreeDataList" :props="defaultProps" :show-checkbox="true" :default-expand-all="true" :expand-on-click-node="false" :check-strictly="true" :render-content="renderResourceTreeNode"></el-tree>
@@ -228,6 +228,7 @@
 			</div>
 		</div>
 	</div>
+	<script type="text/javascript" src="../../resources/js/polyfill.min.js"></script>
 	<script type="text/javascript" src="../../resources/js/vue.min.js"></script>
 	<script type="text/javascript" src="../../resources/js/vue.pageloading.js"></script>
 	<script type="text/javascript" src="../../resources/js/vue-router.min.js"></script>

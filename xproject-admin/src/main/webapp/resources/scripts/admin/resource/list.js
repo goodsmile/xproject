@@ -83,15 +83,7 @@ Vue.onDocumentReady(function() {
 			}
 		},
 		created: function(){
-			var _this = this;
-			axios.get(ADMIN_CONTEXT_PATH + '/admin/resource/available').then(function(response){
-				var result = response.data;
-				if(result.success){
-					_this.resourceTreeDataList = result.data;
-				}
-			}).catch(function(error){
-				//_this.$message.error('请求出错!');
-			});
+			this.refreshResourceTree(0);
 		},
 		methods: {
 			renderResourceTreeNode: function(h, param){
@@ -188,20 +180,27 @@ Vue.onDocumentReady(function() {
 				}
 				return '';
 			},
-			refreshResourceTree: function(){
-				this.loadingResourceTreeDataList = true;
+			refreshResourceTree: function(loading){
 				var _this = this;
+				var url = ADMIN_CONTEXT_PATH + '/admin/resource/available';
+				if(loading){
+					this.loadingResourceTreeDataList = true;
+				}
 				setTimeout(function(){
-					axios.get(ADMIN_CONTEXT_PATH + '/admin/resource/available').then(function(response){
+					axios.get(url).then(function(response){
 						var result = response.data;
 						if(result.success){
-							_this.loadingResourceTreeDataList = false;
 							_this.resourceTreeDataList = result.data;
+						}else{
+							_this.resourceTreeDataList = [];
+						}
+						if(loading){
+							_this.loadingResourceTreeDataList = false;
 						}
 					}).catch(function(error){
-						//_this.$message.error('请求出错!');
+						_this.$message.error('请求出错!');
 					});
-				}, 2000);
+				}, loading);
 			},
 			addResource: function(param){
 				this.actionType = 'add';
@@ -252,7 +251,7 @@ Vue.onDocumentReady(function() {
 									if(result.success){
 										_this.$message.success('保存成功!');
 										_this.closeEditDialog();
-										_this.refreshResourceTree();
+										_this.refreshResourceTree(1000);
 									}else{
 										_this.$message.error(result.message);
 									}
@@ -283,7 +282,7 @@ Vue.onDocumentReady(function() {
 									var result = response.data;
 									if(result.success){
 										_this.$message.success('删除成功!');
-										_this.refreshResourceTree();
+										_this.refreshResourceTree(1000);
 									}else{
 										_this.$message.error(result.message);
 									}

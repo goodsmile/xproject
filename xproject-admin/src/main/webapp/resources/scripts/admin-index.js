@@ -6,14 +6,21 @@ var TOP_NAV_HEIGHT = 50;
  * 浏览器窗口高度
  */
 var WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+var WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 /**
  * index页面IFRAME的最小高度
  */
 var MIN_MAIN_FRAME_HEIGHT = WINDOW_HEIGHT - TOP_NAV_HEIGHT;
 window.onresize = function(){
 	WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+	WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 	MIN_MAIN_FRAME_HEIGHT = WINDOW_HEIGHT - TOP_NAV_HEIGHT;
 }
+
+/*var adminContainerContent = document.querySelector(".admin-container-content");
+adminContainerContent.style.height = WINDOW_HEIGHT + 'px';*/
+var adminContainerInner = document.querySelector(".admin-container-inner");
+adminContainerInner.style.width = (WINDOW_WIDTH + 20) + 'px';
 
 var EMPTY_PAGE_URL = 'about:blank';
 var AdminVue = null;
@@ -56,16 +63,16 @@ var AdminMainContent = Vue.extend({
     		this.contentLoading = false;
     	},
     	setMainFrameMinHeight: function(){
-    		var appContainer = document.getElementById('app');
     		var mainFrame = document.getElementById('adminMainContent');
     		if(mainFrame){
     			mainFrame.style.height = MIN_MAIN_FRAME_HEIGHT + "px";
         		mainFrame.style.minHeight = MIN_MAIN_FRAME_HEIGHT + "px";
     		}
-    		appContainer.style.minHeight = "100%";
+    		var adminContainerContent = document.querySelector(".admin-container-content");
+    		adminContainerContent.style.height = '100%';
+    		//adminContainerContent.style.minHeight = "100%";
     	},
     	autoResizeMainFrameHeight: function(){
-			var appContainer = document.getElementById('app');
     		var mainFrame = document.getElementById('adminMainContent');
     		var mainFrameHeight = MIN_MAIN_FRAME_HEIGHT;
     		if(mainFrame){
@@ -83,7 +90,8 @@ var AdminMainContent = Vue.extend({
     			}
     		}
     		if(!this.contentLoading){
-    			appContainer.style.minHeight = (mainFrameHeight + TOP_NAV_HEIGHT) + "px";
+    			var adminContainerContent = document.querySelector(".admin-container-content");
+    			adminContainerContent.style.height = (mainFrameHeight + TOP_NAV_HEIGHT) + "px";
     		}
     	}
     },

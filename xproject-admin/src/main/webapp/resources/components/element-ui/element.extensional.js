@@ -6,6 +6,24 @@
 function onFocus4ReadOnly(event){
 	event.target.blur();
 }
+/**
+ * 转换<el-table/>的default-sort属性与后台字段对应
+ * @param sort
+ * @returns
+ */
+function convertToOrderBy(sort){
+	var obj = {};
+	if(sort.prop && sort.order){
+		obj['orderby'] = sort.prop;
+		if(sort.order.toLowerCase() == 'descending'){
+			obj['order'] = 'desc';
+		}else{
+			obj['order'] = 'asc';
+		}
+	}
+	return obj;
+}
+
 //Element Validator begin
 /**
  * 字符串最小长度验证

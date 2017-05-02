@@ -9,8 +9,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,8 +37,6 @@ import com.certusnet.xproject.common.web.shiro.ShiroUtils;
 @RestController
 public class AdminResourceMgtController extends BaseController {
 
-	private static final Logger logger = LoggerFactory.getLogger(AdminResourceMgtController.class);
-	
 	private AbstractXTreeBuilder<Long, AdminResource> resourceTreeBuilder = new AdminResourceTreeBuilder();
 	
 	private TreeNodeConverter<AdminResource,Map<String,Object>> resourceTreeNodeConverter = new AdminResourceTreeNodeConverter();
@@ -56,7 +52,6 @@ public class AdminResourceMgtController extends BaseController {
 	 */
 	@RequestMapping(value="/admin/resource/available")
 	public Object getAvailableResources(HttpServletRequest request, HttpServletResponse response) {
-		logger.info(">>> 获取可用的资源树结构");
 		List<AdminResource> allResourceList = adminResourceService.getAllResourceList(null);
 		List<Map<String,Object>> dataList = resourceTreeBuilder.buildObjectTree(GlobalConstants.DEFAULT_ADMIN_ROOT_RESOURCE_ID, allResourceList, resourceTreeNodeConverter);
 		return genSuccessResult(dataList);
