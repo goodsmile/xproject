@@ -3,6 +3,8 @@ package com.certusnet.xproject.common.web;
 import javax.servlet.http.HttpServletRequest;
 
 import com.certusnet.xproject.common.consts.GlobalConstants;
+import com.certusnet.xproject.common.support.PagingList;
+import com.certusnet.xproject.common.support.PagingResult;
 import com.certusnet.xproject.common.support.Result;
 
 public abstract class BaseController {
@@ -82,6 +84,44 @@ public abstract class BaseController {
 		result.setCode(code);
 		result.setMessage(message);
 		result.setData(data);
+		return result;
+	}
+	
+	protected PagingResult<Object> genSuccessPagingResult(PagingList<?> pagingList) {
+		PagingResult<Object> result = new PagingResult<Object>();
+		result.setSuccess(true);
+		result.setCode(GlobalConstants.RESULT_CODE_SUCCESS);
+		result.setData(pagingList.getDataList());
+		result.setTotalRowCount(pagingList.getTotalRowCount());
+		return result;
+	}
+	
+	protected PagingResult<Object> genSuccessPagingResult(Object data, int totalRowCount) {
+		PagingResult<Object> result = new PagingResult<Object>();
+		result.setSuccess(true);
+		result.setCode(GlobalConstants.RESULT_CODE_SUCCESS);
+		result.setData(data);
+		result.setTotalRowCount(totalRowCount);
+		return result;
+	}
+	
+	protected Result<Object> genSuccessPagingResult(String message, Object data, int totalRowCount) {
+		PagingResult<Object> result = new PagingResult<Object>();
+		result.setSuccess(true);
+		result.setCode(GlobalConstants.RESULT_CODE_SUCCESS);
+		result.setMessage(message);
+		result.setData(data);
+		result.setTotalRowCount(totalRowCount);
+		return result;
+	}
+	
+	protected Result<Object> genSuccessResult(String code, String message, Object data, int totalRowCount) {
+		PagingResult<Object> result = new PagingResult<Object>();
+		result.setSuccess(true);
+		result.setCode(code);
+		result.setMessage(message);
+		result.setData(data);
+		result.setTotalRowCount(totalRowCount);
 		return result;
 	}
 	

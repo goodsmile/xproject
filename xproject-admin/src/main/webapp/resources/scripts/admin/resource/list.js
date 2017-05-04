@@ -50,7 +50,7 @@ Vue.onDocumentReady(function() {
 				}],
 				resourceName: [{
 					required: true,
-					message: '请输资源名称!'
+					message: '请输入资源名称!'
 				}],
 				permissionExpression: [{
 					validator: regex,
@@ -157,7 +157,7 @@ Vue.onDocumentReady(function() {
 						'class': 'custom-action-type'
 					}, [
 						h('el-tag', {
-							'class': 'el-tag-action-type',
+							'class': 'el-tag-small',
 							props: {
 								type: _this.getTagType4ActionType(param.data.actionType)
 							}
@@ -199,6 +199,7 @@ Vue.onDocumentReady(function() {
 						}
 					}).catch(function(error){
 						_this.$message.error('请求出错!');
+						_this.loadingResourceTreeDataList = false;
 					});
 				}, loading);
 			},

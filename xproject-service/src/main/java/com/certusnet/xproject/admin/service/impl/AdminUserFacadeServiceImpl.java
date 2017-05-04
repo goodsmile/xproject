@@ -15,6 +15,7 @@ import com.certusnet.xproject.admin.model.AdminUser;
 import com.certusnet.xproject.admin.service.AdminUserService;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
+import com.certusnet.xproject.common.support.PagingList;
 import com.certusnet.xproject.common.util.CollectionUtils;
 import com.certusnet.xproject.common.util.StringUtils;
 import com.certusnet.xproject.common.web.shiro.service.PrincipalService;
@@ -69,7 +70,7 @@ public class AdminUserFacadeServiceImpl implements AdminUserService, PrincipalSe
         return delegate.getUserById(userId);
     }
     
-    public List<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby) {
+    public PagingList<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby) {
         return delegate.getUserList(user, pager, orderby);
     }
     

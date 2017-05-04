@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ import com.certusnet.xproject.admin.service.AdminUserService;
 import com.certusnet.xproject.admin.support.AdminResourceNavMenuNodeConverter;
 import com.certusnet.xproject.admin.support.AdminResourceTreeBuilder;
 import com.certusnet.xproject.admin.web.LoginToken;
+import com.certusnet.xproject.admin.web.shiro.realm.AdminUserRealm;
 import com.certusnet.xproject.common.consts.GlobalConstants;
 import com.certusnet.xproject.common.support.AbstractXTreeBuilder;
 import com.certusnet.xproject.common.support.Result;
@@ -46,6 +49,7 @@ import com.certusnet.xproject.common.util.NetUtils;
 import com.certusnet.xproject.common.util.StringUtils;
 import com.certusnet.xproject.common.web.BaseController;
 import com.certusnet.xproject.common.web.shiro.ShiroUtils;
+import com.certusnet.xproject.common.web.shiro.authz.CustomAuthorizationInfo;
 /**
  * 管理后台Controller
  * 
@@ -192,8 +196,21 @@ public class AdminController extends BaseController {
 	public Object getLoginUserMenuList(HttpServletRequest request, HttpServletResponse response) {
 		List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>();
 		try {
-			List<AdminResource> allResourceList = adminResourceService.getAllResourceList(AdminResourceActionTypeEnum.ADMIN_RESOURCE_ACTION_TYPE_MENU.getTypeCode());
-			dataList = resourceTreeBuilder.buildObjectTree(GlobalConstants.DEFAULT_ADMIN_ROOT_RESOURCE_ID, allResourceList, resourceNavMenuNodeConverter);
+			List<AdminResource> userMenuResources = new ArrayList<AdminResource>();
+			AdminUserRealm realm = ShiroUtils.getRealm(AdminUserRealm.class);
+			AuthorizationInfo authInfo = realm.getAuthorizationInfo(SecurityUtils.getSubject().getPrincipals());
+			if(authInfo instanceof CustomAuthorizationInfo){
+				CustomAuthorizationInfo<AdminResource> authorizationInfo = (CustomAuthorizationInfo<AdminResource>) authInfo;
+				Set<AdminResource> userResources = authorizationInfo.getResources();
+				if(!CollectionUtils.isEmpty(userResources)){
+					for(AdminResource resource : userResources){
+						if(AdminResourceActionTypeEnum.ADMIN_RESOURCE_ACTION_TYPE_MENU.getTypeCode().equals(resource.getActionType())){
+							userMenuResources.add(resource);
+						}
+					}
+					dataList = resourceTreeBuilder.buildObjectTree(GlobalConstants.DEFAULT_ADMIN_ROOT_RESOURCE_ID, userMenuResources, resourceNavMenuNodeConverter);
+				}
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}

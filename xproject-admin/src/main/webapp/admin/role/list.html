@@ -16,6 +16,51 @@
 		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.custom.css">
 		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/font-awesome.min.css">
 		<style type="text/css">
+			.el-tree-roleresources {
+				height: 350px;
+				overflow-x: hidden;
+				overflow-y: auto;
+			}
+			.el-tree-node__content {
+				position: relative;
+				height: auto;
+				min-height: 34px;
+				line-height: 34px;
+			}
+			.el-tree-node__content > .el-checkbox {
+				vertical-align: top;
+			}
+			.el-tree-custom-resource {
+				display: inline-block;
+				vertical-align: middle;
+				white-space: normal;
+				font-size: 14px;
+				width: 100%;
+				margin-left: -50px;
+			    padding-left: 50px;
+			    box-sizing: border-box;
+			}
+			.el-tree-custom-resource > .custom-label {
+				display: inline-block;
+				vertical-align: middle;
+				float: left;
+			}
+			.el-tree-custom-resource > .custom-action-type {
+				display: inline-block;
+				vertical-align: middle;
+				float: right;
+				padding: 5px;
+				box-sizing: border-box;
+				line-height: 1;
+				min-height: 30px;
+			}
+			.el-tree-custom-resource > .custom-label {
+				width: auto;
+			}
+			.el-tree-custom-resource > .custom-action-type {
+				width: 160px;
+				text-align: center;
+			}
 		</style>
 	</head>
 <body>
@@ -52,22 +97,137 @@
 						</el-row>
 					</el-form>
 				</div>
+				<div class="el-search-actions">
+					<el-button type="primary" size="small" icon="fa-plus-circle" @click="openRoleEditDialog('add')">新增角色</el-button>
+				</div>
 				<div class="el-search-list">
-					<el-table v-loading="loadingRoleList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingRoleList}" :data="roleList" :default-sort="roleQuerySort" @sort-change="onRoleQuerySortChange" style="width:100%;" class="el-table-primary el-table-sortable" empty-text="暂无数据">
+					<el-table v-loading="loadingRoleList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingRoleList}" :data="roleList" :default-sort="roleQuerySort" @sort-change="onRoleQuerySortChange" style="width:100%;" class="el-table el-table-primary el-table-sortable" empty-text="暂无数据">
 						<el-table-column label="#" type="index" width="40"></el-table-column>
-						<el-table-column label="角色名称" prop="roleName" width="160" sortable="custom"></el-table-column>
-						<el-table-column label="角色代码" prop="roleCode" width="150" sortable="custom"></el-table-column>
-						<el-table-column label="角色类型" prop="roleType" width="120" align="center" :formatter="formatRoleType" sortable="custom"></el-table-column>
+						<el-table-column label="角色名称" prop="roleName" width="170" sortable="custom"></el-table-column>
+						<el-table-column label="角色代码" prop="roleCode" width="170" sortable="custom"></el-table-column>
+						<el-table-column label="角色类型" prop="roleType" width="120" align="center" sortable="custom">
+							<template scope="scope">
+								<el-tag class="el-tag-small" :type="getRoleTypeTagType(scope.row.roleType)">{{formatRoleType(scope.row.roleType)}}</el-tag>
+							</template>
+						</el-table-column>
 						<el-table-column label="角色描述" prop="description"></el-table-column>
 						<el-table-column label="创建时间" prop="createTime" width="100" align="center" sortable="custom"></el-table-column>
-						<el-table-column label="操作" width="120" align="center">
+						<el-table-column label="操作" width="140" align="center">
 							<template scope="scope">
-								<el-button class="el-padding-no" type="text" size="small">查看</el-button>
-								<el-button class="el-padding-no" type="text" size="small">编辑</el-button>
+								<el-dropdown class="el-dropdown-small" trigger="click" split-button type="primary" @click="openRoleViewConfigDialog('view', scope.row)" @command="handleRoleCmd(arguments[0], scope.row)">
+								  	查看详情
+								  	<el-dropdown-menu slot="dropdown">
+								    	<el-dropdown-item command="view">查看详情</el-dropdown-item>
+								    	<el-dropdown-item command="edit">修改角色</el-dropdown-item>
+								    	<el-dropdown-item command="conf">配置角色资源</el-dropdown-item>
+								    	<el-dropdown-item command="del" divided>删除角色</el-dropdown-item>
+								  	</el-dropdown-menu>
+								</el-dropdown>
 							</template>
 						</el-table-column>
 					</el-table>
+					<div class="el-search-list-pager" v-show="showPager">
+						<el-pagination class="el-pagination-small" @current-change="onCurrentPageChange" :current-page="roleQueryForm.currentPage" :page-size="roleQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="roleQueryTotal">
+					  		<div class="el-pagination-pagesize">
+					  			<span>每页显示</span>
+					  			<el-button-group>
+						  			<el-button type="gray" :class="{active: roleQueryForm.pageSize == 10}" @click="onPageSizeChange($event, 10);">10</el-button>
+						  			<el-button type="gray" :class="{active: roleQueryForm.pageSize == 20}" @click="onPageSizeChange($event, 20);">20</el-button>
+								  	<el-button type="gray" :class="{active: roleQueryForm.pageSize == 50}" @click="onPageSizeChange($event, 50);">50</el-button>
+								  	<el-button type="gray" :class="{active: roleQueryForm.pageSize == 100}" @click="onPageSizeChange($event, 100);">100</el-button>
+								</el-button-group>
+								<span>条</span>
+					  		</div>
+					  	</el-pagination>
+					</div>
 				</div>
+				<el-dialog v-model="editDialogVisible" class="el-dialog-form el-dialog-center-top" size="large" @close="closeEditDialog">
+					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-large"></i>{{editDialogTitle}}</span>
+					<div>
+						<el-form ref="roleEditForm" :model="roleEditForm" :rules="roleEditRules" label-width="120px">
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="角色名称" prop="roleName">
+										<el-col :span="12">
+											<el-input v-model="roleEditForm.roleName" :maxlength="20"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">不超过20个汉字、字符组成.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="角色代码" prop="roleCode">
+										<el-col :span="12">
+											<el-input v-model="roleEditForm.roleCode" :maxlength="50"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">不超过50个字母、数字、下划线组成.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="角色描述" prop="description">
+										<el-col :span="12">
+											<el-input type="textarea" v-model="roleEditForm.description" :maxlength="200"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">限200个字符.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+						</el-form>
+					</div>
+					<div slot="footer">
+						<el-button icon="fa-ban" @click="closeEditDialog">取 消</el-button>
+					    <el-button type="primary" icon="fa-save" @click="saveRole" :loading="submiting">确 定</el-button>
+					</div>
+				</el-dialog>
+				<el-dialog v-model="viewConfigDialogVisible" class="el-dialog-form el-dialog-center-top" size="large">
+					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-large"></i>{{viewConfigDialogTitle}}</span>
+					<div>
+						<el-tabs v-model="viewConfigActiveTabName">
+					    	<el-tab-pane label="角色基本信息" name="roleDetail">
+					    		<div>
+					    			<el-row>
+										<el-col :span="3" class="el-form-item-label">角色名称：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{roleViewConfigForm.roleName}}</el-col>
+										<el-col :span="3" class="el-form-item-label">角色代码：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{roleViewConfigForm.roleCode}}</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">角色描述：</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<p>{{roleViewConfigForm.description}}</p>
+										</el-col>
+										<el-col :span="3" class="el-form-item-label">角色类型：</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<el-tag class="el-tag-small" :type="getRoleTypeTagType(roleViewConfigForm.roleType)">{{formatRoleType(roleViewConfigForm.roleType)}}</el-tag>
+										</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">创建时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{roleViewConfigForm.createTime}}</el-col>
+										<el-col :span="3" class="el-form-item-label">修改时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{roleViewConfigForm.updateTime}}</el-col>
+									</el-row>
+					    		</div>
+					    	</el-tab-pane>
+					    	<el-tab-pane label="角色资源配置" name="roleResourceConfig">
+					    		<el-tree ref="roleResourceViewTree" v-loading="loadingRoleResourceDataList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingRoleResourceDataList}" class="el-tree-roleresources" :data="roleResourceDataList" :props="defaultProps" node-key="id" :show-checkbox="true" :default-expand-all="true" :expand-on-click-node="true" :check-strictly="true" :render-content="renderRoleResourceTreeNode" @check-click="onRoleResourceTreeNodeCheckClick"></el-tree>
+					    	</el-tab-pane>
+					  	</el-tabs>
+					</div>
+					<div slot="footer">
+						<el-button icon="fa-ban" @click="viewConfigDialogVisible = false">关 闭</el-button>
+						<el-button v-if="currentActionType == 'conf'" type="primary" icon="fa-save" @click="saveRoleResourceConfig" :loading="submiting">保存配置</el-button>
+					</div>
+				</el-dialog>
 			</div>
 		</div>
 	</div>

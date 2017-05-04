@@ -6,6 +6,7 @@ import com.certusnet.xproject.admin.model.AdminResource;
 import com.certusnet.xproject.admin.model.AdminRole;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
+import com.certusnet.xproject.common.support.PagingList;
 
 /**
  * 系统角色Service
@@ -47,7 +48,7 @@ public interface AdminRoleService {
 	 * @param orderby
 	 * @return
 	 */
-	public List<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby);
+	public PagingList<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby);
 	
 	/**
 	 * 获取该角色的看见资源

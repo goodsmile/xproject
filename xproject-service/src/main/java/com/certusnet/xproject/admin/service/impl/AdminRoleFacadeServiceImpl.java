@@ -12,6 +12,7 @@ import com.certusnet.xproject.admin.model.AdminRole;
 import com.certusnet.xproject.admin.service.AdminRoleService;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
+import com.certusnet.xproject.common.support.PagingList;
 import com.certusnet.xproject.common.web.shiro.service.ShiroCacheService;
 
 @Lazy
@@ -42,7 +43,7 @@ public class AdminRoleFacadeServiceImpl implements AdminRoleService {
 		return delegate.getRoleById(roleId);
 	}
 
-	public List<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby) {
+	public PagingList<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby) {
 		return delegate.getRoleList(role, pager, orderby);
 	}
 

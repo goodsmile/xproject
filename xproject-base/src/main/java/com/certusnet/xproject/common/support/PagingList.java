@@ -7,17 +7,8 @@ public class PagingList<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/** 当前页码 */
-	private Integer currentPage;
-	
-	/** 每页显示多少页 */
-	private Integer pageSize;
-	
-	/** 共多少页 */
-	private Integer totalPageCount;
-	
     /** 当存在分页查询时此值为总记录数 */
-	private Integer totalRowCount;
+	private int totalRowCount = 0;
 	
 	/** 数据结果集 */
 	private List<T> dataList;
@@ -26,41 +17,17 @@ public class PagingList<T> implements Serializable {
 		super();
 	}
 	
-	public PagingList(List<T> dataList, Pager pager) {
+	public PagingList(List<T> dataList, int totalRowCount) {
 		super();
 		this.dataList = dataList;
-		setPager(pager);
+		this.totalRowCount = totalRowCount;
 	}
 
-	public Integer getCurrentPage() {
-		return currentPage;
-	}
-
-	public void setCurrentPage(Integer currentPage) {
-		this.currentPage = currentPage;
-	}
-
-	public Integer getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(Integer pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	public Integer getTotalPageCount() {
-		return totalPageCount;
-	}
-
-	public void setTotalPageCount(Integer totalPageCount) {
-		this.totalPageCount = totalPageCount;
-	}
-
-	public Integer getTotalRowCount() {
+	public int getTotalRowCount() {
 		return totalRowCount;
 	}
 
-	public void setTotalRowCount(Integer totalRowCount) {
+	public void setTotalRowCount(int totalRowCount) {
 		this.totalRowCount = totalRowCount;
 	}
 
@@ -71,19 +38,9 @@ public class PagingList<T> implements Serializable {
 	public void setDataList(List<T> dataList) {
 		this.dataList = dataList;
 	}
-	
-	public void setPager(Pager pager) {
-		this.currentPage = pager.getCurrentPage();
-		this.pageSize = pager.getPageSize();
-		this.totalRowCount = pager.getTotalRowCount();
-		this.totalPageCount = pager.getTotalPageCount();
-	}
 
 	public String toString() {
-		return "PagingList [currentPage=" + currentPage + ", pageSize="
-				+ pageSize + ", totalPageCount=" + totalPageCount
-				+ ", totalRowCount=" + totalRowCount + ", dataList=" + dataList
-				+ "]";
+		return "PagingList [totalRowCount=" + totalRowCount + ", dataList=" + dataList + "]";
 	}
 	
 }

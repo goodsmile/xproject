@@ -17,6 +17,7 @@ import com.certusnet.xproject.admin.service.AdminRoleService;
 import com.certusnet.xproject.common.support.BusinessAssert;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
+import com.certusnet.xproject.common.support.PagingList;
 import com.certusnet.xproject.common.support.ValidationAssert;
 import com.certusnet.xproject.common.util.CollectionUtils;
 
@@ -65,8 +66,9 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 		return roleDAO.getRoleById(roleId);
 	}
 
-	public List<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby) {
-		return roleDAO.getRoleList(role, pager, orderby);
+	public PagingList<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby) {
+		List<AdminRole> dataList = roleDAO.getRoleList(role, pager, orderby);
+		return new PagingList<AdminRole>(dataList, pager.getTotalRowCount());
 	}
 
 	public List<AdminResource> getResourceListByRoleId(Long roleId) {

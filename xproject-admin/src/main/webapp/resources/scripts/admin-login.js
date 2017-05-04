@@ -44,6 +44,9 @@ new Vue({
 					return false;
 				}
 			});
+		},
+		submitLogin2: function(){
+			alert(1234);
 		}
 	}
 });

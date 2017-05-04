@@ -29,12 +29,12 @@
 				</div>
 				<el-form ref="loginForm" :rules="loginRules" :model="loginForm" label-width="0">
 					<el-form-item class="admin-login-item-input" prop="userName">
-						<el-input placeholder="请输入用户名" v-model="loginForm.userName">
+						<el-input placeholder="请输入用户名" v-model="loginForm.userName" @keyup.enter.native="submitLogin">
 						    <template slot="prepend"><i class="el-icon-fa-user"></i></template>
 						</el-input>
 					</el-form-item>
 					<el-form-item class="admin-login-item-input" prop="password">
-						<el-input type="password" placeholder="请输入密码" v-model="loginForm.password">
+						<el-input type="password" placeholder="请输入密码" v-model="loginForm.password" @keyup.enter.native="submitLogin">
 						    <template slot="prepend"><i class="el-icon-fa-lock"></i></template>
 						</el-input>
 					</el-form-item>

@@ -7,6 +7,7 @@ import com.certusnet.xproject.admin.model.AdminRole;
 import com.certusnet.xproject.admin.model.AdminUser;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
+import com.certusnet.xproject.common.support.PagingList;
 
 /**
  * 后台管理用户Service
@@ -78,7 +79,7 @@ public interface AdminUserService
      * @param orderby
      * @return
      */
-    public List<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby);
+    public PagingList<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby);
     
     /**
      * 获取用户所拥有的角色

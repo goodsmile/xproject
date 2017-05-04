@@ -20,6 +20,7 @@ import com.certusnet.xproject.common.consts.GlobalConstants;
 import com.certusnet.xproject.common.support.BusinessAssert;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
+import com.certusnet.xproject.common.support.PagingList;
 import com.certusnet.xproject.common.support.ValidationAssert;
 import com.certusnet.xproject.common.util.DateTimeUtils;
 import com.certusnet.xproject.common.web.shiro.UserPasswdUtils;
@@ -111,8 +112,9 @@ public class AdminUserServiceImpl implements AdminUserService {
         return userDAO.getUserById(userId);
     }
     
-    public List<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby) {
-        return userDAO.getUserList(user, pager, orderby);
+    public PagingList<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby) {
+    	List<AdminUser> dataList = userDAO.getUserList(user, pager, orderby);
+    	return new PagingList<AdminUser>(dataList, pager.getTotalRowCount());
     }
     
     public List<AdminRole> getUserRoleList(Long userId) {

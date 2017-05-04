@@ -72,6 +72,8 @@
 			   a.description 		description,
 			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
 			   a.create_by			createBy,
+			   DATE_FORMAT(a.update_time, '%Y-%m-%d %T')	updateTime,
+			   a.update_by			updateBy,
 			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) createByName,
 			   (SELECT count(*) FROM admin_user_role b WHERE a.role_id = b.role_id) inuse
 		  FROM admin_role a
