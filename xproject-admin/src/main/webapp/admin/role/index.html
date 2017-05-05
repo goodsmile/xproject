@@ -107,7 +107,7 @@
 						<el-table-column label="角色代码" prop="roleCode" width="170" sortable="custom"></el-table-column>
 						<el-table-column label="角色类型" prop="roleType" width="120" align="center" sortable="custom">
 							<template scope="scope">
-								<el-tag class="el-tag-small" :type="getRoleTypeTagType(scope.row.roleType)">{{formatRoleType(scope.row.roleType)}}</el-tag>
+								<el-tag class="el-tag-small" :type="getRoleTypeTagType(scope.row.roleType)">{{scope.row.roleTypeName}}</el-tag>
 							</template>
 						</el-table-column>
 						<el-table-column label="角色描述" prop="description"></el-table-column>
@@ -207,7 +207,7 @@
 										</el-col>
 										<el-col :span="3" class="el-form-item-label">角色类型：</el-col>
 										<el-col :span="9" class="el-form-item-content">
-											<el-tag class="el-tag-small" :type="getRoleTypeTagType(roleViewConfigForm.roleType)">{{formatRoleType(roleViewConfigForm.roleType)}}</el-tag>
+											<el-tag class="el-tag-small" :type="getRoleTypeTagType(roleViewConfigForm.roleType)">{{roleViewConfigForm.roleTypeName}}</el-tag>
 										</el-col>
 									</el-row>
 									<el-row>
@@ -239,6 +239,6 @@
 	<script type="text/javascript" src="../../resources/components/element-ui/element.min.js"></script>
 	<script type="text/javascript" src="../../resources/components/element-ui/element.extensional.js"></script>
 	<script type="text/javascript" src="../../resources/scripts/common.js"></script>
-	<script type="text/javascript" src="../../resources/scripts/admin/role/list.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/admin/role/index.js"></script>
 </body>
 </html>

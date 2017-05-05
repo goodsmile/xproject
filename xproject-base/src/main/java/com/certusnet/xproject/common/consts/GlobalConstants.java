@@ -1,5 +1,7 @@
 package com.certusnet.xproject.common.consts;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -20,6 +22,16 @@ public class GlobalConstants extends AbstractConstants {
 	 * 系统默认Locale
 	 */
 	public static final Locale SYSTEM_DEFAULT_LOCALE = valueOf(new Locale("zh", "CN"));
+	
+	/**
+	 * 系统默认的上传文件临时存储路径
+	 */
+	public static final String DEFAULT_UPLOAD_SAVE_PATH = valueOf("/upload/temp/");
+	
+	/**
+	 * 系统默认的允许上传图片格式
+	 */
+	public static final List<String> DEFAULT_UPLOAD_IMAGE_FORMATS = valueOf(Arrays.asList("jpg", "jpeg", "png"));
 	
 	/**
 	 * 返回结果之成功

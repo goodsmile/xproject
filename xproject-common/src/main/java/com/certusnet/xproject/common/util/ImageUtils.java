@@ -2,6 +2,7 @@ package com.certusnet.xproject.common.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -14,6 +15,7 @@ import com.alibaba.simpleimage.render.ScaleParameter;
 import com.alibaba.simpleimage.render.ScaleRender;
 import com.alibaba.simpleimage.render.WriteRender;
 import com.alibaba.simpleimage.util.ImageReadHelper;
+import com.certusnet.xproject.common.support.ImagePixel;
 
 /**
  * 基于simpleimage的图片处理类
@@ -29,8 +31,8 @@ public class ImageUtils {
 	 * @param imgFile
 	 * @return
 	 */
-	public static Dimension getDimension(String fullImgPath) {
-		return getDimension(new File(fullImgPath));
+	public static ImagePixel getImagePixel(String fullImgPath) {
+		return getImagePixel(new File(fullImgPath));
 	}
 	
 	/**
@@ -38,12 +40,23 @@ public class ImageUtils {
 	 * @param imgFile
 	 * @return
 	 */
-	public static Dimension getDimension(File imgFile) {
-		InputStream in = null;
+	public static ImagePixel getImagePixel(File imgFile) {
 		try {
-			in = new FileInputStream(imgFile);
+			return getImagePixel(new FileInputStream(imgFile));
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * 获取图片的像素
+	 * @param imgFile
+	 * @return
+	 */
+	public static ImagePixel getImagePixel(InputStream in) {
+		try {
 			ImageWrapper imageWrapper = ImageReadHelper.read(in);
-			return new Dimension(imageWrapper.getWidth(), imageWrapper.getHeight());
+			return new ImagePixel(imageWrapper.getWidth(), imageWrapper.getHeight());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -88,42 +101,9 @@ public class ImageUtils {
 	
 	public static void main(String[] args) {
 		ScaleParameter scaleParameter = new ScaleParameter();
-		scaleParameter.setMaxWidth(450);
+		scaleParameter.setMaxWidth(300);
+		scaleParameter.setMaxHeight(300);
 		scaleImage("d:/iphone7.jpg", "d:/iphone7-scale.jpg", scaleParameter);
 	}
 
-	public static class Dimension {
-		
-		private Integer width;
-		
-		private Integer height;
-
-		public Dimension(Integer width, Integer height) {
-			super();
-			this.width = width;
-			this.height = height;
-		}
-
-		public Integer getWidth() {
-			return width;
-		}
-
-		public void setWidth(Integer width) {
-			this.width = width;
-		}
-
-		public Integer getHeight() {
-			return height;
-		}
-
-		public void setHeight(Integer height) {
-			this.height = height;
-		}
-
-		public String toString() {
-			return "Dimension [width=" + width + ", height=" + height + "]";
-		}
-		
-	}
-	
 }

@@ -28,6 +28,7 @@ public class AdminResourceTreeNodeConverter implements TreeNodeConverter<AdminRe
 		treeNodeMap.put("parentResourceName", targetTreeNode.getParentResourceName());
 		treeNodeMap.put("siblingsIndex", targetTreeNode.getSiblingsIndex());
 		treeNodeMap.put("actionType", targetTreeNode.getActionType());
+		treeNodeMap.put("actionTypeName", targetTreeNode.getActionTypeName());
 		treeNodeMap.put("resourceUrl", targetTreeNode.getResourceUrl());
 		treeNodeMap.put("resourceType", targetTreeNode.getResourceType());
 		treeNodeMap.put("resourceIcon", targetTreeNode.getResourceIcon());

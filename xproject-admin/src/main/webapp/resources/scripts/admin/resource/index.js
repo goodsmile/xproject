@@ -1,7 +1,3 @@
-var ACTION_TYPES = {
-	0: "菜单",
-	1: "按钮"
-};
 var ADMIN_RESOURCE_TYPE_SYSTEM = 0;
 
 Vue.onDocumentReady(function() {
@@ -39,6 +35,7 @@ Vue.onDocumentReady(function() {
 				resourceName: '',
 				permissionExpression: '',
 				actionType: '',
+				actionTypeName: '',
 				resourceUrl: '',
 				siblingsIndex: '',
 				resourceIcon: ''
@@ -161,7 +158,7 @@ Vue.onDocumentReady(function() {
 							props: {
 								type: _this.getTagType4ActionType(param.data.actionType)
 							}
-						}, _this.formatActionType(param.data.actionType))
+						}, param.data.actionTypeName)
 					]),
 					h('div', {
 						'class': 'custom-siblings-index'
@@ -170,9 +167,6 @@ Vue.onDocumentReady(function() {
 			},
 			getTagType4ActionType: function(actionType){
 				return actionType == 0 ? 'primary' : 'success'
-			},
-			formatActionType: function(actionType){
-				return ACTION_TYPES[actionType];
 			},
 			formatResourceUrl: function(resourceUrl){
 				if(resourceUrl){
@@ -205,33 +199,43 @@ Vue.onDocumentReady(function() {
 			},
 			addResource: function(param){
 				this.actionType = 'add';
-				this.resourceEditForm.resourceId = '';
-				this.resourceEditForm.parentResourceId = param.data.id;
-				this.resourceEditForm.parentResourceName = param.data.label;
 				this.editDialogVisible = true;
+				var _this = this;
+				Vue.nextTick(function(){ //nextTick必须放在editDialogVisible=true即对话框显示后执行,解决form.field初始值问题,进而解决form.resetFields()问题
+					_this.resourceEditForm.resourceId = '';
+					_this.resourceEditForm.parentResourceId = param.data.id;
+					_this.resourceEditForm.parentResourceName = param.data.label;
+				});
 			},
 			editResource: function(param){
 				this.actionType = 'edit';
-				this.resourceEditForm.resourceId = param.data.id;
-				this.resourceEditForm.resourceName = param.data.label;
-				this.resourceEditForm.parentResourceId = param.data.parentResourceId;
-				this.resourceEditForm.parentResourceName = param.data.parentResourceName;
-				this.resourceEditForm.permissionExpression = param.data.permissionExpression;
-				this.resourceEditForm.actionType = param.data.actionType;
-				this.resourceEditForm.resourceUrl = param.data.resourceUrl;
-				this.resourceEditForm.siblingsIndex = param.data.siblingsIndex;
-				this.resourceEditForm.resourceIcon = param.data.resourceIcon;
 				this.editDialogVisible = true;
+				var _this = this;
+				Vue.nextTick(function(){ //nextTick必须放在editDialogVisible=true即对话框显示后执行,解决form.field初始值问题,进而解决form.resetFields()问题
+					_this.resourceEditForm.resourceId = param.data.id;
+					_this.resourceEditForm.resourceName = param.data.label;
+					_this.resourceEditForm.parentResourceId = param.data.parentResourceId;
+					_this.resourceEditForm.parentResourceName = param.data.parentResourceName;
+					_this.resourceEditForm.permissionExpression = param.data.permissionExpression;
+					_this.resourceEditForm.actionType = param.data.actionType;
+					_this.resourceEditForm.resourceUrl = param.data.resourceUrl;
+					_this.resourceEditForm.siblingsIndex = param.data.siblingsIndex;
+					_this.resourceEditForm.resourceIcon = param.data.resourceIcon;
+				});
 			},
 			viewResource: function(param){
-				this.resourceViewForm.parentResourceName = param.data.parentResourceName;
-				this.resourceViewForm.resourceName = param.data.label;
-				this.resourceViewForm.permissionExpression = param.data.permissionExpression;
-				this.resourceViewForm.actionType = param.data.actionType;
-				this.resourceViewForm.resourceUrl = param.data.resourceUrl;
-				this.resourceViewForm.siblingsIndex = param.data.siblingsIndex;
-				this.resourceViewForm.resourceIcon = param.data.resourceIcon;
 				this.viewDialogVisible = true;
+				var _this = this;
+				Vue.nextTick(function(){
+					_this.resourceViewForm.parentResourceName = param.data.parentResourceName;
+					_this.resourceViewForm.resourceName = param.data.label;
+					_this.resourceViewForm.permissionExpression = param.data.permissionExpression;
+					_this.resourceViewForm.actionType = param.data.actionType;
+					_this.resourceViewForm.actionTypeName = param.data.actionTypeName;
+					_this.resourceViewForm.resourceUrl = param.data.resourceUrl;
+					_this.resourceViewForm.siblingsIndex = param.data.siblingsIndex;
+					_this.resourceViewForm.resourceIcon = param.data.resourceIcon;
+				});
 			},
 			saveResource: function(){
 				var url = '';
@@ -296,9 +300,7 @@ Vue.onDocumentReady(function() {
 				}
 			},
 			closeEditDialog: function(){
-				if(this.editDialogVisible){
-					this.editDialogVisible = false;
-				}
+				this.editDialogVisible = false;
 				this.$refs.resourceEditForm.resetFields();
 			}
 		}

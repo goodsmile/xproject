@@ -682,6 +682,9 @@ a {
 	text-align: right;
 }
 
+.el-upload__tip {
+	line-height: 20px;
+}
 .el-upload-plusuploader > .el-upload, .el-upload--picture-card {
 	border: 3px dashed #dfdfdf;
     border-radius: 0;

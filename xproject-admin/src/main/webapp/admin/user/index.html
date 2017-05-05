@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>用户管理</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="shortcut icon" href="../../resources/images/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.min.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.custom.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/font-awesome.min.css">
+		<style type="text/css">
+			.usercard {
+				display: inline-block;
+				position: relative;
+				height: 40px;
+				line-height: 40px;
+				padding-left: 45px;
+			}
+			.usercard > img {
+				display: block;
+				border: 0 none;
+				margin: 0;
+				padding: 0;
+				position: absolute;
+				left: 0;
+				top: 0;
+				height: 40px;
+				width: 40px;
+				border-radius: 50%;
+			}
+			.el-upload-plusuploader > .el-upload {
+				height: 100px;
+				line-height: 100px;
+				width: 100px;
+			}
+		</style>
+	</head>
+<body>
+	<div id="app" class="el-container el-hidden">
+		<div class="el-container-inner">
+			<el-breadcrumb class="el-breadcrumb-admin" separator="/">
+				<i class="el-icon-fa-home"></i>
+			  	<el-breadcrumb-item>系统管理</el-breadcrumb-item>
+			  	<el-breadcrumb-item>用户管理</el-breadcrumb-item>
+			</el-breadcrumb>
+			<div class="el-container-content">
+				<h3 class="el-title">
+					<label>用户查询</label>
+				</h3>
+				<div class="el-search-form">
+					<el-form ref="userQueryForm" :model="userQueryForm">
+						<el-row :gutter="20">
+							<el-col :span="4">
+								<el-form-item prop="userName">
+									<el-input v-model="userQueryForm.userName" :maxlength="20" placeholder="用户名"></el-input>
+								</el-form-item>
+							</el-col>
+							<el-col :span="4">
+								<el-form-item prop="realName">
+							    	<el-input v-model="userQueryForm.realName" :maxlength="10" placeholder="姓名"></el-input>
+							    </el-form-item>
+					      	</el-col>
+					      	<el-col :span="4">
+								<el-form-item prop="userType">
+									<el-select class="el-block" v-model="userQueryForm.userType" placeholder="用户类型">
+					  					<el-option label="系统用户" :value="0"></el-option>
+		 								<el-option label="普通用户" :value="1"></el-option>
+					  				</el-select>
+							    </el-form-item>
+					      	</el-col>
+					      	<el-col :span="4">
+								<el-form-item prop="status">
+									<el-select class="el-block" v-model="userQueryForm.status" placeholder="状态">
+					  					<el-option label="启用" :value="1"></el-option>
+		 								<el-option label="禁用" :value="0"></el-option>
+					  				</el-select>
+							    </el-form-item>
+					      	</el-col>
+					      	<el-col :span="8">
+					      		<el-form-item class="el-align-center">
+					      			<el-button @click="resetQueryForm" icon="fa-undo">重 置</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+					      			<el-button type="primary" @click="queryUserList(1000)" icon="fa-search">查 询</el-button>
+					      		</el-form-item>
+					      	</el-col>
+						</el-row>
+					</el-form>
+				</div>
+				<div class="el-search-actions">
+					<el-button type="primary" size="small" icon="fa-plus-circle" @click="openUserEditDialog('add')">新增用户</el-button>
+				</div>
+				<div class="el-search-list">
+					<el-table v-loading="loadingUserList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingUserList}" :data="userList" :default-sort="userQuerySort" @sort-change="onUserQuerySortChange" style="width:100%;" class="el-table el-table-primary el-table-sortable" empty-text="暂无数据">
+						<el-table-column label="#" type="index" width="40"></el-table-column>
+						<el-table-column label="用户名" prop="userName" width="170" sortable="custom">
+							<template scope="scope">
+								<div class="usercard"><img :src="getUserIconUrl(scope.row.userIcon)"/>{{scope.row.userName}}</div>
+							</template>
+						</el-table-column>
+						<el-table-column label="姓名" prop="realName" width="120" align="center" sortable="custom"></el-table-column>
+						<el-table-column label="手机号码" prop="mobilePhone" width="140" align="center" sortable="custom"></el-table-column>
+						<el-table-column label="EMAIL" prop="email" sortable="custom"></el-table-column>
+						<el-table-column label="用户类型" prop="userType" width="120" align="center" sortable="custom">
+							<template scope="scope">
+								<el-tag class="el-tag-small" :type="getUserTypeTagType(scope.row.userType)">{{scope.row.userTypeName}}</el-tag>
+							</template>
+						</el-table-column>
+						<el-table-column label="状态" prop="status" width="100" align="center" sortable="custom">
+							<template scope="scope">
+								<el-tag class="el-tag-small" :type="getStatusTagType(scope.row.status)">{{scope.row.statusName}}</el-tag>
+							</template>
+						</el-table-column>
+						<el-table-column label="创建时间" prop="createTime" width="100" align="center" sortable="custom"></el-table-column>
+						<el-table-column label="操作" width="140" align="center">
+							<template scope="scope">
+								<el-dropdown class="el-dropdown-small" trigger="click" split-button type="primary" @click="openUserViewConfigDialog('view', scope.row)" @command="handleUserCmd(arguments[0], scope.row)">
+								  	查看详情
+								  	<el-dropdown-menu slot="dropdown">
+								    	<el-dropdown-item command="view">查看详情</el-dropdown-item>
+								    	<el-dropdown-item command="edit">修改用户</el-dropdown-item>
+								    	<el-dropdown-item command="conf">配置用户角色</el-dropdown-item>
+								    	<el-dropdown-item command="del" divided>删除用户</el-dropdown-item>
+								  	</el-dropdown-menu>
+								</el-dropdown>
+							</template>
+						</el-table-column>
+					</el-table>
+					<div class="el-search-list-pager" v-show="showPager">
+						<el-pagination class="el-pagination-small" @current-change="onCurrentPageChange" :current-page="userQueryForm.currentPage" :page-size="userQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="userQueryTotal">
+					  		<div class="el-pagination-pagesize">
+					  			<span>每页显示</span>
+					  			<el-button-group>
+						  			<el-button type="gray" :class="{active: userQueryForm.pageSize == 10}" @click="onPageSizeChange($event, 10);">10</el-button>
+						  			<el-button type="gray" :class="{active: userQueryForm.pageSize == 20}" @click="onPageSizeChange($event, 20);">20</el-button>
+								  	<el-button type="gray" :class="{active: userQueryForm.pageSize == 50}" @click="onPageSizeChange($event, 50);">50</el-button>
+								  	<el-button type="gray" :class="{active: userQueryForm.pageSize == 100}" @click="onPageSizeChange($event, 100);">100</el-button>
+								</el-button-group>
+								<span>条</span>
+					  		</div>
+					  	</el-pagination>
+					</div>
+				</div>
+				<el-dialog v-model="editDialogVisible" class="el-dialog-form el-dialog-center-top" size="large" @close="closeEditDialog">
+					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-large"></i>{{editDialogTitle}}</span>
+					<div>
+						<el-form ref="userEditForm" :model="userEditForm" :rules="userEditRules" label-width="120px">
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="用户名" prop="userName">
+										<el-col :span="12">
+											<el-input v-model="userEditForm.userName" :maxlength="20"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">由字母开头,5~20个字母、数字及下划线组成.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="姓 名" prop="realName">
+										<el-col :span="12">
+											<el-input v-model="userEditForm.realName" :maxlength="10"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">真实姓名.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="账户密码" prop="password">
+										<el-col :span="12">
+											<el-input v-model="userEditForm.password" :maxlength="20" type="password"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">由6~20位个字母或数字组成.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="重复密码" prop="repassword">
+										<el-col :span="12">
+											<el-input v-model="userEditForm.repassword" :maxlength="20" type="password"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips">请再次确认您输入的密码.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="手机号码" prop="mobilePhone">
+										<el-col :span="12">
+											<el-input v-model="userEditForm.mobilePhone" :maxlength="11"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips"></p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+									<el-form-item label="EMAIL" prop="email">
+										<el-col :span="12">
+											<el-input v-model="userEditForm.email" :maxlength="100"></el-input>
+										</el-col>
+										<el-col :span="12">
+								      		<p class="el-form-item-tips"></p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="12">
+									<el-form-item label="上传头像" prop="mobilePhone">
+										<el-col :span="24">
+											<el-upload class="el-upload-plusuploader" :action="userIconUploadUrl" :data="userIconUploadParam" :show-file-list="false" :before-upload="beforeUserIconUpload" :on-remove="handleUserIconRemove" :on-success="handleUserIconUploadSuccess" :on-error="handleUploadError">
+												<img v-if="userEditForm.userIcon" :src="getUserIconUrl(userEditForm.userIcon)">
+			  									<i v-else class="el-icon-plus"></i>
+			  									<div class="el-upload__tip" slot="tip">只能上传jpg|png文件，大小不超过50kb，图片像素限100x100像素附近(长宽误差不超过10个像素)</div>
+											</el-upload>
+										</el-col>
+									</el-form-item>
+								</el-col>
+								<el-col :span="12">
+								</el-col>
+							</el-row>
+						</el-form>
+					</div>
+					<div slot="footer">
+						<el-button icon="fa-ban" @click="closeEditDialog">取 消</el-button>
+					    <el-button type="primary" icon="fa-save" @click="saveUser" :loading="submiting">确 定</el-button>
+					</div>
+				</el-dialog>
+				<el-dialog v-model="viewConfigDialogVisible" class="el-dialog-form el-dialog-center-top" size="large">
+					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-large"></i>{{viewConfigDialogTitle}}</span>
+					<div>
+						<el-tabs v-model="viewConfigActiveTabName">
+					    	<el-tab-pane label="用户基本信息" name="userDetail">
+					    		<div>
+					    			<el-row>
+										<el-col :span="3" class="el-form-item-label">用户名：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.userName}}</el-col>
+										<el-col :span="3" class="el-form-item-label">姓 名：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.realName}}</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">手机号码：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.mobilePhone}}</el-col>
+										<el-col :span="3" class="el-form-item-label">EMAIL：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.email}}</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">用户类型：</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<el-tag class="el-tag-small" :type="getUserTypeTagType(userViewConfigForm.userType)">{{userViewConfigForm.userTypeName}}</el-tag>
+										</el-col>
+										<el-col :span="3" class="el-form-item-label">状 态：</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<el-tag class="el-tag-small" :type="getStatusTagType(userViewConfigForm.status)">{{userViewConfigForm.statusName}}</el-tag>
+										</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">头 像：</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<img :src="getUserIconUrl(userViewConfigForm.userIcon)"/>
+										</el-col>
+										<el-col :span="3" class="el-form-item-label">EMAIL：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.email}}</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">创建时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.createTime}}</el-col>
+										<el-col :span="3" class="el-form-item-label">修改时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.updateTime}}</el-col>
+									</el-row>
+					    		</div>
+					    	</el-tab-pane>
+					    	<el-tab-pane label="角色资源配置" name="userRoleConfig">
+					    		角色资源配置
+					    	</el-tab-pane>
+					  	</el-tabs>
+					</div>
+					<div slot="footer">
+						<el-button icon="fa-ban" @click="viewConfigDialogVisible = false">关 闭</el-button>
+						<el-button v-if="currentActionType == 'conf'" type="primary" icon="fa-save" @click="saveUserRoleConfig" :loading="submiting">保存配置</el-button>
+					</div>
+				</el-dialog>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../resources/js/polyfill.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue.pageloading.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue-router.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/axios.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.extensional.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/common.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/admin/user/index.js"></script>
+</body>
+</html>

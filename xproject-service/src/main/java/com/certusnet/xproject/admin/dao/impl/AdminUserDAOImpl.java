@@ -63,7 +63,7 @@ public class AdminUserDAOImpl extends DefaultBaseMybatisDAO implements AdminUser
     public List<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby) {
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("userName", user.getUserName());
-        paramMap.put("nickName", user.getNickName());
+        paramMap.put("realName", user.getRealName());
         paramMap.put("userType", user.getUserType());
         paramMap.put("status", user.getStatus());
         paramMap.put("orderby", orderby.getOrderby());

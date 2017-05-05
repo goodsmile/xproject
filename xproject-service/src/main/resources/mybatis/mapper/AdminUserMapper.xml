@@ -8,7 +8,7 @@
 			user_name,
 			password,
 			user_type,
-			nick_name,
+			real_name,
 			mobile_phone,
 			email,
 			status,
@@ -20,7 +20,7 @@
 			#{userName, jdbcType=VARCHAR},
 			#{encryptedPassword, jdbcType=VARCHAR},
 			#{userType, jdbcType=INTEGER},
-			#{nickName, jdbcType=VARCHAR},
+			#{realName, jdbcType=VARCHAR},
 			#{mobilePhone, jdbcType=VARCHAR},
 			#{email, jdbcType=VARCHAR},
 			#{status, jdbcType=INTEGER},
@@ -33,7 +33,7 @@
 	<update id="updateUser" parameterType="AdminUser" statementType="PREPARED">
 		UPDATE admin_user a
 		   SET a.user_name 		= #{userName, jdbcType=VARCHAR},
-		   	   a.nick_name		= #{nickName, jdbcType=VARCHAR},
+		   	   a.real_name		= #{realName, jdbcType=VARCHAR},
 		   	   a.mobile_phone	= #{mobilePhone, jdbcType=VARCHAR},
 		   	   a.email			= #{email, jdbcType=VARCHAR},
 		   	   a.user_icon		= #{userIcon, jdbcType=VARCHAR},
@@ -70,7 +70,7 @@
 			   a.user_name		userName,
 			   a.password		password,
 			   a.user_type		userType,
-			   a.nick_name		nickName,
+			   a.real_name		realName,
 			   a.mobile_phone	mobilePhone,
 			   a.email			email,
 			   a.status			status,
@@ -111,7 +111,7 @@
 			   a.user_name		userName,
 			   a.password		password,
 			   a.user_type		userType,
-			   a.nick_name		nickName,
+			   a.real_name		realName,
 			   a.mobile_phone	mobilePhone,
 			   a.email			email,
 			   a.status			status,
@@ -133,7 +133,7 @@
 			   a.user_name		userName,
 			   a.password		password,
 			   a.user_type		userType,
-			   a.nick_name		nickName,
+			   a.real_name		realName,
 			   a.mobile_phone	mobilePhone,
 			   a.email			email,
 			   a.status			status,
@@ -150,8 +150,8 @@
 		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userName)">
 		   AND a.user_name like CONCAT('%', #{userName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(nickName)">
-		   AND a.nick_name like CONCAT('%', #{nickName, jdbcType=VARCHAR}, '%')
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(realName)">
+		   AND a.real_name like CONCAT('%', #{realName, jdbcType=VARCHAR}, '%')
 		</if>
 		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userType)">
 		   AND a.user_type = #{userType, jdbcType=INTEGER}
@@ -171,8 +171,8 @@
 		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userName)">
 		   AND a.user_name like CONCAT('%', #{userName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(nickName)">
-		   AND a.nick_name like CONCAT('%', #{nickName, jdbcType=VARCHAR}, '%')
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(realName)">
+		   AND a.real_name like CONCAT('%', #{realName, jdbcType=VARCHAR}, '%')
 		</if>
 		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userType)">
 		   AND a.user_type = #{userType, jdbcType=INTEGER}

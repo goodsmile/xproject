@@ -22,8 +22,8 @@ public class AdminUser implements Serializable {
 	/** 密码 */
 	private String password;
 	
-	/** 昵称 */
-	private String nickName;
+	/** 姓名 */
+	private String realName;
 	
 	/** 手机号码 */
 	private String mobilePhone;
@@ -92,12 +92,12 @@ public class AdminUser implements Serializable {
 		this.password = password;
 	}
 
-	public String getNickName() {
-		return nickName;
+	public String getRealName() {
+		return realName;
 	}
 
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
+	public void setRealName(String realName) {
+		this.realName = realName;
 	}
 
 	public String getMobilePhone() {

@@ -204,7 +204,7 @@
 						<el-row>
 							<el-col :span="3" class="el-form-item-label">资源功能类型：</el-col>
 							<el-col :span="9" class="el-form-item-content">
-								<el-tag class="el-tag-action-type" :type="getTagType4ActionType(resourceViewForm.actionType)">{{formatActionType(resourceViewForm.actionType)}}</el-tag>
+								<el-tag class="el-tag-action-type" :type="getTagType4ActionType(resourceViewForm.actionType)">{{resourceViewForm.actionTypeName}}</el-tag>
 							</el-col>
 							<el-col :span="3" class="el-form-item-label">排序号：</el-col>
 							<el-col :span="9" class="el-form-item-content">{{resourceViewForm.siblingsIndex}}</el-col>
@@ -233,6 +233,6 @@
 	<script type="text/javascript" src="../../resources/components/element-ui/element.min.js"></script>
 	<script type="text/javascript" src="../../resources/components/element-ui/element.extensional.js"></script>
 	<script type="text/javascript" src="../../resources/scripts/common.js"></script>
-	<script type="text/javascript" src="../../resources/scripts/admin/resource/list.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/admin/resource/index.js"></script>
 </body>
 </html>

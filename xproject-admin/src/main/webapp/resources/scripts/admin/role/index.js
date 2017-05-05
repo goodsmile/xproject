@@ -1,8 +1,4 @@
 var ADMIN_ROLE_TYPE_SYSTEM = 0;
-var ACTION_TYPES = {
-	0: "菜单",
-	1: "按钮"
-};
 Vue.onDocumentReady(function() {
 	new Vue({
 		el: '#app',
@@ -45,6 +41,7 @@ Vue.onDocumentReady(function() {
 				roleCode: '',
 				description: '',
 				roleType: '',
+				roleTypeName: '',
 				createBy: '',
 				createTime: '',
 				updateBy: '',
@@ -96,13 +93,6 @@ Vue.onDocumentReady(function() {
 			this.queryRoleList(0);
 		},
 		methods: {
-			formatRoleType: function(roleType){
-				if(roleType == 0){
-					return "系统角色";
-				}else{
-					return "普通角色";
-				}
-			},
 			getRoleTypeTagType: function(roleType){
 				if(roleType == 0){
 					return "success";
@@ -177,33 +167,40 @@ Vue.onDocumentReady(function() {
 		    },
 		    openRoleEditDialog: function(cmd, row){
 		    	this.currentActionType = cmd;
-		    	if(cmd == 'edit'){
-		    		this.roleEditForm.roleId = row.roleId;
-		    		this.roleEditForm.roleName = row.roleName;
-		    		this.roleEditForm.roleCode = row.roleCode;
-		    		this.roleEditForm.description = row.description;
-		    	}
 		    	this.editDialogVisible = true;
+		    	var _this = this;
+				Vue.nextTick(function(){
+					if(cmd == 'edit'){
+						_this.roleEditForm.roleId = row.roleId;
+						_this.roleEditForm.roleName = row.roleName;
+						_this.roleEditForm.roleCode = row.roleCode;
+						_this.roleEditForm.description = row.description;
+			    	}
+				});
 		    },
 		    openRoleViewConfigDialog: function(cmd, row){
 		    	this.currentActionType = cmd;
-		    	this.roleViewConfigForm.roleId = row.roleId;
-		    	this.roleViewConfigForm.roleName = row.roleName;
-	    		this.roleViewConfigForm.roleCode = row.roleCode;
-	    		this.roleViewConfigForm.description = row.description;
-	    		this.roleViewConfigForm.roleType = row.roleType;
-	    		this.roleViewConfigForm.createBy = row.createBy;
-	    		this.roleViewConfigForm.createTime = row.createTime;
-	    		this.roleViewConfigForm.updateBy = row.updateBy;
-	    		this.roleViewConfigForm.updateTime = row.updateTime;
-	    		if(cmd == 'conf'){
-	    			this.viewConfigActiveTabName = 'roleResourceConfig';
-	    			this.loadRoleResourceDataList(1500, row.roleId);
-	    		}else{
-	    			this.viewConfigActiveTabName = 'roleDetail';
-	    			this.loadRoleResourceDataList(0, row.roleId);
-	    		}
-	    		this.viewConfigDialogVisible = true;
+		    	this.viewConfigDialogVisible = true;
+		    	var _this = this;
+				Vue.nextTick(function(){
+					_this.roleViewConfigForm.roleId = row.roleId;
+					_this.roleViewConfigForm.roleName = row.roleName;
+					_this.roleViewConfigForm.roleCode = row.roleCode;
+					_this.roleViewConfigForm.description = row.description;
+					_this.roleViewConfigForm.roleType = row.roleType;
+					_this.roleViewConfigForm.roleTypeName = row.roleTypeName;
+					_this.roleViewConfigForm.createBy = row.createBy;
+					_this.roleViewConfigForm.createTime = row.createTime;
+					_this.roleViewConfigForm.updateBy = row.updateBy;
+					_this.roleViewConfigForm.updateTime = row.updateTime;
+		    		if(cmd == 'conf'){
+		    			_this.viewConfigActiveTabName = 'roleResourceConfig';
+		    			_this.loadRoleResourceDataList(1500, row.roleId);
+		    		}else{
+		    			_this.viewConfigActiveTabName = 'roleDetail';
+		    			_this.loadRoleResourceDataList(0, row.roleId);
+		    		}
+				});
 		    },
 		    saveRole: function(){
 		    	var url = '';
@@ -300,9 +297,7 @@ Vue.onDocumentReady(function() {
 		    	}
 		    },
 		    closeEditDialog: function(){
-				if(this.editDialogVisible){
-					this.editDialogVisible = false;
-				}
+		    	this.editDialogVisible = false;
 				this.$refs.roleEditForm.resetFields();
 			},
 			loadRoleResourceDataList: function(loading, roleId){
@@ -353,7 +348,7 @@ Vue.onDocumentReady(function() {
 							props: {
 								type: _this.getTagType4ActionType(param.data.actionType)
 							}
-						}, _this.formatActionType(param.data.actionType))
+						}, param.data.actionTypeName)
 					])
 				]);
 			},
@@ -383,9 +378,6 @@ Vue.onDocumentReady(function() {
 			},
 			getTagType4ActionType: function(actionType){
 				return actionType == 0 ? 'primary' : 'success'
-			},
-			formatActionType: function(actionType){
-				return ACTION_TYPES[actionType];
 			}
 		}
 	});
