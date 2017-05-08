@@ -100,7 +100,7 @@
 						<el-table-column label="#" type="index" width="40"></el-table-column>
 						<el-table-column label="用户名" prop="userName" width="170" sortable="custom">
 							<template scope="scope">
-								<div class="usercard"><img :src="getUserIconUrl(scope.row.userIcon)"/>{{scope.row.userName}}</div>
+								<div class="usercard"><img :src="scope.row.userIconUrl"/>{{scope.row.userName}}</div>
 							</template>
 						</el-table-column>
 						<el-table-column label="姓名" prop="realName" width="120" align="center" sortable="custom"></el-table-column>
@@ -131,15 +131,15 @@
 							</template>
 						</el-table-column>
 					</el-table>
-					<div class="el-search-list-pager" v-show="showPager">
-						<el-pagination class="el-pagination-small" @current-change="onCurrentPageChange" :current-page="userQueryForm.currentPage" :page-size="userQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="userQueryTotal">
+					<div class="el-search-list-pager" v-show="showUserQueryPager">
+						<el-pagination class="el-pagination-small" @current-change="onUserQueryCurrentPageChange" :current-page="userQueryForm.currentPage" :page-size="userQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="userQueryTotal">
 					  		<div class="el-pagination-pagesize">
 					  			<span>每页显示</span>
 					  			<el-button-group>
-						  			<el-button type="gray" :class="{active: userQueryForm.pageSize == 10}" @click="onPageSizeChange($event, 10);">10</el-button>
-						  			<el-button type="gray" :class="{active: userQueryForm.pageSize == 20}" @click="onPageSizeChange($event, 20);">20</el-button>
-								  	<el-button type="gray" :class="{active: userQueryForm.pageSize == 50}" @click="onPageSizeChange($event, 50);">50</el-button>
-								  	<el-button type="gray" :class="{active: userQueryForm.pageSize == 100}" @click="onPageSizeChange($event, 100);">100</el-button>
+						  			<el-button type="gray" :class="{active: userQueryForm.pageSize == 10}" @click="onUserQueryPageSizeChange($event, 10);">10</el-button>
+						  			<el-button type="gray" :class="{active: userQueryForm.pageSize == 20}" @click="onUserQueryPageSizeChange($event, 20);">20</el-button>
+								  	<el-button type="gray" :class="{active: userQueryForm.pageSize == 50}" @click="onUserQueryPageSizeChange($event, 50);">50</el-button>
+								  	<el-button type="gray" :class="{active: userQueryForm.pageSize == 100}" @click="onUserQueryPageSizeChange($event, 100);">100</el-button>
 								</el-button-group>
 								<span>条</span>
 					  		</div>
@@ -172,7 +172,7 @@
 									</el-form-item>
 								</el-col>
 							</el-row>
-							<el-row>
+							<el-row v-if="currentActionType == 'add'">
 								<el-col :span="12">
 									<el-form-item label="账户密码" prop="password">
 										<el-col :span="12">
@@ -218,12 +218,12 @@
 							</el-row>
 							<el-row>
 								<el-col :span="12">
-									<el-form-item label="上传头像" prop="mobilePhone">
+									<el-form-item label="上传头像" prop="userIcon">
 										<el-col :span="24">
-											<el-upload class="el-upload-plusuploader" :action="userIconUploadUrl" :data="userIconUploadParam" :show-file-list="false" :before-upload="beforeUserIconUpload" :on-remove="handleUserIconRemove" :on-success="handleUserIconUploadSuccess" :on-error="handleUploadError">
-												<img v-if="userEditForm.userIcon" :src="getUserIconUrl(userEditForm.userIcon)">
+											<el-upload class="el-upload-plusuploader" :headers="uploadHeaders" :action="userIconUploadUrl" :data="userIconUploadParam" :show-file-list="false" :before-upload="beforeUserIconUpload" :on-remove="handleUserIconRemove" :on-success="handleUserIconUploadSuccess" :on-error="handleUploadError">
+												<img v-if="userEditForm.userIcon" :src="userEditForm.userIconUrl" title="点击原图片可以重新上传新图片!">
 			  									<i v-else class="el-icon-plus"></i>
-			  									<div class="el-upload__tip" slot="tip">只能上传jpg|png文件，大小不超过50kb，图片像素限100x100像素附近(长宽误差不超过10个像素)</div>
+			  									<div class="el-upload__tip" slot="tip">只能上传jpg|png文件，大小不超过50kb，图片像素限100x100像素附近(长宽误差不超过10个像素)，点击原图片可以重新上传新图片!</div>
 											</el-upload>
 										</el-col>
 									</el-form-item>
@@ -238,7 +238,7 @@
 					    <el-button type="primary" icon="fa-save" @click="saveUser" :loading="submiting">确 定</el-button>
 					</div>
 				</el-dialog>
-				<el-dialog v-model="viewConfigDialogVisible" class="el-dialog-form el-dialog-center-top" size="large">
+				<el-dialog v-model="viewConfigDialogVisible" class="el-dialog-form el-dialog-center-top" size="large" @close="closeUserViewConfigDialog">
 					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-large"></i>{{viewConfigDialogTitle}}</span>
 					<div>
 						<el-tabs v-model="viewConfigActiveTabName">
@@ -246,7 +246,9 @@
 					    		<div>
 					    			<el-row>
 										<el-col :span="3" class="el-form-item-label">用户名：</el-col>
-										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.userName}}</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<div class="usercard"><img :src="userViewConfigForm.userIconUrl"/>{{userViewConfigForm.userName}}</div>
+										</el-col>
 										<el-col :span="3" class="el-form-item-label">姓 名：</el-col>
 										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.realName}}</el-col>
 									</el-row>
@@ -267,12 +269,10 @@
 										</el-col>
 									</el-row>
 									<el-row>
-										<el-col :span="3" class="el-form-item-label">头 像：</el-col>
-										<el-col :span="9" class="el-form-item-content">
-											<img :src="getUserIconUrl(userViewConfigForm.userIcon)"/>
-										</el-col>
-										<el-col :span="3" class="el-form-item-label">EMAIL：</el-col>
-										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.email}}</el-col>
+										<el-col :span="3" class="el-form-item-label">最后登录时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.lastLoginTime}}</el-col>
+										<el-col :span="3" class="el-form-item-label">登录总次数：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{userViewConfigForm.loginTimes}}</el-col>
 									</el-row>
 									<el-row>
 										<el-col :span="3" class="el-form-item-label">创建时间：</el-col>
@@ -282,14 +282,101 @@
 									</el-row>
 					    		</div>
 					    	</el-tab-pane>
-					    	<el-tab-pane label="角色资源配置" name="userRoleConfig">
-					    		角色资源配置
+					    	<el-tab-pane label="用户角色列表" name="userRoleConfig">
+					    		<div class="el-search-form el-padding-no">
+									<el-form ref="userRoleQueryForm" :model="userRoleQueryForm" style="padding: 5px 0 15px;">
+										<el-row :gutter="20">
+											<el-col :span="5">
+												<el-form-item prop="roleName">
+													<el-input v-model="userRoleQueryForm.roleName" :maxlength="100" placeholder="角色名称"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="5">
+												<el-form-item prop="roleCode">
+													<el-input v-model="userRoleQueryForm.roleCode" :maxlength="100" placeholder="角色代码"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="6">
+												<el-form-item class="el-align-center">
+													<el-button @click="resetUserRoleQueryForm" icon="fa-undo">重 置</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+													<el-button type="primary" @click="queryUserRoleList(1000)" icon="fa-search">查 询</el-button>
+												</el-form-item>
+											</el-col>
+											<el-col :span="8">
+												<el-form-item v-if="currentActionType == 'conf'" class="el-align-right">
+													<el-button type="primary" icon="fa-plus-circle" @click="showUserRoleAddTab">添加用户角色</el-button>
+													<el-button type="primary" icon="fa-minus-circle" :loading="submiting" @click="delUserRoleConfig">移除选中角色</el-button>
+												</el-form-item>
+											</el-col>
+										</el-row>
+									</el-form>
+								</div>
+					    		<el-table ref="userRoleTable" v-loading="loadingUserRoleList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingUserRoleList}" :data="userRoleList" max-height="250" style="width:100%;" class="el-table el-table-primary2"  @selection-change="onUserRoleSelectionChange" empty-text="暂无配置">
+									<el-table-column label="#" type="index" width="40"></el-table-column>
+									<el-table-column type="selection" width="60" v-if="currentActionType == 'conf'"></el-table-column>
+									<el-table-column label="角色名称" prop="roleName" width="170" sortable></el-table-column>
+									<el-table-column label="角色代码" prop="roleCode" width="170" sortable></el-table-column>
+									<el-table-column label="角色类型" prop="roleType" width="120" align="center" sortable>
+										<template scope="scope">
+											<el-tag class="el-tag-small" :type="getRoleTypeTagType(scope.row.roleType)">{{scope.row.roleTypeName}}</el-tag>
+										</template>
+									</el-table-column>
+									<el-table-column label="角色描述" prop="description"></el-table-column>
+									<el-table-column label="配置时间" prop="createTime" width="100" align="center" sortable></el-table-column>
+								</el-table>
+					    	</el-tab-pane>
+					    	<el-tab-pane v-if="currentActionType == 'conf'" label="添加用户角色" name="userRoleAdd">
+					    		<div class="el-search-form el-padding-no">
+									<el-form ref="roleQueryForm" :model="roleQueryForm" style="padding: 5px 0 15px;">
+										<el-row :gutter="20">
+											<el-col :span="5">
+												<el-form-item prop="roleName">
+													<el-input v-model="roleQueryForm.roleName" :maxlength="100" placeholder="角色名称"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="5">
+												<el-form-item prop="roleCode">
+													<el-input v-model="roleQueryForm.roleCode" :maxlength="100" placeholder="角色代码"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="6">
+												<el-form-item class="el-align-center">
+													<el-button @click="resetRoleQueryForm" icon="fa-undo">重 置</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+													<el-button type="primary" @click="queryRoleList(1000)" icon="fa-search">查 询</el-button>
+												</el-form-item>
+											</el-col>
+											<el-col :span="8">
+												<el-form-item class="el-align-right">
+													<el-button type="primary" icon="fa-plus-circle" :loading="submiting" @click="addUserRoleConfig">添加选中角色</el-button>
+												</el-form-item>
+											</el-col>
+										</el-row>
+									</el-form>
+								</div>
+								<div class="el-search-list" style="padding:0;">
+						    		<el-table ref="roleTable" v-loading="loadingRoleList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingRoleList}" :data="roleList" max-height="250" style="width:100%;" class="el-table el-table-primary2" @selection-change="onRoleSelectionChange" empty-text="暂无数据">
+										<el-table-column label="#" type="index" width="40"></el-table-column>
+										<el-table-column type="selection" width="60" v-if="currentActionType == 'conf'"></el-table-column>
+										<el-table-column label="角色名称" prop="roleName" width="170" sortable></el-table-column>
+										<el-table-column label="角色代码" prop="roleCode" width="170" sortable></el-table-column>
+										<el-table-column label="角色类型" prop="roleType" width="120" align="center" sortable>
+											<template scope="scope">
+												<el-tag class="el-tag-small" :type="getRoleTypeTagType(scope.row.roleType)">{{scope.row.roleTypeName}}</el-tag>
+											</template>
+										</el-table-column>
+										<el-table-column label="角色描述" prop="description"></el-table-column>
+										<el-table-column label="创建时间" prop="createTime" width="100" align="center" sortable></el-table-column>
+									</el-table>
+									<div class="el-search-list-pager" v-show="showRoleQueryPager">
+										<el-pagination class="el-pagination-small" @current-change="onRoleQueryCurrentPageChange" :current-page="roleQueryForm.currentPage" :page-size="roleQueryForm.pageSize" layout="prev, pager, next, total" :total="roleQueryTotal">
+									  	</el-pagination>
+									</div>
+								</div>
 					    	</el-tab-pane>
 					  	</el-tabs>
 					</div>
 					<div slot="footer">
-						<el-button icon="fa-ban" @click="viewConfigDialogVisible = false">关 闭</el-button>
-						<el-button v-if="currentActionType == 'conf'" type="primary" icon="fa-save" @click="saveUserRoleConfig" :loading="submiting">保存配置</el-button>
+						<el-button icon="fa-ban" @click="closeUserViewConfigDialog">关 闭</el-button>
 					</div>
 				</el-dialog>
 			</div>

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.certusnet.xproject.admin.consts.AdminConstants;
 import com.certusnet.xproject.admin.consts.em.AdminUserStatusEnum;
 import com.certusnet.xproject.admin.consts.em.AdminUserTypeEnum;
 import com.certusnet.xproject.admin.model.AdminRole;
@@ -24,11 +25,13 @@ import com.certusnet.xproject.admin.model.AdminUser;
 import com.certusnet.xproject.admin.service.AdminResourceService;
 import com.certusnet.xproject.admin.service.AdminUserService;
 import com.certusnet.xproject.admin.web.LoginToken;
+import com.certusnet.xproject.common.consts.GlobalConstants;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
 import com.certusnet.xproject.common.support.PagingList;
 import com.certusnet.xproject.common.support.Result;
 import com.certusnet.xproject.common.util.DateTimeUtils;
+import com.certusnet.xproject.common.util.FileUtils;
 import com.certusnet.xproject.common.util.StringUtils;
 import com.certusnet.xproject.common.web.BaseController;
 import com.certusnet.xproject.common.web.shiro.ShiroUtils;
@@ -74,12 +77,25 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/add/submit", method=POST)
-	public Object addUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userAddForm) {
+	public Object addUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userAddForm) throws Exception {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		userAddForm.setCreateTime(DateTimeUtils.formatNow());
 		userAddForm.setCreateBy(loginToken.getLoginId());
 		userAddForm.setStatus(AdminUserStatusEnum.ADMIN_USER_STATUS_ENABLED.getStatusCode());
 		userAddForm.setUserType(AdminUserTypeEnum.ADMIN_USER_TYPE_NORMAL.getTypeCode());
+		
+		if(StringUtils.isEmpty(userAddForm.getUserIcon())){
+			userAddForm.setUserIcon(AdminConstants.DEFAULT_USER_ICON);
+		}else{
+			String userIcon = userAddForm.getUserIcon();
+			if(userIcon.toLowerCase().startsWith(GlobalConstants.DEFAULT_UPLOAD_SAVE_PATH)){
+				String srcFullFileName = FileUtils.formatFilePath(request.getSession().getServletContext().getRealPath("/") + userIcon);
+				userIcon = userIcon.replace(GlobalConstants.DEFAULT_UPLOAD_SAVE_PATH, AdminConstants.USER_ICON_IMAGE_SAVE_PATH);
+				String destFullFileName = FileUtils.formatFilePath(GlobalConstants.IMAGE_SERVER_ROOT_PATH + userIcon);
+				FileUtils.copyFile(srcFullFileName, destFullFileName);
+				userAddForm.setUserIcon(userIcon);
+			}
+		}
 		adminUserService.createUser(userAddForm);
 		return genSuccessResult("保存成功!", null);
 	}
@@ -93,10 +109,23 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/edit/submit", method=POST)
-	public Object editUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userEditForm) {
+	public Object editUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userEditForm) throws Exception {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		userEditForm.setUpdateBy(loginToken.getLoginId());
 		userEditForm.setUpdateTime(DateTimeUtils.formatNow());
+		
+		if(StringUtils.isEmpty(userEditForm.getUserIcon())){
+			userEditForm.setUserIcon(AdminConstants.DEFAULT_USER_ICON);
+		}else{
+			String userIcon = userEditForm.getUserIcon();
+			if(userIcon.toLowerCase().startsWith(GlobalConstants.DEFAULT_UPLOAD_SAVE_PATH)){
+				String srcFullFileName = FileUtils.formatFilePath(request.getSession().getServletContext().getRealPath("/") + userIcon);
+				userIcon = userIcon.replace(GlobalConstants.DEFAULT_UPLOAD_SAVE_PATH, AdminConstants.USER_ICON_IMAGE_SAVE_PATH);
+				String destFullFileName = FileUtils.formatFilePath(GlobalConstants.IMAGE_SERVER_ROOT_PATH + userIcon);
+				FileUtils.copyFile(srcFullFileName, destFullFileName);
+				userEditForm.setUserIcon(userIcon);
+			}
+		}
 		adminUserService.updateUser(userEditForm);
 		return genSuccessResult("保存成功!", null);
 	}
@@ -172,8 +201,8 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/roles")
-	public Object loadUserRoles(HttpServletRequest request, HttpServletResponse response, Long userId) {
-		List<AdminRole> roleList = adminUserService.getUserRoleList(userId);
+	public Object loadUserRoles(HttpServletRequest request, HttpServletResponse response, Long userId, AdminRole filterParam) {
+		List<AdminRole> roleList = adminUserService.getUserRoleList(userId, filterParam);
 		return genSuccessResult(roleList);
 	}
 	

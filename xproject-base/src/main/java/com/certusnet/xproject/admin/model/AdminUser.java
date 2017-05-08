@@ -62,6 +62,8 @@ public class AdminUser implements Serializable {
 	
 	private String userTypeName;
 	
+	private String userIconUrl;
+	
 	private String statusName;
 	
 	private String createByName;
@@ -218,6 +220,14 @@ public class AdminUser implements Serializable {
 
 	public void setUserTypeName(String userTypeName) {
 		this.userTypeName = userTypeName;
+	}
+
+	public String getUserIconUrl() {
+		return userIconUrl;
+	}
+
+	public void setUserIconUrl(String userIconUrl) {
+		this.userIconUrl = userIconUrl;
 	}
 
 	public String getStatusName() {

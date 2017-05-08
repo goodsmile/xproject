@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
+import com.certusnet.xproject.common.support.ConstValue;
+
 /**
  * 全局共通常量
  * 
@@ -22,6 +24,18 @@ public class GlobalConstants extends AbstractConstants {
 	 * 系统默认Locale
 	 */
 	public static final Locale SYSTEM_DEFAULT_LOCALE = valueOf(new Locale("zh", "CN"));
+	
+	/**
+	 * 图片服务器的物理根目录,如 /data/img
+	 */
+	@ConstValue("${global.imgserver.root}")
+	public static final String IMAGE_SERVER_ROOT_PATH = valueOf("/data/xproject");
+	
+	/**
+	 * 图片服务器的物理根目录,如 http://127.0.0.1/img
+	 */
+	@ConstValue("${global.imgserver.domain}")
+	public static final String IMAGE_SERVER_DOMAIN = valueOf("http://127.0.0.1");
 	
 	/**
 	 * 系统默认的上传文件临时存储路径

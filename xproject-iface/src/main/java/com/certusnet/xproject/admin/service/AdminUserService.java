@@ -85,6 +85,15 @@ public interface AdminUserService
      * 获取用户所拥有的角色
      * 
      * @param userId
+     * @param filterParam
+     * @return
+     */
+    public List<AdminRole> getUserRoleList(Long userId, AdminRole filterParam);
+    
+    /**
+     * 获取用户所拥有的角色
+     * 
+     * @param userId
      * @return
      */
     public List<AdminRole> getUserRoleList(Long userId);

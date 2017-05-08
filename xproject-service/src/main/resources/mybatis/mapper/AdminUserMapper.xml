@@ -182,7 +182,7 @@
 		</if>
 	</select>
 	
-	<select id="getUserRoleList" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+	<select id="getUserRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -193,6 +193,12 @@
 		  FROM admin_role a, admin_user_role b
 		 WHERE b.user_id = #{userId, jdbcType=BIGINT}
 		   AND a.role_id = b.role_id
+		<if test="filterParam != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(filterParam.roleName)">
+		   AND a.role_name like CONCAT('%', #{filterParam.roleName, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="filterParam != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(filterParam.roleCode)">
+		   AND a.role_code like CONCAT('%', #{filterParam.roleCode, jdbcType=VARCHAR}, '%')
+		</if>
 		 ORDER BY b.create_time DESC, a.role_name ASC
 	</select>
 	

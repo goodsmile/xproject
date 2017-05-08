@@ -63,7 +63,7 @@ Vue.onDocumentReady(function() {
 			}
 		},
 		computed: {
-			showPager: function(){
+			showRoleQueryPager: function(){
 				if(this.roleQuering || this.roleQueryTotal == 0){
 					return false;
 				}else{
@@ -146,11 +146,11 @@ Vue.onDocumentReady(function() {
 			resetQueryForm: function(){
 				this.$refs.roleQueryForm.resetFields();
 			},
-			onPageSizeChange: function(event, pageSize){
+			onRoleQueryPageSizeChange: function(event, pageSize){
 		    	this.roleQueryForm.pageSize = pageSize;
 		    	this.queryRoleList(1000);
 		    },
-		    onCurrentPageChange: function(currentPage){
+		    onRoleQueryCurrentPageChange: function(currentPage){
 		    	this.roleQueryForm.currentPage = currentPage;
 		    	this.doQueryRoleList(1000);
 		    },

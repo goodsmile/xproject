@@ -92,9 +92,10 @@ public interface AdminUserDAO
      * 获取用户所拥有的角色
      * 
      * @param userId
+     * @param filterParam
      * @return
      */
-    public List<AdminRole> getUserRoleList(Long userId);
+    public List<AdminRole> getUserRoleList(Long userId, AdminRole filterParam);
     
     /**
      * 获取用户所能访问的URL资源

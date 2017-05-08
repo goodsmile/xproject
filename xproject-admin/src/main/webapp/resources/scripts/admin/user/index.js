@@ -25,14 +25,16 @@ Vue.onDocumentReady(function() {
 			editDialogVisible: false,
 			viewConfigDialogVisible: false,
 			viewConfigActiveTabName: 'userDetail',
+			uploadHeaders: {
+				Accept: 'application/json'
+			},
 			userIconUploadUrl: ADMIN_CONTEXT_PATH + '/upload/image/submit',
 			userIconUploadParam: {
 				formatLimit: 'jpeg,jpg,png',
 				pixelLimit: '90x90'
 			},
-			userRoleDataList: [],
-			checkedRoleIdList: [],
-			loadingUserRoleDataList: false,
+			userRoleList: [],
+			loadingUserRoleList: false,
 			currentActionType: 'add',
 			userEditForm: {
 				userId: '',
@@ -43,7 +45,7 @@ Vue.onDocumentReady(function() {
 				mobilePhone: '',
 				email: '',
 				userIcon: '',
-				status: ''
+				userIconUrl: ''
 			},
 			userViewConfigForm: {
 				userId: '',
@@ -52,8 +54,11 @@ Vue.onDocumentReady(function() {
 				mobilePhone: '',
 				email: '',
 				userIcon: '',
+				userIconUrl: '',
 				status: '',
+				statusName: '',
 				userType: '',
+				userTypeName: '',
 				createBy: '',
 				createTime: '',
 				updateBy: '',
@@ -90,7 +95,7 @@ Vue.onDocumentReady(function() {
 					compareTarget: {
 						vue: 'vm',
 						form: 'userEditForm',
-						field: 'repassword'
+						field: 'password'
 					},
 					message: '两次密码不一致!'
 				}],
@@ -113,11 +118,36 @@ Vue.onDocumentReady(function() {
 					validator: email,
 					message: 'EMAIL不合法!'
 				}]
-			}
+			},
+			roleQuering: false,
+			userRoleQueryForm: {
+				userId: '',
+				roleName: '',
+				roleCode: ''
+			},
+			roleQueryForm: {
+				roleName: '',
+				roleCode: '',
+				pageSize: 10,
+				currentPage: 1,
+				orderby: 'createTime',
+				order: 'desc'
+			},
+			roleList: [],
+			selectedRoleIds: [],
+			loadingRoleList: false,
+			roleQueryTotal: 0
 		},
 		computed: {
-			showPager: function(){
+			showUserQueryPager: function(){
 				if(this.userQuering || this.userQueryTotal == 0){
+					return false;
+				}else{
+					return true;
+				}
+			},
+			showRoleQueryPager: function(){
+				if(this.roleQuering || this.roleQueryTotal == 0){
 					return false;
 				}else{
 					return true;
@@ -160,15 +190,12 @@ Vue.onDocumentReady(function() {
 					return "success";
 				}
 			},
-			getUserIconUrl: function(userIcon){
-				if(userIcon){
-					if(userIcon.indexOf('http') == 0){
-						userIcon = userIcon;
-					}else{
-						userIcon = ADMIN_CONTEXT_PATH + userIcon;
-					}
+			getRoleTypeTagType: function(roleType){
+				if(roleType == 0){
+					return "success";
+				}else{
+					return "primary";
 				}
-				return userIcon;
 			},
 			queryUserList: function(loading){
 				this.userQueryForm.currentPage = 1;
@@ -215,11 +242,11 @@ Vue.onDocumentReady(function() {
 			resetQueryForm: function(){
 				this.$refs.userQueryForm.resetFields();
 			},
-			onPageSizeChange: function(event, pageSize){
+			onUserQueryPageSizeChange: function(event, pageSize){
 		    	this.userQueryForm.pageSize = pageSize;
 		    	this.queryUserList(1000);
 		    },
-		    onCurrentPageChange: function(currentPage){
+		    onUserQueryCurrentPageChange: function(currentPage){
 		    	this.userQueryForm.currentPage = currentPage;
 		    	this.doQueryUserList(1000);
 		    },
@@ -239,8 +266,11 @@ Vue.onDocumentReady(function() {
 		    	if(cmd == 'edit'){
 		    		this.userEditForm.userId = row.userId;
 		    		this.userEditForm.userName = row.userName;
-		    		this.userEditForm.userCode = row.userCode;
-		    		this.userEditForm.description = row.description;
+		    		this.userEditForm.realName = row.realName;
+		    		this.userEditForm.mobilePhone = row.mobilePhone;
+		    		this.userEditForm.email = row.email;
+		    		this.userEditForm.userIcon = row.userIcon;
+		    		this.userEditForm.userIconUrl = row.userIconUrl;
 		    	}
 		    	this.editDialogVisible = true;
 		    },
@@ -248,19 +278,27 @@ Vue.onDocumentReady(function() {
 		    	this.currentActionType = cmd;
 		    	this.userViewConfigForm.userId = row.userId;
 		    	this.userViewConfigForm.userName = row.userName;
-	    		this.userViewConfigForm.userCode = row.userCode;
-	    		this.userViewConfigForm.description = row.description;
+	    		this.userViewConfigForm.realName = row.realName;
+	    		this.userViewConfigForm.mobilePhone = row.mobilePhone;
+	    		this.userViewConfigForm.email = row.email;
+	    		this.userViewConfigForm.userIcon = row.userIcon;
+	    		this.userViewConfigForm.userIconUrl = row.userIconUrl;
 	    		this.userViewConfigForm.userType = row.userType;
+	    		this.userViewConfigForm.userTypeName = row.userTypeName;
+	    		this.userViewConfigForm.status = row.status;
+	    		this.userViewConfigForm.statusName = row.statusName;
+	    		this.userViewConfigForm.lastLoginTime = row.lastLoginTime;
+	    		this.userViewConfigForm.loginTimes = row.loginTimes;
 	    		this.userViewConfigForm.createBy = row.createBy;
 	    		this.userViewConfigForm.createTime = row.createTime;
 	    		this.userViewConfigForm.updateBy = row.updateBy;
 	    		this.userViewConfigForm.updateTime = row.updateTime;
 	    		if(cmd == 'conf'){
 	    			this.viewConfigActiveTabName = 'userRoleConfig';
-	    			this.loadUserRoleDataList(1500, row.userId);
+	    			this.queryUserRoleList(1500);
 	    		}else{
 	    			this.viewConfigActiveTabName = 'userDetail';
-	    			this.loadUserRoleDataList(0, row.userId);
+	    			this.queryUserRoleList(0);
 	    		}
 	    		this.viewConfigDialogVisible = true;
 		    },
@@ -326,27 +364,114 @@ Vue.onDocumentReady(function() {
 					});
 				}
 		    },
-		    saveUserRoleConfig: function(){
-		    	var userId = this.userViewConfigForm.userId;
-		    	var checkedKeys = this.$refs.userRoleViewTree.getCheckedKeys();
-		    	var checkedRoleIds = checkedKeys.sort().join(",");
-		    	if(checkedRoleIds == this.checkedRoleIdList.sort().join(",")){
-		    		this.$message.warning('配置没有改变,无需保存!');
-		    	}else{
-		    		var url = ADMIN_CONTEXT_PATH + "/admin/user/config/submit";
+		    closeEditDialog: function(){
+				this.editDialogVisible = false;
+				this.$refs.userEditForm.resetFields();
+			},
+			queryUserRoleList: function(loading){
+				this.userRoleQueryForm.userId = this.userViewConfigForm.userId;
+				var _this = this;
+				var url = ADMIN_CONTEXT_PATH + '/admin/user/roles';
+				if(loading){
+					this.loadingUserRoleList = true;
+				}
+				setTimeout(function(){
+					axios.get(url, {
+						params: _this.userRoleQueryForm
+					}).then(function(response){
+						var result = response.data;
+						if(result.success){
+							_this.userRoleList = result.data;
+						}else{
+							_this.userRoleList = [];
+						}
+						if(loading){
+							_this.loadingUserRoleList = false;
+						}
+					}).catch(function(error){
+						_this.$message.error('请求出错!');
+						_this.userRoleList = [];
+						if(loading){
+							_this.loadingUserRoleList = false;
+						}
+					});
+				}, loading);
+			},
+			resetUserRoleQueryForm: function(){
+				this.$refs.userRoleQueryForm.resetFields();
+			},
+			showUserRoleAddTab: function(){
+				this.viewConfigActiveTabName = 'userRoleAdd';
+			},
+			onRoleQueryCurrentPageChange: function(currentPage){
+		    	this.roleQueryForm.currentPage = currentPage;
+		    	this.doQueryRoleList(1000);
+		    },
+		    queryRoleList: function(loading){
+				this.roleQueryForm.currentPage = 1;
+				this.doQueryRoleList(loading);
+			},
+			doQueryRoleList: function(loading){
+				var _this = this;
+				this.roleQuering = true;
+				var url = ADMIN_CONTEXT_PATH + '/admin/role/list';
+				if(loading){
+					this.loadingRoleList = true;
+				}
+				setTimeout(function(){
+					var params = _this.roleQueryForm;
+					axios.get(url, {
+						params: params
+					}).then(function(response){
+						var result = response.data;
+						if(result.success){
+							_this.roleList = result.data;
+							_this.roleQueryTotal = result.totalRowCount;
+						}else{
+							_this.roleList = [];
+							_this.roleQueryTotal = 0;
+						}
+						if(loading){
+							_this.loadingRoleList = false;
+						}
+						_this.roleQuering = false;
+					}).catch(function(error){
+						_this.$message.error('请求出错!');
+						_this.loadingRoleList = false;
+						_this.roleQuering = false;
+					});
+				}, loading);
+			},
+		    resetRoleQueryForm: function(){
+				this.$refs.roleQueryForm.resetFields();
+			},
+			closeUserViewConfigDialog: function(){
+				this.viewConfigDialogVisible = false;
+				this.resetUserRoleQueryForm();
+				this.userRoleList = [];
+				if(this.currentActionType == 'conf'){
+					this.resetRoleQueryForm();
+					this.roleList = [];
+					this.selectedRoleIds = [];
+				}
+			},
+			delUserRoleConfig: function(){
+				if(this.selectedRoleIds.length){
+					var userId = this.userViewConfigForm.userId;
+		    		var url = ADMIN_CONTEXT_PATH + "/admin/user/config/del";
 		    		if(!this.submiting){
 		    			this.submiting = true;
 		    			var _this = this;
 						setTimeout(function(){
 							axios.post(url, {
 								userId: userId,
-								resourceIds: checkedRoleIds
+								roleIds: _this.selectedRoleIds.join(',')
 							}).then(function(response){
 								_this.submiting = false;
 								var result = response.data;
 								if(result.success){
-									_this.$message.success('保存成功!');
-									_this.loadUserRoleDataList(1500, userId);
+									_this.$message.success('删除成功!');
+									_this.queryUserRoleList(1000);
 								}else{
 									_this.$message.error(result.message);
 								}
@@ -356,45 +481,63 @@ Vue.onDocumentReady(function() {
 							});
 						}, 1500);
 					}
-		    	}
-		    },
-		    closeEditDialog: function(){
-				if(this.editDialogVisible){
-					this.editDialogVisible = false;
+				}else{
+					this.$message.error('请选择需要移除的角色!');
 				}
-				this.$refs.userEditForm.resetFields();
 			},
-			loadUserRoleDataList: function(loading, userId){
-				var _this = this;
-				var url = ADMIN_CONTEXT_PATH + '/admin/user/roles?userId=' + userId;
-				if(loading){
-					this.loadingUserRoleDataList = true;
-				}
-				setTimeout(function(){
-					axios.get(url).then(function(response){
-						var result = response.data;
-						if(result.success){
-							_this.userRoleDataList = result.data.allRoleList;
-							_this.checkedRoleIdList = result.data.checkedRoleIdList;
-							Vue.nextTick(function(){
-								_this.$refs.userRoleViewTree.setCheckedKeys(result.data.checkedRoleIdList);
+			addUserRoleConfig: function(){
+				if(this.selectedRoleIds.length){
+					var userId = this.userViewConfigForm.userId;
+		    		var url = ADMIN_CONTEXT_PATH + "/admin/user/config/add";
+		    		if(!this.submiting){
+		    			this.submiting = true;
+		    			var _this = this;
+						setTimeout(function(){
+							axios.post(url, {
+								userId: userId,
+								roleIds: _this.selectedRoleIds.join(',')
+							}).then(function(response){
+								_this.submiting = false;
+								var result = response.data;
+								if(result.success){
+									_this.$message.success('添加成功!');
+									_this.viewConfigActiveTabName = 'userRoleConfig';
+									Vue.nextTick(function(){
+										_this.queryUserRoleList(1000);
+										_this.$refs.roleTable.clearSelection();
+									});
+								}else{
+									_this.$message.error(result.message);
+								}
+							}).catch(function(error){
+								_this.submiting = false;
+								_this.$message.error('请求出错!');
 							});
-						}else{
-							_this.userRoleDataList = [];
-							_this.checkedRoleIdList = [];
-						}
-						if(loading){
-							_this.loadingUserRoleDataList = false;
-						}
-					}).catch(function(error){
-						_this.$message.error('请求出错!');
-						_this.userRoleDataList = [];
-						_this.checkedRoleIdList = [];
-						if(loading){
-							_this.loadingUserRoleDataList = false;
-						}
-					});
-				}, loading);
+						}, 1500);
+					}
+				}else{
+					this.$message.error('请选择需要添加的角色!');
+				}
+			},
+			onUserRoleSelectionChange: function(selectedRows){
+				if(selectedRows && selectedRows.length){
+					this.selectedRoleIds = [];
+					selectedRows.forEach(function(row){
+						this.selectedRoleIds.push(row.roleId);
+					}, this);
+				}else{
+					this.selectedRoleIds = [];
+				}
+			},
+			onRoleSelectionChange: function(selectedRows){
+				if(selectedRows && selectedRows.length){
+					this.selectedRoleIds = [];
+					selectedRows.forEach(function(row){
+						this.selectedRoleIds.push(row.roleId);
+					}, this);
+				}else{
+					this.selectedRoleIds = [];
+				}
 			},
 			beforeUserIconUpload: function(file){
 				var fileType = file.type;
@@ -411,13 +554,26 @@ Vue.onDocumentReady(function() {
 			handleUserIconUploadSuccess: function(response, file, fileList){
 				file.url = response.data.url;
 				file.path = response.data.path;
-				this.userEditForm.userIcon = response.data.url;
+				this.userEditForm.userIcon = response.data.path;
+				this.userEditForm.userIconUrl = response.data.url;
 			},
 			handleUserIconRemove: function(file, fileList){
-				axios.get(ADMIN_CONTEXT_PATH + '/upload/remove/submit.do?path=' + file.path);
+				if(file && file.path){
+					axios.get(ADMIN_CONTEXT_PATH + '/upload/remove/submit.do?path=' + file.path);
+				}
 			},
-			handleUploadError: function(error, response, file){
-				this.$message.error(response.message);
+			handleUploadError: function(error, file, fileList){
+				try {
+					var result = JSON.parse(error.message);
+					this.$message.error(result.message);
+				} catch (e) {
+					this.$message.error(error.message);
+				}
+			}
+		},
+		watch: {
+			viewConfigActiveTabName: function(curVal, oldVal){
+				this.selectedRoleIds = [];
 			}
 		}
 	});

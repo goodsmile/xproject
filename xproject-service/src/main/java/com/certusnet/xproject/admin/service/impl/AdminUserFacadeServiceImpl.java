@@ -78,6 +78,10 @@ public class AdminUserFacadeServiceImpl implements AdminUserService, PrincipalSe
         return delegate.getUserRoleList(userId);
     }
     
+    public List<AdminRole> getUserRoleList(Long userId, AdminRole filterParam) {
+        return delegate.getUserRoleList(userId, filterParam);
+    }
+    
     public List<AdminResource> getUserResourceList(Long userId) {
         return delegate.getUserResourceList(userId);
     }

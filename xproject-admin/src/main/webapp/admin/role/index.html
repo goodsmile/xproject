@@ -126,15 +126,15 @@
 							</template>
 						</el-table-column>
 					</el-table>
-					<div class="el-search-list-pager" v-show="showPager">
-						<el-pagination class="el-pagination-small" @current-change="onCurrentPageChange" :current-page="roleQueryForm.currentPage" :page-size="roleQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="roleQueryTotal">
+					<div class="el-search-list-pager" v-show="showRoleQueryPager">
+						<el-pagination class="el-pagination-small" @current-change="onRoleQueryCurrentPageChange" :current-page="roleQueryForm.currentPage" :page-size="roleQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="roleQueryTotal">
 					  		<div class="el-pagination-pagesize">
 					  			<span>每页显示</span>
 					  			<el-button-group>
-						  			<el-button type="gray" :class="{active: roleQueryForm.pageSize == 10}" @click="onPageSizeChange($event, 10);">10</el-button>
-						  			<el-button type="gray" :class="{active: roleQueryForm.pageSize == 20}" @click="onPageSizeChange($event, 20);">20</el-button>
-								  	<el-button type="gray" :class="{active: roleQueryForm.pageSize == 50}" @click="onPageSizeChange($event, 50);">50</el-button>
-								  	<el-button type="gray" :class="{active: roleQueryForm.pageSize == 100}" @click="onPageSizeChange($event, 100);">100</el-button>
+						  			<el-button type="gray" :class="{active: roleQueryForm.pageSize == 10}" @click="onRoleQueryPageSizeChange($event, 10);">10</el-button>
+						  			<el-button type="gray" :class="{active: roleQueryForm.pageSize == 20}" @click="onRoleQueryPageSizeChange($event, 20);">20</el-button>
+								  	<el-button type="gray" :class="{active: roleQueryForm.pageSize == 50}" @click="onRoleQueryPageSizeChange($event, 50);">50</el-button>
+								  	<el-button type="gray" :class="{active: roleQueryForm.pageSize == 100}" @click="onRoleQueryPageSizeChange($event, 100);">100</el-button>
 								</el-button-group>
 								<span>条</span>
 					  		</div>

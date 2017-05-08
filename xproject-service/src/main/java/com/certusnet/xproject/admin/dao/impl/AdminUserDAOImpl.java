@@ -14,10 +14,13 @@ import com.certusnet.xproject.admin.dao.impl.AdminRoleDAOImpl.AdminRoleModelHand
 import com.certusnet.xproject.admin.model.AdminResource;
 import com.certusnet.xproject.admin.model.AdminRole;
 import com.certusnet.xproject.admin.model.AdminUser;
+import com.certusnet.xproject.common.consts.ApplicationConstants;
+import com.certusnet.xproject.common.consts.GlobalConstants;
 import com.certusnet.xproject.common.mybatis.DefaultBaseMybatisDAO;
 import com.certusnet.xproject.common.mybatis.ModelHandler;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
+import com.certusnet.xproject.common.util.StringUtils;
 
 @Repository("adminUserDAO")
 public class AdminUserDAOImpl extends DefaultBaseMybatisDAO implements AdminUserDAO {
@@ -71,11 +74,14 @@ public class AdminUserDAOImpl extends DefaultBaseMybatisDAO implements AdminUser
         return getSqlSessionTemplate().selectList(getMapperKey("getUserList"), paramMap, new AdminUserModelHandler(), pager);
     }
     
-    public List<AdminRole> getUserRoleList(Long userId) {
-        return getSqlSessionTemplate().selectList(getMapperKey("getUserRoleList"), userId, new AdminRoleModelHandler());
-    }
-    
-    public List<AdminResource> getUserResourceList(Long userId) {
+	public List<AdminRole> getUserRoleList(Long userId, AdminRole filterParam) {
+		Map<String,Object> paramMap = new HashMap<String,Object>();
+		paramMap.put("userId", userId);
+		paramMap.put("filterParam", filterParam);
+		return getSqlSessionTemplate().selectList(getMapperKey("getUserRoleList"), paramMap, new AdminRoleModelHandler());
+	}
+
+	public List<AdminResource> getUserResourceList(Long userId) {
         return getSqlSessionTemplate().selectList(getMapperKey("getUserResourceList"), userId, new AdminResourceModelHandler());
     }
     
@@ -123,6 +129,17 @@ public class AdminUserDAOImpl extends DefaultBaseMybatisDAO implements AdminUser
                 if (em != null) {
                     element.setUserTypeName(em.getTypeName());
                 }
+            }
+            if (!StringUtils.isEmpty(element.getUserIcon())) {
+            	String userIconUrl = element.getUserIcon();
+            	if(userIconUrl.toLowerCase().startsWith("/resources/")){ //工程目录下的本地图片
+            		userIconUrl = ApplicationConstants.CONTEXT_PATH + userIconUrl;
+            	}else if(userIconUrl.toLowerCase().startsWith("http")){
+            		//nothing to do
+            	}else{
+            		userIconUrl = GlobalConstants.IMAGE_SERVER_DOMAIN + userIconUrl;
+            	}
+            	element.setUserIconUrl(userIconUrl);
             }
         }
     }

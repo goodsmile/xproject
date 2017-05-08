@@ -139,8 +139,9 @@ public class ElementUIUploadController extends BaseController {
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);
 			result.setCode("500");
-        	result.setMessage("上传文件出错：" + e.getMessage());
+        	result.setMessage("上传图片出现未知错误!");
 		}
+		result.setSuccess("200".equals(result.getCode()));
 		if(!dataList.isEmpty()){
 			result.setData(dataList.size() == 1 ? dataList.get(0) : dataList);
 		}
@@ -222,8 +223,9 @@ public class ElementUIUploadController extends BaseController {
 		} catch (Throwable e) {
 			logger.error(e.getMessage(), e);
 			result.setCode("500");
-        	result.setMessage("上传文件出错：" + e.getMessage());
+			result.setMessage("上传文件出现未知错误!");
 		}
+		result.setSuccess("200".equals(result.getCode()));
 		if(!dataList.isEmpty()){
 			result.setData(dataList.size() == 1 ? dataList.get(0) : dataList);
 		}

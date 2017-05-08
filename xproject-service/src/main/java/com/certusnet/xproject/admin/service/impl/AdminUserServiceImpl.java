@@ -117,8 +117,12 @@ public class AdminUserServiceImpl implements AdminUserService {
     	return new PagingList<AdminUser>(dataList, pager.getTotalRowCount());
     }
     
+    public List<AdminRole> getUserRoleList(Long userId, AdminRole filterParam) {
+        return userDAO.getUserRoleList(userId, filterParam);
+    }
+    
     public List<AdminRole> getUserRoleList(Long userId) {
-        return userDAO.getUserRoleList(userId);
+        return userDAO.getUserRoleList(userId, null);
     }
     
     public List<AdminResource> getUserResourceList(Long userId) {
