@@ -131,8 +131,8 @@
 							</template>
 						</el-table-column>
 					</el-table>
-					<div class="el-search-list-pager" v-show="showUserQueryPager">
-						<el-pagination class="el-pagination-small" @current-change="onUserQueryCurrentPageChange" :current-page="userQueryForm.currentPage" :page-size="userQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="userQueryTotal">
+					<div class="el-search-list-pager">
+						<el-pagination v-show="showUserQueryPager" class="el-pagination-small" @current-change="onUserQueryCurrentPageChange" :current-page="userQueryForm.currentPage" :page-size="userQueryForm.pageSize" layout="slot, prev, pager, next, total" :total="userQueryTotal">
 					  		<div class="el-pagination-pagesize">
 					  			<span>每页显示</span>
 					  			<el-button-group>
@@ -367,8 +367,8 @@
 										<el-table-column label="角色描述" prop="description"></el-table-column>
 										<el-table-column label="创建时间" prop="createTime" width="100" align="center" sortable></el-table-column>
 									</el-table>
-									<div class="el-search-list-pager" v-show="showRoleQueryPager">
-										<el-pagination class="el-pagination-small" @current-change="onRoleQueryCurrentPageChange" :current-page="roleQueryForm.currentPage" :page-size="roleQueryForm.pageSize" layout="prev, pager, next, total" :total="roleQueryTotal">
+									<div class="el-search-list-pager">
+										<el-pagination v-show="showRoleQueryPager" class="el-pagination-small" @current-change="onRoleQueryCurrentPageChange" :current-page="roleQueryForm.currentPage" :page-size="roleQueryForm.pageSize" layout="prev, pager, next, total" :total="roleQueryTotal">
 									  	</el-pagination>
 									</div>
 								</div>
