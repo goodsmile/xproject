@@ -3,7 +3,7 @@
  */
 var TOP_NAV_HEIGHT = 50;
 /**
- * 浏览器窗口高度
+ * 浏览器窗口高度,宽度
  */
 var WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 var WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -17,8 +17,6 @@ window.onresize = function(){
 	MIN_MAIN_FRAME_HEIGHT = WINDOW_HEIGHT - TOP_NAV_HEIGHT;
 }
 
-/*var adminContainerContent = document.querySelector(".admin-container-content");
-adminContainerContent.style.height = WINDOW_HEIGHT + 'px';*/
 var adminContainerInner = document.querySelector(".admin-container-inner");
 adminContainerInner.style.width = (WINDOW_WIDTH + 20) + 'px';
 

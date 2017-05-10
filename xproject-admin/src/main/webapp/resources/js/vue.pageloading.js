@@ -36,7 +36,7 @@ function removeClass(el, cls) {
 }
 
 if(pageContainer){
-	addClass(pageContainer, 'el-hidden');
+	addClass(pageContainer, 'el-vhidden');
 }
 
 var ElPageLoading = Vue.extend({
@@ -57,7 +57,7 @@ var ElPageLoading = Vue.extend({
 	},
 	methods: {
 		handleLeave: function(){
-			removeClass(pageContainer, 'el-hidden');
+			removeClass(pageContainer, 'el-vhidden');
 		}
 	}
 });

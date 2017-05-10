@@ -35,11 +35,12 @@ if(axios){
 	}, function (error) {
 		var statusCode = error.response.status;
 		if(statusCode == 401){
-			if(window.parent){
+			window.top.href = ADMIN_CONTEXT_PATH + '/login';
+			/*if(window.parent){
 				window.parent.location.href = ADMIN_CONTEXT_PATH + '/login';
 			}else{
 				window.location.href = ADMIN_CONTEXT_PATH + '/login';
-			}
+			}*/
 			return Promise.reject(error);
 		}
 	});

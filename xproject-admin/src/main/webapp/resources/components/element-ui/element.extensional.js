@@ -1,4 +1,22 @@
 /**
+ * 浏览器窗口高度,宽度
+ */
+var WINDOW_HEIGHT = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+var WINDOW_WIDTH = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+/**
+ * 去页面滚动条
+ */
+var scrollContainerInner = document.querySelector(".el-container-inner-noscroll");
+if(scrollContainerInner){
+	scrollContainerInner.style.width = (WINDOW_WIDTH + 18) + 'px'; //18px为滚动条的宽度
+	if(window.parent !== window.self){ //当前页面在iframe中时存在两边padding不对齐的情况,fix
+		scrollContainerInner.style.paddingLeft = '8px';
+		scrollContainerInner.style.paddingRight = '12px';
+	}
+}
+
+/**
  * 解决input readonly样式各浏览器之间的差异问题
  * @param event
  * @returns

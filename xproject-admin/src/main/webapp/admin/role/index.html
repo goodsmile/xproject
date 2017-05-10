@@ -64,8 +64,8 @@
 		</style>
 	</head>
 <body>
-	<div id="app" class="el-container el-hidden">
-		<div class="el-container-inner">
+	<div id="app" class="el-container el-container-noscroll el-vhidden">
+		<div class="el-container-inner el-container-inner-noscroll">
 			<el-breadcrumb class="el-breadcrumb-admin" separator="/">
 				<i class="el-icon-fa-home"></i>
 			  	<el-breadcrumb-item>系统管理</el-breadcrumb-item>
@@ -101,7 +101,7 @@
 					<el-button type="primary" size="small" icon="fa-plus-circle" @click="openRoleEditDialog('add')">新增角色</el-button>
 				</div>
 				<div class="el-search-list">
-					<el-table v-loading="loadingRoleList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingRoleList}" :data="roleList" :default-sort="roleQuerySort" @sort-change="onRoleQuerySortChange" style="width:100%;" class="el-table el-table-primary el-table-sortable" empty-text="暂无数据">
+					<el-table v-loading="loadingRoleList" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: loadingRoleList}" :data="roleList" :default-sort="roleQuerySort" @sort-change="onRoleQuerySortChange" width="1346" class="el-table el-table-primary el-table-sortable" empty-text="暂无数据">
 						<el-table-column label="#" type="index" width="40"></el-table-column>
 						<el-table-column label="角色名称" prop="roleName" width="170" sortable="custom"></el-table-column>
 						<el-table-column label="角色代码" prop="roleCode" width="170" sortable="custom"></el-table-column>
