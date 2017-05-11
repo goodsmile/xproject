@@ -113,7 +113,7 @@
 						</el-table-column>
 						<el-table-column label="状态" prop="status" width="100" align="center" sortable="custom">
 							<template scope="scope">
-								<el-tag class="el-tag-small" :type="getStatusTagType(scope.row.status)">{{scope.row.statusName}}</el-tag>
+								<el-switch :value="scope.row.status" on-color="#27c24c" off-color="#f05050" :on-value="1" :off-value="0" on-text="启用" off-text="禁用" @click.native="changeUserStatus($event, scope.row)"></el-switch>
 							</template>
 						</el-table-column>
 						<el-table-column label="创建时间" prop="createTime" width="100" align="center" sortable="custom"></el-table-column>
@@ -124,6 +124,7 @@
 								  	<el-dropdown-menu slot="dropdown">
 								    	<el-dropdown-item command="view">查看详情</el-dropdown-item>
 								    	<el-dropdown-item command="edit">修改用户</el-dropdown-item>
+								    	<el-dropdown-item command="changepwd">修改密码</el-dropdown-item>
 								    	<el-dropdown-item command="conf">配置用户角色</el-dropdown-item>
 								    	<el-dropdown-item command="del" divided>删除用户</el-dropdown-item>
 								  	</el-dropdown-menu>
@@ -377,6 +378,52 @@
 					</div>
 					<div slot="footer">
 						<el-button icon="fa-ban" @click="closeUserViewConfigDialog">关 闭</el-button>
+					</div>
+				</el-dialog>
+				<el-dialog v-model="changePwdDialogVisible" class="el-dialog-form el-dialog-center" size="large" @close="closeChangePwdDialog">
+					<span class="el-dialog__title" slot="title"><i class="el-icon-fa-th-large"></i>修改用户密码</span>
+					<div>
+						<el-form ref="changePwdForm" :model="changePwdForm" :rules="changePwdRules" label-width="220px">
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="用户名" prop="userName">
+										<el-col :span="14">
+											<span style="line-height:32px;font-weight:bold;color:#000;">{{changePwdForm.userName}}</span>
+										</el-col>
+										<el-col :span="10">
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="账户密码" prop="password">
+										<el-col :span="14">
+											<el-input v-model="changePwdForm.password" :maxlength="20" type="password"></el-input>
+										</el-col>
+										<el-col :span="10">
+								      		<p class="el-form-item-tips">由6~20位个字母或数字组成.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="24">
+									<el-form-item label="重复密码" prop="repassword">
+										<el-col :span="14">
+											<el-input v-model="changePwdForm.repassword" :maxlength="20" type="password"></el-input>
+										</el-col>
+										<el-col :span="10">
+								      		<p class="el-form-item-tips">请再次确认您输入的密码.</p>
+								      	</el-col>
+									</el-form-item>
+								</el-col>
+							</el-row>
+						</el-form>
+					</div>
+					<div slot="footer">
+						<el-button icon="fa-ban" @click="closeChangePwdDialog">取 消</el-button>
+					    <el-button type="primary" icon="fa-save" @click="changePasswd" :loading="submiting">确 定</el-button>
 					</div>
 				</el-dialog>
 			</div>

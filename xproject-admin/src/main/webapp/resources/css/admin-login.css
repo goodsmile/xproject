@@ -108,6 +108,7 @@ html, body, .el-container {
 	float: right;
 	font-size: 12px;
 	color: #999;
+	line-height: 30px;
 }
 .admin-login-forgotpwd:hover {
 	color: #337ab7;

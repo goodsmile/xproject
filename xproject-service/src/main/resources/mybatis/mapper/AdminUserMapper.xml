@@ -215,6 +215,11 @@
         </foreach>
 	</insert>
 	
+	<delete id="deleteUserAllRoles" parameterType="java.lang.Long" statementType="PREPARED">
+		DELETE a FROM admin_user_role a
+		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
+	</delete>
+	
 	<delete id="deleteUserRoles" parameterType="java.util.Map" statementType="PREPARED">
 		DELETE a FROM admin_user_role a
 		 WHERE a.user_id = #{userId, jdbcType=BIGINT}

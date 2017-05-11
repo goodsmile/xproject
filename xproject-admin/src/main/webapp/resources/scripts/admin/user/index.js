@@ -1,5 +1,9 @@
 var ADMIN_USER_TYPE_SYSTEM = 0;
 var IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
+var USER_STATUS = {
+	1: '启用',
+	0: '禁用'
+};
 var vm = null;
 Vue.onDocumentReady(function() {
 	vm = new Vue({
@@ -24,6 +28,7 @@ Vue.onDocumentReady(function() {
 			userList: [],
 			editDialogVisible: false,
 			viewConfigDialogVisible: false,
+			changePwdDialogVisible: false,
 			viewConfigActiveTabName: 'userDetail',
 			uploadHeaders: {
 				Accept: 'application/json'
@@ -65,6 +70,12 @@ Vue.onDocumentReady(function() {
 				updateTime: '',
 				lastLoginTime: '',
 				loginTimes: ''
+			},
+			changePwdForm: {
+				userId: '',
+				userName: '',
+				password: '',
+				repassword: ''
 			},
 			userEditRules: {
 				userName: [{
@@ -117,6 +128,32 @@ Vue.onDocumentReady(function() {
 				},{
 					validator: email,
 					message: 'EMAIL不合法!'
+				}]
+			},
+			changePwdRules: {
+				password: [{
+					required: true,
+					message: '请输入账户密码!'
+				},{
+					validator: regex,
+					regex: /^[a-zA-Z0-9]{6,20}$/,
+					message: '账户密码由6~20个字母或数字组成!'
+				}],
+				repassword: [{
+					required: true,
+					message: '请再次输入账户密码!'
+				},{
+					validator: regex,
+					regex: /^[a-zA-Z0-9]{6,20}$/,
+					message: '账户密码由6~20个字母或数字组成!'
+				},{
+					validator: equalTo,
+					compareTarget: {
+						vue: 'vm',
+						form: 'changePwdForm',
+						field: 'password'
+					},
+					message: '两次密码不一致!'
 				}]
 			},
 			roleQuering: false,
@@ -259,6 +296,8 @@ Vue.onDocumentReady(function() {
 		    		this.deleteUser(row);
 		    	}else if(cmd == 'conf'){
 		    		this.openUserViewConfigDialog(cmd, row);
+		    	}else if(cmd == 'changepwd'){
+		    		this.openChangePwdDialog(cmd, row);
 		    	}
 		    },
 		    openUserEditDialog: function(cmd, row){
@@ -274,6 +313,10 @@ Vue.onDocumentReady(function() {
 		    	}
 		    	this.editDialogVisible = true;
 		    },
+		    closeEditDialog: function(){
+				this.editDialogVisible = false;
+				this.$refs.userEditForm.resetFields();
+			},
 		    openUserViewConfigDialog: function(cmd, row){
 		    	this.currentActionType = cmd;
 		    	this.userViewConfigForm.userId = row.userId;
@@ -302,6 +345,26 @@ Vue.onDocumentReady(function() {
 	    		}
 	    		this.viewConfigDialogVisible = true;
 		    },
+		    closeUserViewConfigDialog: function(){
+				this.viewConfigDialogVisible = false;
+				this.resetUserRoleQueryForm();
+				this.userRoleList = [];
+				if(this.currentActionType == 'conf'){
+					this.resetRoleQueryForm();
+					this.roleList = [];
+					this.selectedRoleIds = [];
+				}
+			},
+		    openChangePwdDialog: function(cmd, row){
+		    	this.currentActionType = cmd;
+		    	this.changePwdForm.userId = row.userId;
+		    	this.changePwdForm.userName = row.userName;
+		    	this.changePwdDialogVisible = true;
+		    },
+		    closeChangePwdDialog: function(){
+				this.changePwdDialogVisible = false;
+				this.$refs.changePwdForm.resetFields();
+			},
 		    saveUser: function(){
 		    	var url = '';
 				if(this.currentActionType == 'add'){
@@ -364,10 +427,77 @@ Vue.onDocumentReady(function() {
 					});
 				}
 		    },
-		    closeEditDialog: function(){
-				this.editDialogVisible = false;
-				this.$refs.userEditForm.resetFields();
-			},
+		    changePasswd: function(){
+		    	var url = ADMIN_CONTEXT_PATH + '/admin/user/changepwd/submit?forceUpdate=true';
+				var _this = this;
+				this.$refs.changePwdForm.validate(function(valid){
+					if(valid && !_this.submiting){
+						_this.$confirm('你确定要修改该用户的密码?', '提示', {
+							confirmButtonText: '确定',
+					        cancelButtonText: '取消',
+					        type: 'warning',
+					        callback: function(action, instance){
+								if(action == 'confirm'){
+									_this.submiting = true;
+									setTimeout(function(){
+										axios.post(url, _this.changePwdForm).then(function(response){
+											_this.submiting = false;
+											var result = response.data;
+											if(result.success){
+												_this.closeChangePwdDialog();
+												_this.$message.success('修改成功!');
+											}else{
+												_this.$message.error(result.message);
+											}
+										}).catch(function(error){
+											_this.submiting = false;
+											_this.$message.error('请求出错!');
+										});
+									}, 1500);
+								}
+							}
+						});
+					}else{
+						return false;
+					}
+				});
+		    },
+		    changeUserStatus: function(event, row){
+		    	if(ADMIN_USER_TYPE_SYSTEM == row.userType){
+					this.$message.error('系统用户禁止此操作!');
+				}else{
+					//var switchVm = event.currentTarget.__vue__;
+			    	var targetStatus = row.status == 1 ? 0 : 1;
+			    	var url = '';
+			    	if(targetStatus == 1){
+			    		url = ADMIN_CONTEXT_PATH + '/admin/user/enable?userId=' + row.userId;
+			    	}else{
+			    		url = ADMIN_CONTEXT_PATH + '/admin/user/disable?userId=' + row.userId;
+			    	}
+			    	this.$confirm('你确定要' + USER_STATUS[targetStatus] + '该用户?', '提示', {
+						confirmButtonText: '确定',
+				        cancelButtonText: '取消',
+				        type: 'warning',
+				        callback: function(action, instance){
+							if(action == 'confirm'){
+								axios.get(url).then(function(response){
+									var result = response.data;
+									if(result.success){
+										//_this.$message.success('操作成功!');
+										row.status = targetStatus;
+									}else{
+										_this.$message.error(result.message);
+									}
+								}).catch(function(error){
+									_this.$message.error('请求出错!');
+								});
+							}
+						}
+					});
+				}
+		    	event.preventDefault();
+		    	return false;
+		    },
 			queryUserRoleList: function(loading){
 				this.userRoleQueryForm.userId = this.userViewConfigForm.userId;
 				var _this = this;
@@ -444,16 +574,6 @@ Vue.onDocumentReady(function() {
 			},
 		    resetRoleQueryForm: function(){
 				this.$refs.roleQueryForm.resetFields();
-			},
-			closeUserViewConfigDialog: function(){
-				this.viewConfigDialogVisible = false;
-				this.resetUserRoleQueryForm();
-				this.userRoleList = [];
-				if(this.currentActionType == 'conf'){
-					this.resetRoleQueryForm();
-					this.roleList = [];
-					this.selectedRoleIds = [];
-				}
 			},
 			delUserRoleConfig: function(){
 				if(this.selectedRoleIds.length){

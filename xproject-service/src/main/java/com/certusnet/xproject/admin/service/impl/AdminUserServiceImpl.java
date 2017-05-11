@@ -86,7 +86,8 @@ public class AdminUserServiceImpl implements AdminUserService {
         ValidationAssert.notNull(puser, "该用户已经不存在了!");
         BusinessAssert.isTrue(!AdminUserTypeEnum.ADMIN_USER_TYPE_SYSTEM.getTypeCode().equals(puser.getUserType()), "系统级用户不能被删除!");
         user.setUserName(puser.getUserName());
-        userDAO.deleteUserById(user.getUserId());
+        userDAO.deleteUserById(user.getUserId()); //删除用户信息
+        userDAO.deleteUserAllRoles(user.getUserId()); //删除用户的所有角色关系
     }
     
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)

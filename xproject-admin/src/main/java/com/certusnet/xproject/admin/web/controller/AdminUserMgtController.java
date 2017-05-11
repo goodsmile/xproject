@@ -85,7 +85,7 @@ public class AdminUserMgtController extends BaseController {
 		userAddForm.setUserType(AdminUserTypeEnum.ADMIN_USER_TYPE_NORMAL.getTypeCode());
 		
 		if(StringUtils.isEmpty(userAddForm.getUserIcon())){
-			userAddForm.setUserIcon(AdminConstants.DEFAULT_USER_ICON);
+			userAddForm.setUserIcon(AdminConstants.DEFAULT_USER_AVATAR);
 		}else{
 			String userIcon = userAddForm.getUserIcon();
 			if(userIcon.toLowerCase().startsWith(GlobalConstants.DEFAULT_UPLOAD_SAVE_PATH)){
@@ -115,7 +115,7 @@ public class AdminUserMgtController extends BaseController {
 		userEditForm.setUpdateTime(DateTimeUtils.formatNow());
 		
 		if(StringUtils.isEmpty(userEditForm.getUserIcon())){
-			userEditForm.setUserIcon(AdminConstants.DEFAULT_USER_ICON);
+			userEditForm.setUserIcon(AdminConstants.DEFAULT_USER_AVATAR);
 		}else{
 			String userIcon = userEditForm.getUserIcon();
 			if(userIcon.toLowerCase().startsWith(GlobalConstants.DEFAULT_UPLOAD_SAVE_PATH)){
@@ -138,9 +138,9 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/del")
-	public Object delUser(HttpServletRequest request, HttpServletResponse response, Long userId) {
+	public Object delUser(HttpServletRequest request, HttpServletResponse response, Long id) {
 		AdminUser user = new AdminUser();
-		user.setUserId(userId);
+		user.setUserId(id);
 		adminUserService.deleteUserById(user);
 		return genSuccessResult("删除成功!", null);
 	}

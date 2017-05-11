@@ -59,7 +59,8 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 		ValidationAssert.notNull(role, "该角色已经不存在了!");
 		BusinessAssert.isTrue(!AdminRoleTypeEnum.ADMIN_ROLE_TYPE_SYSTEM.getTypeCode().equals(role.getRoleType()), "删除角色失败,系统角色不允许删除!");
 		BusinessAssert.isTrue(!role.isInuse(), "删除角色失败,该角色已经在使用不允许删除!");
-		roleDAO.deleteRoleById(roleId);
+		roleDAO.deleteRoleById(roleId); //删除角色信息
+		roleDAO.deleteRoleResourcesByRoleId(roleId); //删除该角色下的所有资源关系
 	}
 
 	public AdminRole getRoleById(Long roleId) {

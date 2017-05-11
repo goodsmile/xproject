@@ -98,10 +98,14 @@ public class AdminUserDAOImpl extends DefaultBaseMybatisDAO implements AdminUser
         Map<String, Object> paramMap = new HashMap<String, Object>();
         paramMap.put("userId", userId);
         paramMap.put("roleIdList", roleIdList);
-        getSqlSessionTemplate().insert(getMapperKey("deleteUserRoles"), paramMap);
+        getSqlSessionTemplate().delete(getMapperKey("deleteUserRoles"), paramMap);
     }
     
-    public AdminUser getUserByUserName(String userName, boolean fatUser) {
+	public void deleteUserAllRoles(Long userId) {
+		getSqlSessionTemplate().delete(getMapperKey("deleteUserAllRoles"), userId);
+	}
+
+	public AdminUser getUserByUserName(String userName, boolean fatUser) {
         if (fatUser) {
             return getSqlSessionTemplate().selectOne(getMapperKey("getUserByUserName"), userName, new AdminUserModelHandler());
         }

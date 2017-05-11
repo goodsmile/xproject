@@ -14,7 +14,7 @@ public class AdminConstants extends AbstractConstants {
 	/**
 	 * 用户默认头像
 	 */
-	public static final String DEFAULT_USER_ICON = valueOf("/resources/images/default-user-icon.png");
+	public static final String DEFAULT_USER_AVATAR = valueOf("/resources/images/default-user-avatar.png");
 	
 	/**
 	 * 用户头像默认保存路径,相对于#GlobalConstants.IMAGE_SERVER_ROOT

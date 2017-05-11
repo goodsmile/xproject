@@ -124,6 +124,14 @@ public interface AdminUserDAO
     public void deleteUserRoles(Long userId, List<Long> roleIdList);
     
     /**
+     * 删除用户的所有角色
+     * 
+     * @param userId
+     * @param roleIdList
+     */
+    public void deleteUserAllRoles(Long userId);
+    
+    /**
      * 根据用户名获取用户信息
      * 
      * @param userName
