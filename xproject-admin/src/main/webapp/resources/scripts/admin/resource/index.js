@@ -302,6 +302,8 @@ Vue.onDocumentReady(function() {
 			closeEditDialog: function(){
 				this.editDialogVisible = false;
 				this.$refs.resourceEditForm.resetFields();
+				this.resourceEditForm.resourceId = '';
+				this.resourceEditForm.parentResourceId = '';
 			}
 		}
 	});

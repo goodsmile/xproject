@@ -29,6 +29,7 @@ import com.certusnet.xproject.admin.support.AdminResourceTreeBuilder;
 import com.certusnet.xproject.admin.web.LoginToken;
 import com.certusnet.xproject.common.consts.GlobalConstants;
 import com.certusnet.xproject.common.support.AbstractXTreeBuilder;
+import com.certusnet.xproject.common.support.HttpAccessLogging;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
 import com.certusnet.xproject.common.support.PagingList;
@@ -69,6 +70,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/role/list", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/角色管理/查询角色列表")
 	public Object listRole(HttpServletRequest request, HttpServletResponse response, AdminRole roleQueryForm, OrderBy orderBy, Pager pager) {
 		PagingList<AdminRole> roleList = adminRoleService.getRoleList(roleQueryForm, pager, orderBy);
 		return genSuccessPagingResult(roleList);
@@ -82,8 +84,10 @@ public class AdminRoleMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/role/add/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/角色管理/新增角色")
 	public Object addRole(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminRole roleAddForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
+		roleAddForm.setRoleId(null);
 		roleAddForm.setCreateTime(DateTimeUtils.formatNow());
 		roleAddForm.setCreateBy(loginToken.getLoginId());
 		roleAddForm.setRoleType(AdminRoleTypeEnum.ADMIN_ROLE_TYPE_NORMAL.getTypeCode());
@@ -99,6 +103,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/role/edit/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/角色管理/修改角色")
 	public Object editRole(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminRole roleEditForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		roleEditForm.setUpdateTime(DateTimeUtils.formatNow());
@@ -115,6 +120,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/role/del", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/角色管理/删除角色")
 	public Object delRole(HttpServletRequest request, HttpServletResponse response, Long id) {
 		adminRoleService.deleteRoleById(id);
 		return genSuccessResult("删除成功!", null);
@@ -153,6 +159,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/role/config/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/角色管理/配置角色资源关系")
 	public Object configRoleResources(HttpServletRequest request, HttpServletResponse response,  @RequestBody Map<String,Object> parameter) {
 		List<Long> resourceIdList = new ArrayList<Long>();
 		String resourceIds = MapUtils.getString(parameter, "resourceIds");

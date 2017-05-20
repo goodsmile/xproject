@@ -302,48 +302,55 @@ Vue.onDocumentReady(function() {
 		    },
 		    openUserEditDialog: function(cmd, row){
 		    	this.currentActionType = cmd;
-		    	if(cmd == 'edit'){
-		    		this.userEditForm.userId = row.userId;
-		    		this.userEditForm.userName = row.userName;
-		    		this.userEditForm.realName = row.realName;
-		    		this.userEditForm.mobilePhone = row.mobilePhone;
-		    		this.userEditForm.email = row.email;
-		    		this.userEditForm.userIcon = row.userIcon;
-		    		this.userEditForm.userIconUrl = row.userIconUrl;
-		    	}
 		    	this.editDialogVisible = true;
+		    	var _this = this;
+		    	Vue.nextTick(function(){
+		    		if(cmd == 'edit'){
+		    			_this.userEditForm.userId = row.userId;
+		    			_this.userEditForm.userName = row.userName;
+		    			_this.userEditForm.realName = row.realName;
+		    			_this.userEditForm.mobilePhone = row.mobilePhone;
+		    			_this.userEditForm.email = row.email;
+		    			_this.userEditForm.userIcon = row.userIcon;
+		    			_this.userEditForm.userIconUrl = row.userIconUrl;
+			    	}
+		    	});
 		    },
 		    closeEditDialog: function(){
 				this.editDialogVisible = false;
 				this.$refs.userEditForm.resetFields();
+				this.userEditForm.userId = ''; //手动reset
 			},
 		    openUserViewConfigDialog: function(cmd, row){
 		    	this.currentActionType = cmd;
-		    	this.userViewConfigForm.userId = row.userId;
-		    	this.userViewConfigForm.userName = row.userName;
-	    		this.userViewConfigForm.realName = row.realName;
-	    		this.userViewConfigForm.mobilePhone = row.mobilePhone;
-	    		this.userViewConfigForm.email = row.email;
-	    		this.userViewConfigForm.userIcon = row.userIcon;
-	    		this.userViewConfigForm.userIconUrl = row.userIconUrl;
-	    		this.userViewConfigForm.userType = row.userType;
-	    		this.userViewConfigForm.userTypeName = row.userTypeName;
-	    		this.userViewConfigForm.status = row.status;
-	    		this.userViewConfigForm.statusName = row.statusName;
-	    		this.userViewConfigForm.lastLoginTime = row.lastLoginTime;
-	    		this.userViewConfigForm.loginTimes = row.loginTimes;
-	    		this.userViewConfigForm.createBy = row.createBy;
-	    		this.userViewConfigForm.createTime = row.createTime;
-	    		this.userViewConfigForm.updateBy = row.updateBy;
-	    		this.userViewConfigForm.updateTime = row.updateTime;
-	    		if(cmd == 'conf'){
-	    			this.viewConfigActiveTabName = 'userRoleConfig';
-	    			this.queryUserRoleList(1500);
-	    		}else{
-	    			this.viewConfigActiveTabName = 'userDetail';
-	    			this.queryUserRoleList(0);
-	    		}
-	    		this.viewConfigDialogVisible = true;
+		    	this.viewConfigDialogVisible = true;
+		    	var _this = this;
+		    	Vue.nextTick(function(){
+		    		_this.userViewConfigForm.userId = row.userId;
+		    		_this.userViewConfigForm.userName = row.userName;
+		    		_this.userViewConfigForm.realName = row.realName;
+		    		_this.userViewConfigForm.mobilePhone = row.mobilePhone;
+		    		_this.userViewConfigForm.email = row.email;
+		    		_this.userViewConfigForm.userIcon = row.userIcon;
+		    		_this.userViewConfigForm.userIconUrl = row.userIconUrl;
+		    		_this.userViewConfigForm.userType = row.userType;
+		    		_this.userViewConfigForm.userTypeName = row.userTypeName;
+		    		_this.userViewConfigForm.status = row.status;
+		    		_this.userViewConfigForm.statusName = row.statusName;
+		    		_this.userViewConfigForm.lastLoginTime = row.lastLoginTime;
+		    		_this.userViewConfigForm.loginTimes = row.loginTimes;
+		    		_this.userViewConfigForm.createBy = row.createBy;
+		    		_this.userViewConfigForm.createTime = row.createTime;
+		    		_this.userViewConfigForm.updateBy = row.updateBy;
+		    		_this.userViewConfigForm.updateTime = row.updateTime;
+		    		if(cmd == 'conf'){
+		    			_this.viewConfigActiveTabName = 'userRoleConfig';
+		    			_this.queryUserRoleList(1500);
+		    		}else{
+		    			_this.viewConfigActiveTabName = 'userDetail';
+		    			_this.queryUserRoleList(0);
+		    		}
+				});
 		    },
 		    closeUserViewConfigDialog: function(){
 				this.viewConfigDialogVisible = false;
@@ -357,9 +364,12 @@ Vue.onDocumentReady(function() {
 			},
 		    openChangePwdDialog: function(cmd, row){
 		    	this.currentActionType = cmd;
-		    	this.changePwdForm.userId = row.userId;
-		    	this.changePwdForm.userName = row.userName;
 		    	this.changePwdDialogVisible = true;
+		    	var _this = this;
+		    	Vue.nextTick(function(){
+		    		_this.changePwdForm.userId = row.userId;
+		    		_this.changePwdForm.userName = row.userName;
+				});
 		    },
 		    closeChangePwdDialog: function(){
 				this.changePwdDialogVisible = false;

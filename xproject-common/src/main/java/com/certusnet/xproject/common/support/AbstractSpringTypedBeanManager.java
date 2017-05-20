@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.certusnet.xproject.common.util.CollectionUtils;
 
@@ -23,7 +24,7 @@ public abstract class AbstractSpringTypedBeanManager<T,P> implements SpringTyped
 	private final Map<String,T> typeOfMap = new HashMap<String,T>();
 	
 	public AbstractSpringTypedBeanManager() {
-		Class<?> c = getClass();
+		Class<?> c = getThisSuperclass(getClass());
         Type t = c.getGenericSuperclass();
         if (t instanceof ParameterizedType) {
             Type[] ps = ((ParameterizedType) t).getActualTypeArguments();
@@ -39,7 +40,15 @@ public abstract class AbstractSpringTypedBeanManager<T,P> implements SpringTyped
 	protected Class<T> getTypeOf() {
 		return typeOf;
 	}
-
+	
+	protected Class<?> getThisSuperclass(Class<?> clazz) {
+		if(clazz.getSuperclass().equals(AbstractSpringTypedBeanManager.class)){
+			return clazz;
+		}else{
+			return getThisSuperclass(clazz.getSuperclass());
+		}
+	}
+	
 	public T getTypedBean(P parameter) {
 		if(!loaded){
 			synchronized (typeOfMap) {
@@ -65,9 +74,16 @@ public abstract class AbstractSpringTypedBeanManager<T,P> implements SpringTyped
 	}
 
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
+		//如果参数applicationContext是容器环境下SpringMVC Application上下文,则取其parent (ROOT)
+		if(applicationContext instanceof WebApplicationContext && applicationContext.getParent() != null){ 
+    		this.applicationContext = applicationContext.getParent();
+    	}
 	}
 	
+	public ApplicationContext getApplicationContext() {
+		return applicationContext;
+	}
+
 	protected T processBean(T bean) {
 		return bean;
 	}

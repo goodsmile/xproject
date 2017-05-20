@@ -24,6 +24,7 @@ import com.certusnet.xproject.admin.support.AdminResourceTreeNodeConverter;
 import com.certusnet.xproject.admin.web.LoginToken;
 import com.certusnet.xproject.common.consts.GlobalConstants;
 import com.certusnet.xproject.common.support.AbstractXTreeBuilder;
+import com.certusnet.xproject.common.support.HttpAccessLogging;
 import com.certusnet.xproject.common.support.TreeNodeConverter;
 import com.certusnet.xproject.common.util.DateTimeUtils;
 import com.certusnet.xproject.common.web.BaseController;
@@ -53,6 +54,7 @@ public class AdminResourceMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/resource/available", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/资源管理/查看资源树结构")
 	public Object getAvailableResources(HttpServletRequest request, HttpServletResponse response) {
 		List<AdminResource> allResourceList = adminResourceService.getAllResourceList(null);
 		List<Map<String,Object>> dataList = resourceTreeBuilder.buildObjectTree(GlobalConstants.DEFAULT_ADMIN_ROOT_RESOURCE_ID, allResourceList, resourceTreeNodeConverter);
@@ -67,8 +69,10 @@ public class AdminResourceMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/resource/add/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/资源管理/新增资源")
 	public Object addResource(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminResource resourceAddForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
+		resourceAddForm.setResourceId(null);
 		resourceAddForm.setCreateTime(DateTimeUtils.formatNow());
 		resourceAddForm.setCreateBy(loginToken.getLoginId());
 		resourceAddForm.setResourceType(AdminResourceTypeEnum.ADMIN_RESOURCE_TYPE_NORMAL.getTypeCode());
@@ -84,6 +88,7 @@ public class AdminResourceMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/resource/edit/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/资源管理/修改资源")
 	public Object editResource(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminResource resourceEditForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		resourceEditForm.setUpdateTime(DateTimeUtils.formatNow());
@@ -100,6 +105,7 @@ public class AdminResourceMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/resource/del", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/资源管理/删除资源")
 	public Object delResource(HttpServletRequest request, HttpServletResponse response, Long id) {
 		adminResourceService.deleteResourceById(id, true);
 		return genSuccessResult("删除成功!", null);

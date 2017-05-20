@@ -30,7 +30,9 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import com.certusnet.xproject.common.consts.GlobalConstants;
+import com.certusnet.xproject.common.support.AbstractSpringTypedBeanManager;
 import com.certusnet.xproject.common.support.HttpAccessLogging;
+import com.certusnet.xproject.common.support.HttpAccessLogging.LoggingType;
 import com.certusnet.xproject.common.support.Messages;
 import com.certusnet.xproject.common.support.NamedThreadFactory;
 import com.certusnet.xproject.common.util.CollectionUtils;
@@ -45,11 +47,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 /**
  * Http请求日志记录拦截器
  * 
- * @author	  	pengpeng
- * @date	  	2014年10月16日 下午9:21:35
- * @version  	1.0
+ * @author 	pengpeng
+ * @date   		2017年5月20日 下午4:16:20
+ * @version 	1.0
  */
-public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInterceptor, DisposableBean {
+@SuppressWarnings("unchecked")
+public abstract class AbstractHttpAccessLoggingInterceptor extends AbstractSpringTypedBeanManager<HttpAccessLogDAO,HttpAccessLogging.LoggingType> implements HandlerInterceptor, DisposableBean {
 
 	private static final Pattern messageSourceCodePattern = Pattern.compile("\\$\\{([a-zA-Z0-9_.]+)\\}");
 	
@@ -121,7 +124,7 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 						httpAccessLog.setRequestHeader(extractRequestHeader(request, loggingContext));
 					}
 					getLoggingContextThreadLocal().set(loggingContext);
-					logger.debug(">>> access logging [preHandle] : " + httpAccessLog);
+					//logger.debug(">>> access logging [preHandle] : " + httpAccessLog);
 				}
 			}
 		} catch (Throwable e) {
@@ -140,7 +143,7 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 			if(httpAccessLog != null){
 				httpAccessLog.setAccessEndMillis(System.currentTimeMillis());
 				httpAccessLog.setProcessTime1(httpAccessLog.getAccessEndMillis() - httpAccessLog.getAccessBeginMillis());
-				logger.debug(">>> access logging [postHandle] : " + httpAccessLog);
+				//logger.debug(">>> access logging [postHandle] : " + httpAccessLog);
 			}
 		}
 	}
@@ -158,14 +161,11 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 					httpAccessLog.setProcessTime2(nowTimeMillis - httpAccessLog.getAccessEndMillis());
 					httpAccessLog.setAccessEndMillis(nowTimeMillis);
 					httpAccessLog.setLoggingCompleted(true);
-					httpAccessLog.setRequestParameter(extractRequestParameter(request, loggingContext));
-					httpAccessLog.setAccessUser(getAccessUser(request, loggingContext));
 					httpAccessLog.setResponseContentType(getContentType(response.getContentType()));
 					httpAccessLog.setResponseResult(extractResponseResult(response, loggingContext));
-					logger.debug(">>> access logging [postHandle] : " + httpAccessLog);
-					AbstractHttpAccessLogHandler<?> httpAccessLogHandler = createHttpAccessLoggerHandler(loggingContext);
-					if(httpAccessLogHandler != null){
-						getHttpAccessLogHandlerExecutor().execute(httpAccessLogHandler);
+					HttpAccessLogDAO httpAccessLogDAO = getHttpAccessLogDAO(loggingContext);
+					if(httpAccessLogDAO != null){
+						getHttpAccessLogHandlerExecutor().submit(new DefaultHttpAccessLoggingTask(request, response, loggingContext, httpAccessLogDAO));
 					}
 				}
 			}
@@ -256,7 +256,6 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 	 * @param loggingContext
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	protected HttpRequestParameter excludeRequestParameter(HttpRequestParameter parameter, LoggingContext loggingContext) {
 		HttpAccessLogging httpAccessLogging = loggingContext.httpAccessLogging;
 		String[] excludeNameParams = httpAccessLogging.excludeParamNames();
@@ -289,7 +288,6 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 	 * @param parameter
 	 * @param paramName
 	 */
-	@SuppressWarnings("unchecked")
 	protected void excludeParameter(Map<String,Object> parameter, String paramName) {
 		if(!CollectionUtils.isEmpty(parameter)){
 			parameter.remove(paramName);
@@ -384,6 +382,13 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 		getHttpAccessLogHandlerExecutor().shutdown();
 	}
 	
+	protected boolean filterBean(HttpAccessLogDAO httpAccessLogDAO, LoggingType parameter) {
+		if(parameter != null){
+			return parameter.equals(httpAccessLogDAO.getLoggingType());
+		}
+		return false;
+	}
+
 	/**
 	 * 获取操作人的LoginUser对象
 	 * @param request
@@ -397,7 +402,9 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 	 * @param loggingContext
 	 * @return
 	 */
-	protected abstract <T> AbstractHttpAccessLogHandler<T> createHttpAccessLoggerHandler(LoggingContext loggingContext);
+	protected HttpAccessLogDAO getHttpAccessLogDAO(LoggingContext loggingContext) {
+		return getTypedBean(loggingContext.getHttpAccessLogging().loggingType());
+	}
 	
 	/**
 	 * 日志记录上下文
@@ -448,6 +455,42 @@ public abstract class AbstractHttpAccessLoggingInterceptor implements HandlerInt
 			this.modelAndView = modelAndView;
 		}
 
+	}
+	
+	@SuppressWarnings("unused")
+	public class DefaultHttpAccessLoggingTask implements Runnable {
+
+		private final HttpServletRequest request;
+		
+		private final HttpServletResponse response;
+		
+		private final LoggingContext loggingContext;
+		
+		private final HttpAccessLogDAO httpAccessLogDAO;
+		
+		public DefaultHttpAccessLoggingTask(HttpServletRequest request, HttpServletResponse response, LoggingContext loggingContext, HttpAccessLogDAO httpAccessLogDAO) {
+			super();
+			this.request = request;
+			this.response = response;
+			this.loggingContext = loggingContext;
+			this.httpAccessLogDAO = httpAccessLogDAO;
+		}
+
+		public void run() {
+			try {
+				HttpAccessLog<?> httpAccessLog = loggingContext.getHttpAccessLog();
+				if (httpAccessLog != null) {
+					httpAccessLog.setRequestParameter(extractRequestParameter(request, loggingContext));
+					httpAccessLog.setAccessUser(getAccessUser(request, loggingContext));
+					logger.debug(">>> http access log : " + httpAccessLog);
+					httpAccessLogDAO.saveLog((HttpAccessLog<?>) httpAccessLog);
+				} 
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
+			
+		}
+		
 	}
 	
 }

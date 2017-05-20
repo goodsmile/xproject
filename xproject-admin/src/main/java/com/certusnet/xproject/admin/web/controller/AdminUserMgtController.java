@@ -28,6 +28,7 @@ import com.certusnet.xproject.admin.service.AdminResourceService;
 import com.certusnet.xproject.admin.service.AdminUserService;
 import com.certusnet.xproject.admin.web.LoginToken;
 import com.certusnet.xproject.common.consts.GlobalConstants;
+import com.certusnet.xproject.common.support.HttpAccessLogging;
 import com.certusnet.xproject.common.support.OrderBy;
 import com.certusnet.xproject.common.support.Pager;
 import com.certusnet.xproject.common.support.PagingList;
@@ -66,6 +67,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/list", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/查询用户列表")
 	public Object listRole(HttpServletRequest request, HttpServletResponse response, AdminUser userQueryForm, OrderBy orderBy, Pager pager) {
 		PagingList<AdminUser> dataList = adminUserService.getUserList(userQueryForm, pager, orderBy);
 		return genSuccessPagingResult(dataList);
@@ -79,8 +81,10 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/add/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/新增用户")
 	public Object addUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userAddForm) throws Exception {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
+		userAddForm.setUserId(null);
 		userAddForm.setCreateTime(DateTimeUtils.formatNow());
 		userAddForm.setCreateBy(loginToken.getLoginId());
 		userAddForm.setStatus(AdminUserStatusEnum.ADMIN_USER_STATUS_ENABLED.getStatusCode());
@@ -111,6 +115,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/edit/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/修改用户")
 	public Object editUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userEditForm) throws Exception {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		userEditForm.setUpdateBy(loginToken.getLoginId());
@@ -140,6 +145,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/del", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/删除用户")
 	public Object delUser(HttpServletRequest request, HttpServletResponse response, Long id) {
 		AdminUser user = new AdminUser();
 		user.setUserId(id);
@@ -148,13 +154,14 @@ public class AdminUserMgtController extends BaseController {
 	}
 	
 	/**
-	 * 修改密码
+	 * 修改用户密码
 	 * @param request
 	 * @param response
 	 * @param passwdEditForm
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/changepwd/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/修改用户密码", excludeParamNames={"password","repassword"})
 	public Object changeUserPasswd(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser passwdEditForm, Boolean forceUpdate) {
 		if(forceUpdate == null){
 			forceUpdate = false;
@@ -171,6 +178,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/enable", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/启用用户")
 	public Object enableUser(HttpServletRequest request, HttpServletResponse response, Long userId) {
 		return updateUserStatus(request, response, userId, AdminUserStatusEnum.ADMIN_USER_STATUS_ENABLED);
 	}
@@ -183,6 +191,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/disable", method=GET, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/禁用用户")
 	public Object disableUser(HttpServletRequest request, HttpServletResponse response, Long userId) {
 		return updateUserStatus(request, response, userId, AdminUserStatusEnum.ADMIN_USER_STATUS_DISABLED);
 	}
@@ -217,6 +226,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/config/add", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/添加用户角色配置")
 	public Object addUserRoles(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String,Object> parameter) {
 		Long userId = MapUtils.getLong(parameter, "userId");
 		String roleIds = MapUtils.getString(parameter, "roleIds");
@@ -246,6 +256,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping(value="/admin/user/config/del", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="系统管理/用户管理/删除用户角色配置")
 	public Object delUserRoles(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String,Object> parameter) {
 		Long userId = MapUtils.getLong(parameter, "userId");
 		String roleIds = MapUtils.getString(parameter, "roleIds");

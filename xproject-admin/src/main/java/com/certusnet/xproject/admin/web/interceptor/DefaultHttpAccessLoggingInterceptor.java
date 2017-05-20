@@ -14,11 +14,8 @@ import org.springframework.web.method.HandlerMethod;
 import com.certusnet.xproject.admin.model.AdminUser;
 import com.certusnet.xproject.admin.service.AdminUserService;
 import com.certusnet.xproject.admin.web.LoginToken;
-import com.certusnet.xproject.common.support.HttpAccessLogging.LoggingType;
 import com.certusnet.xproject.common.web.shiro.ShiroUtils;
-import com.certusnet.xproject.common.web.springmvc.interceptor.AbstractHttpAccessLogHandler;
 import com.certusnet.xproject.common.web.springmvc.interceptor.AbstractHttpAccessLoggingInterceptor;
-import com.certusnet.xproject.common.web.springmvc.interceptor.HttpAccessLog;
 import com.certusnet.xproject.common.web.springmvc.interceptor.HttpAccessLog.HttpRequestParameter;
 
 @SuppressWarnings("unchecked")
@@ -49,16 +46,6 @@ public class DefaultHttpAccessLoggingInterceptor extends AbstractHttpAccessLoggi
 			LoginToken<AdminUser> loginToken = (LoginToken<AdminUser>) ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 			return loginToken == null ? null : loginToken.getLoginUser();
 		}
-	}
-
-	protected AbstractHttpAccessLogHandler<AdminUser> createHttpAccessLoggerHandler(LoggingContext loggingContext) {
-		LoggingType loggingType = loggingContext.getHttpAccessLogging().loggingType();
-		if(LoggingType.DB.equals(loggingType)){
-			return new DbStoreHttpAccessLogHandler((HttpAccessLog<AdminUser>) loggingContext.getHttpAccessLog());
-		}else if(LoggingType.FILE.equals(loggingType)){
-			return new FileStoreHttpAccessLogHandler((HttpAccessLog<AdminUser>) loggingContext.getHttpAccessLog());
-		}
-		return null;
 	}
 
 }

@@ -299,6 +299,7 @@ Vue.onDocumentReady(function() {
 		    closeEditDialog: function(){
 		    	this.editDialogVisible = false;
 				this.$refs.roleEditForm.resetFields();
+				this.roleEditForm.roleId = ''; //手动reset
 			},
 			loadRoleResourceDataList: function(loading, roleId){
 				var _this = this;
@@ -353,10 +354,12 @@ Vue.onDocumentReady(function() {
 				]);
 			},
 			onRoleResourceTreeNodeCheckClick: function(data, node){
-				if(node.checked){
-					this.recursiveCheckParent(node, node.checked); //当前节点被选中时则选中其所有父节点
-				}else{
-					this.recursiveCheckChild(node, node.checked); //当前节点被取消选中时则取消选中其所有子节点
+				if(this.currentActionType == 'conf'){
+					if(!node.checked){
+						this.recursiveCheckParent(node, !node.checked); //当前节点被选中时则选中其所有父节点
+					}else{
+						this.recursiveCheckChild(node, !node.checked); //当前节点被取消选中时则取消选中其所有子节点
+					}
 				}
 			},
 			recursiveCheckParent: function(node, checked){

@@ -225,7 +225,7 @@
 					</div>
 					<div slot="footer">
 						<el-button icon="fa-ban" @click="viewConfigDialogVisible = false">关 闭</el-button>
-						<el-button v-if="currentActionType == 'conf'" type="primary" icon="fa-save" @click="saveRoleResourceConfig" :loading="submiting">保存配置</el-button>
+						<el-button v-if="currentActionType == 'conf' && viewConfigActiveTabName == 'roleResourceConfig'" type="primary" icon="fa-save" @click="saveRoleResourceConfig" :loading="submiting">保存配置</el-button>
 					</div>
 				</el-dialog>
 			</div>
