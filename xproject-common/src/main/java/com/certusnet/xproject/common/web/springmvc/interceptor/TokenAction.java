@@ -1,4 +1,4 @@
-package com.certusnet.xproject.common.web.interceptor;
+package com.certusnet.xproject.common.web.springmvc.interceptor;
 /**
  * 防重复提交token的动作
  * 

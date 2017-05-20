@@ -49,7 +49,7 @@
 		 WHERE a.resource_id = #{resourceId, jdbcType=BIGINT}
 	</delete>
 	
-	<select id="selectResourceById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
+	<select id="getResourceById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
 		SELECT a.resource_id			resourceId,
 			   a.resource_name			resourceName,
 			   a.parent_resource_id		parentResourceId,
@@ -71,7 +71,7 @@
 		 WHERE a.resource_id = #{resourceId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="selectThinResourceById" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
+	<select id="getThinResourceById" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
 		SELECT a.resource_id			resourceId,
 			   a.resource_name			resourceName,
 			   a.parent_resource_id		parentResourceId,
@@ -84,7 +84,7 @@
 		 WHERE a.resource_id = #{resourceId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="selectAllResourceList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
+	<select id="getAllResourceList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
 		SELECT a.resource_id			resourceId,
 			   a.resource_name			resourceName,
 			   a.parent_resource_id		parentResourceId,
@@ -103,7 +103,7 @@
 		</if>
 	</select>
 	
-	<select id="selectAllThinResourceList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
+	<select id="getAllThinResourceList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminResource">
 		SELECT a.resource_id			resourceId,
 			   a.resource_name			resourceName,
 			   a.parent_resource_id		parentResourceId,

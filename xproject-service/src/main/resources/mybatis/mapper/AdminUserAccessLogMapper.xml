@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.certusnet.xproject.admin.model.AdminUserAccessLogMapper">
+	
+	<insert id="insertUserAccessLog" parameterType="AdminUserAccessLog" statementType="PREPARED" keyProperty="id" useGeneratedKeys="true">
+		INSERT INTO admin_user_access_log (
+			id,
+			title,
+			uri,
+			method,
+			request_header,
+			request_contenttype,
+			request_parameter,
+			access_user_id,
+			access_time,
+			client_ipaddr,
+			server_ipaddr,
+			process_time1,
+			process_time2,
+			logging_completed,
+			asyn_request,
+			response_contenttype,
+			response_result,
+			create_time
+		) VALUES (
+			#{id, jdbcType=BIGINT},
+			#{title, jdbcType=VARCHAR},
+			#{uri, jdbcType=VARCHAR},
+			#{method, jdbcType=VARCHAR},
+			#{requestHeader, jdbcType=VARCHAR},
+			#{requestContentType, jdbcType=VARCHAR},
+			#{requestParameter, jdbcType=VARCHAR},
+			#{accessUserId, jdbcType=BIGINT},
+			#{accessTime, jdbcType=VARCHAR},
+			#{clientIpAddr, jdbcType=VARCHAR},
+			#{serverIpAddr, jdbcType=VARCHAR},
+			#{processTime1, jdbcType=BIGINT},
+			#{processTime2, jdbcType=BIGINT},
+			#{loggingCompleted, jdbcType=BOOLEAN},
+			#{asynRequest, jdbcType=BOOLEAN},
+			#{responseContentType, jdbcType=VARCHAR},
+			#{responseResult, jdbcType=VARCHAR},
+			#{createTime, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<select id="getUserAccessLogById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUserAccessLog">
+		SELECT a.id					id,
+			   a.title				title,
+			   a.uri				uri,
+			   a.method				method,
+			   a.request_header		requestHeader,
+			   a.request_contenttype	requestContentType,
+			   a.request_parameter	requestParameter,
+			   a.access_user_id		accessUserId,
+			   DATE_FORMAT(a.access_time, '%Y-%m-%d %T')	accessTime,
+			   a.client_ipaddr		clientIpAddr,
+			   a.server_ipaddr		serverIpAddr,
+			   a.process_time1		processTime1,
+			   a.process_time2		processTime2,
+			   a.logging_completed	loggingCompleted,
+			   a.asyn_request		asynRequest,
+			   a.response_contenttype	responseContentType,
+			   a.response_result	responseResult,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   b.user_name			userName
+		  FROM admin_user_access_log a LEFT JOIN admin_user b ON (a.access_user_id = b.user_id)
+		 WHERE a.id = #{id, jdbcType=BIGINT}
+	</select>
+	
+	<select id="getUserAccessLogList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminUserAccessLog">
+		SELECT a.id					id,
+			   a.title				title,
+			   a.uri				uri,
+			   a.method				method,
+			   a.request_header		requestHeader,
+			   a.request_contenttype	requestContentType,
+			   a.request_parameter	requestParameter,
+			   a.access_user_id		accessUserId,
+			   DATE_FORMAT(a.access_time, '%Y-%m-%d %T')	accessTime,
+			   a.client_ipaddr		clientIpAddr,
+			   a.server_ipaddr		serverIpAddr,
+			   a.process_time1		processTime1,
+			   a.process_time2		processTime2,
+			   a.logging_completed	loggingCompleted,
+			   a.asyn_request		asynRequest,
+			   a.response_contenttype	responseContentType,
+			   a.response_result	responseResult,
+			   DATE_FORMAT(a.create_time, '%Y-%m-%d %T')	createTime,
+			   b.user_name			userName
+		  FROM admin_user_access_log a LEFT JOIN admin_user b ON (a.access_user_id = b.user_id)
+		 WHERE 1=1
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.title)">
+		   AND a.title like CONCAT('%', #{condition.title, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.uri)">
+		   AND a.uri like CONCAT('%', #{condition.uri, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.method)">
+		   AND a.method = #{condition.method, jdbcType=VARCHAR}
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.userName)">
+		   AND EXISTS (SELECT 1 FROM admin_user u WHERE a.access_user_id = u.user_id AND u.user_name like CONCAT('%', #{condition.userName, jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.clientIpAddr)">
+		   AND a.client_ipaddr = #{condition.clientIpAddr, jdbcType=VARCHAR}
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.loggingCompleted)">
+		   AND a.logging_completed = #{condition.loggingCompleted, jdbcType=VARCHAR}
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.asynRequest)">
+		   AND a.asyn_request = #{condition.asynRequest, jdbcType=VARCHAR}
+		</if>
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy)">
+		 ORDER BY ${orderBy.orderby} ${orderBy.order}
+		</if>
+	</select>
+	
+	<select id="getUserAccessLogList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM admin_user_access_log a
+		 WHERE 1=1
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.title)">
+		   AND a.title like CONCAT('%', #{condition.title, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.uri)">
+		   AND a.uri like CONCAT('%', #{condition.uri, jdbcType=VARCHAR}, '%')
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.method)">
+		   AND a.method = #{condition.method, jdbcType=VARCHAR}
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.userName)">
+		   AND EXISTS (SELECT 1 FROM admin_user u WHERE a.access_user_id = u.user_id AND u.user_name like CONCAT('%', #{condition.userName, jdbcType=VARCHAR}, '%'))
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.clientIpAddr)">
+		   AND a.client_ipaddr = #{condition.clientIpAddr, jdbcType=VARCHAR}
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.loggingCompleted)">
+		   AND a.logging_completed = #{condition.loggingCompleted, jdbcType=VARCHAR}
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.asynRequest)">
+		   AND a.asyn_request = #{condition.asynRequest, jdbcType=VARCHAR}
+		</if>
+	</select>
+	
+</mapper>

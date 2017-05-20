@@ -1,10 +1,11 @@
 package com.certusnet.xproject.common.util;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.util.Assert;
 
 /**
@@ -31,40 +32,36 @@ public class DateTimeUtils {
 	 */
 	public static final String DEFAULT_DATETIME_PATTERN = DEFAULT_DATE_PATTERN + " " + DEFAULT_TIME_PATTERN;
 	
-	private static ZoneId DEFAULT_ZONE = ZoneId.systemDefault();
+	/**
+	 * 默认带毫秒数的时间戳格式
+	 */
+	private static final Pattern TIMESTAMP_MSEC_REGEX_PATTERN = Pattern.compile("\\d{2}:\\d{2}:\\d{2}\\.\\d{1,3}");
 	
 	/**
-	 * java.util.Date转java.time.LocalDateTime
+	 * 默认不带毫秒数的时间戳格式
+	 */
+	private static final Pattern TIMESTAMP_REGEX_PATTERN = Pattern.compile("\\d{2}:\\d{2}:\\d{2}");
+	
+	/**
+	 * <p>将@{code java.util.Date}转换为@{code org.joda.time.DateTime}
+	 * 
 	 * @param date
 	 * @return
 	 */
-	public static LocalDateTime toDateTime(Date date){
+	public static DateTime from(Date date){
 		Assert.notNull(date, "Parameter 'date' can not be null!");
-		return LocalDateTime.ofInstant(date.toInstant(), DEFAULT_ZONE);
+		return new DateTime(date);
 	}
 	
 	/**
-	 * java.time.LocalDateTime转java.util.Date
-	 * 
-	 * @param dateTime
-	 * @return
-	 */
-	public static Date toDate(LocalDateTime dateTime){
-		Assert.notNull(dateTime, "Parameter 'dateTime' can not be null!");
-		return Date.from(dateTime.atZone(DEFAULT_ZONE).toInstant());
-	}
-	
-	/**
-	 * <p>将@{code java.time.LocalDateTime}以指定的日期格式格式化为字符串</p>
+	 * <p>将@{code java.util.Date}转换为@{code org.joda.time.DateTime}
 	 * 
 	 * @param date
-	 * @param pattern
 	 * @return
 	 */
-	public static String format(LocalDateTime dateTime, String pattern){
+	public static Date from(DateTime dateTime){
 		Assert.notNull(dateTime, "Parameter 'dateTime' can not be null!");
-		Assert.hasText(pattern, "Parameter 'pattern' can not be empty!");
-		return dateTime.format(DateTimeFormatter.ofPattern(pattern));
+		return dateTime.toDate();
 	}
 	
 	/**
@@ -77,7 +74,7 @@ public class DateTimeUtils {
 	public static String format(Date date, String pattern){
 		Assert.notNull(date, "Parameter 'date' can not be null!");
 		Assert.hasText(pattern, "Parameter 'pattern' can not be empty!");
-		return format(toDateTime(date), pattern);
+		return new DateTime(date).toString(pattern);
 	}
 	
 	/**
@@ -89,7 +86,7 @@ public class DateTimeUtils {
 	 */
 	public static String formatNow(String pattern){
 		Assert.hasText(pattern, "Parameter 'pattern' can not be empty!");
-		return format(LocalDateTime.now(), pattern);
+		return new DateTime(new Date()).toString(pattern);
 	}
 	
 	/**
@@ -100,7 +97,31 @@ public class DateTimeUtils {
 	 * @return
 	 */
 	public static String formatNow(){
-		return formatNow(DEFAULT_DATETIME_PATTERN);
+		return new DateTime(new Date()).toString(DEFAULT_DATETIME_PATTERN);
+	}
+	
+	/**
+	 * <p>将字符串格式的日期转换为@{org.joda.time.DateTime}</p>
+	 * 
+	 * @param dateTimeText		- 日期字符串形式的值
+	 * @param pattern			- 针对dateTimeText的日期格式
+	 * @return
+	 */
+	public static DateTime parse2DateTime(String dateTimeText, String pattern){
+		Assert.hasText(dateTimeText, "Parameter 'dateTimeText' can not be empty!");
+		Assert.hasText(dateTimeText, "Parameter 'pattern' can not be empty!");
+		String format = pattern;
+		String text = dateTimeText;
+		Matcher matcher = null;
+		String suffix = ".SSS";
+		//dateTimeText以毫秒结尾 && 格式pattern中没有以.SSS结尾
+		if((matcher = TIMESTAMP_MSEC_REGEX_PATTERN.matcher(dateTimeText)).find() && matcher.end() == dateTimeText.length() && !pattern.endsWith(suffix)){
+			format = format + suffix;
+		//dateTimeText没有以毫秒结尾 && 格式pattern中以.SSS结尾
+		}else if((matcher = TIMESTAMP_REGEX_PATTERN.matcher(dateTimeText)).find() && matcher.end() == dateTimeText.length() && pattern.endsWith(suffix)){
+			text = text + ".0";
+		}
+		return DateTimeFormat.forPattern(format).parseDateTime(text);
 	}
 	
 	/**
@@ -110,17 +131,26 @@ public class DateTimeUtils {
 	 * @param pattern			- 针对dateTimeText的日期格式
 	 * @return
 	 */
-	public static LocalDateTime parse(String dateTimeText, String pattern){
-		Assert.hasText(dateTimeText, "Parameter 'dateTimeText' can not be empty!");
-		Assert.hasText(dateTimeText, "Parameter 'pattern' can not be empty!");
-		return LocalDateTime.parse(dateTimeText, DateTimeFormatter.ofPattern(pattern));
+	public static Date parse2Date(String dateTimeText, String pattern){
+		return parse2DateTime(dateTimeText, pattern).toDate();
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(DEFAULT_ZONE);
-		Date date = new Date();
-		System.out.println(date);
-		System.out.println(format(date, DEFAULT_DATETIME_PATTERN));
+	/**
+	 * 检测dateTimeText的日期格式是否是pattern
+	 * @param dateTimeText
+	 * @param pattern
+	 * @return
+	 */
+	public static boolean checkDatePattern(String dateTimeText, String pattern) {
+		if(dateTimeText != null){
+			try {
+				DateTime dateTime = DateTimeFormat.forPattern(pattern).parseDateTime(dateTimeText);
+				return dateTime != null;
+			} catch (Exception e) {
+				return false;
+			}
+		}
+		return false;
 	}
 	
 }

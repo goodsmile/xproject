@@ -49,12 +49,12 @@ public interface AdminRoleDAO {
 	
 	/**
 	 * 根据【角色名称、角色代码】查询角色列表(分页)
-	 * @param role
+	 * @param condition
 	 * @param pager
-	 * @param orderby
+	 * @param orderBy
 	 * @return
 	 */
-	public List<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby);
+	public List<AdminRole> getRoleList(AdminRole condition, Pager pager, OrderBy orderBy);
 	
 	/**
 	 * 获取该角色的看见资源

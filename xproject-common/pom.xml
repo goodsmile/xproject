@@ -54,6 +54,12 @@
 			<artifactId>shiro-spring</artifactId>
 		</dependency>
 
+		<!-- joda -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+		</dependency>
+
 		<!-- apache commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>

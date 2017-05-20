@@ -31,24 +31,22 @@ public class AdminRoleDAOImpl extends DefaultBaseMybatisDAO implements AdminRole
 	}
 	
 	public AdminRole getThinRoleById(Long roleId) {
-		return this.getSqlSessionTemplate().selectOne(getMapperKey("selectThinRoleById"), roleId);
+		return this.getSqlSessionTemplate().selectOne(getMapperKey("getThinRoleById"), roleId);
 	}
 
 	public AdminRole getRoleById(Long roleId) {
-		return this.getSqlSessionTemplate().selectOne(getMapperKey("selectRoleById"), roleId, new AdminRoleModelHandler());
+		return this.getSqlSessionTemplate().selectOne(getMapperKey("getRoleById"), roleId, new AdminRoleModelHandler());
 	}
 
-	public List<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby) {
+	public List<AdminRole> getRoleList(AdminRole condition, Pager pager, OrderBy orderBy) {
 		Map<String,Object> paramMap = new HashMap<String,Object>();
-		paramMap.put("roleName", role.getRoleName());
-		paramMap.put("roleCode", role.getRoleCode());
-		paramMap.put("orderby", orderby.getOrderby());
-		paramMap.put("order", orderby.getOrder());
-		return this.getSqlSessionTemplate().selectList(getMapperKey("selectRoleList"), paramMap, new AdminRoleModelHandler(), pager);
+		paramMap.put("condition", condition);
+		paramMap.put("orderBy", orderBy);
+		return this.getSqlSessionTemplate().selectList(getMapperKey("getRoleList"), paramMap, new AdminRoleModelHandler(), pager);
 	}
 	
 	public List<AdminResource> getResourceListByRoleId(Long roleId) {
-		return this.getSqlSessionTemplate().selectList(getMapperKey("selectResourceListByRoleId"), roleId);
+		return this.getSqlSessionTemplate().selectList(getMapperKey("getResourceListByRoleId"), roleId);
 	}
 
 	public void deleteRoleResourcesByRoleId(Long roleId) {

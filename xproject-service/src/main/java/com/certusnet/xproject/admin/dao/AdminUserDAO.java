@@ -16,8 +16,7 @@ import com.certusnet.xproject.common.support.Pager;
  * @date 2015年12月10日 下午1:49:33
  * @version 1.0
  */
-public interface AdminUserDAO
-{
+public interface AdminUserDAO {
     /**
      * 新增用户
      * 
@@ -81,12 +80,12 @@ public interface AdminUserDAO
     /**
      * 根据[用户名、用户状态、用户类型]查询用户列表(分页、排序)
      * 
-     * @param user
+     * @param condition
      * @param pager
-     * @param orderby
+     * @param orderBy
      * @return
      */
-    public List<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby);
+    public List<AdminUser> getUserList(AdminUser condition, Pager pager, OrderBy orderBy);
     
     /**
      * 获取用户所拥有的角色

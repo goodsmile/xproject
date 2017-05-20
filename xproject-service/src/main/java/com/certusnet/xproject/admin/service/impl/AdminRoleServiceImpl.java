@@ -25,13 +25,13 @@ import com.certusnet.xproject.common.util.CollectionUtils;
 public class AdminRoleServiceImpl implements AdminRoleService {
 
 	@Resource(name="adminRoleDAO")
-	private AdminRoleDAO roleDAO;
+	private AdminRoleDAO adminRoleDAO;
 	
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void createRole(AdminRole role) {
 		ValidationAssert.notNull(role, "参数不能为空!");
 		try {
-			roleDAO.insertRole(role);
+			adminRoleDAO.insertRole(role);
 		} catch(DuplicateKeyException e) {
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("ROLE_NAME"), "新增角色失败,该角色名称已经存在!");
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("ROLE_CODE"), "新增角色失败,该角色代码已经存在!");
@@ -42,10 +42,10 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 	public void updateRole(AdminRole role) {
 		ValidationAssert.notNull(role, "参数不能为空!");
 		ValidationAssert.notNull(role.getRoleId(), "角色ID不能为空!");
-		AdminRole prole = roleDAO.getThinRoleById(role.getRoleId());
+		AdminRole prole = adminRoleDAO.getThinRoleById(role.getRoleId());
 		ValidationAssert.notNull(prole, "该角色已经不存在了!");
 		try {
-			roleDAO.updateRole(role);
+			adminRoleDAO.updateRole(role);
 		} catch(DuplicateKeyException e) {
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("ROLE_NAME"), "修改角色失败,该角色名称已经存在!");
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("ROLE_CODE"), "修改角色失败,该角色代码已经存在!");
@@ -55,34 +55,34 @@ public class AdminRoleServiceImpl implements AdminRoleService {
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void deleteRoleById(Long roleId) {
 		ValidationAssert.notNull(roleId, "角色ID不能为空!");
-		AdminRole role = roleDAO.getThinRoleById(roleId);
+		AdminRole role = adminRoleDAO.getThinRoleById(roleId);
 		ValidationAssert.notNull(role, "该角色已经不存在了!");
 		BusinessAssert.isTrue(!AdminRoleTypeEnum.ADMIN_ROLE_TYPE_SYSTEM.getTypeCode().equals(role.getRoleType()), "删除角色失败,系统角色不允许删除!");
 		BusinessAssert.isTrue(!role.isInuse(), "删除角色失败,该角色已经在使用不允许删除!");
-		roleDAO.deleteRoleById(roleId); //删除角色信息
-		roleDAO.deleteRoleResourcesByRoleId(roleId); //删除该角色下的所有资源关系
+		adminRoleDAO.deleteRoleById(roleId); //删除角色信息
+		adminRoleDAO.deleteRoleResourcesByRoleId(roleId); //删除该角色下的所有资源关系
 	}
 
 	public AdminRole getRoleById(Long roleId) {
-		return roleDAO.getRoleById(roleId);
+		return adminRoleDAO.getRoleById(roleId);
 	}
 
 	public PagingList<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby) {
-		List<AdminRole> dataList = roleDAO.getRoleList(role, pager, orderby);
+		List<AdminRole> dataList = adminRoleDAO.getRoleList(role, pager, orderby);
 		return new PagingList<AdminRole>(dataList, pager.getTotalRowCount());
 	}
 
 	public List<AdminResource> getResourceListByRoleId(Long roleId) {
-		return roleDAO.getResourceListByRoleId(roleId);
+		return adminRoleDAO.getResourceListByRoleId(roleId);
 	}
 
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void configRoleResources(Long roleId, List<Long> resourceIdList, Long optUserId, String optTime) {
-		AdminRole role = roleDAO.getThinRoleById(roleId);
+		AdminRole role = adminRoleDAO.getThinRoleById(roleId);
 		ValidationAssert.notNull(role, "该角色已经不存在了!");
-		roleDAO.deleteRoleResourcesByRoleId(roleId);
+		adminRoleDAO.deleteRoleResourcesByRoleId(roleId);
 		if(!CollectionUtils.isEmpty(resourceIdList)){
-			roleDAO.insertRoleResources(roleId, resourceIdList, optUserId, optTime);
+			adminRoleDAO.insertRoleResources(roleId, resourceIdList, optUserId, optTime);
 		}
 	}
 

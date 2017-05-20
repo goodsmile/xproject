@@ -29,7 +29,11 @@ public class ApplicationBootingInitializer extends AbstractApplicationInitialize
     	}
     	setFinalFieldValue(ApplicationConstants.class, "APPLICATION_CONTEXT", rootApplicationContext);
     	SpringUtils.setApplicationContext(rootApplicationContext);
-		Messages.setMessageSource(rootApplicationContext.getBean(AbstractMessageSource.class));
+    	try {
+			Messages.setMessageSource(rootApplicationContext.getBean(AbstractMessageSource.class));
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
 	}
 
 }

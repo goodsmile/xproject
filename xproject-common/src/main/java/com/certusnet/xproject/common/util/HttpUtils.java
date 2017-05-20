@@ -66,7 +66,7 @@ public class HttpUtils {
      */
     public static void asynOutputResponse(HttpServletResponse response, ContentType contentType, String content) throws IOException  {
     	response.setContentType(contentType.toString());     
-		response.setCharacterEncoding(GlobalConstants.SYSTEM_DEFAULT_ENCODING);    
+		response.setCharacterEncoding(GlobalConstants.SYSTEM_DEFAULT_CHARSET);    
 		PrintWriter out = response.getWriter();
 		out.print(content);
 		out.flush();

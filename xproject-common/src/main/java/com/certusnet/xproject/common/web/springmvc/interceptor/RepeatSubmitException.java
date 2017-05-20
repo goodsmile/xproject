@@ -1,4 +1,4 @@
-package com.certusnet.xproject.common.web.interceptor;
+package com.certusnet.xproject.common.web.springmvc.interceptor;
 
 import com.certusnet.xproject.common.exception.SystemException;
 

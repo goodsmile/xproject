@@ -1,5 +1,7 @@
 package com.certusnet.xproject.admin.web.controller;
 
+import static com.certusnet.xproject.common.consts.ContentType.APPLICATION_JSON;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @param pager
 	 * @return
 	 */
-	@RequestMapping(value="/admin/role/list")
+	@RequestMapping(value="/admin/role/list", method=GET, produces=APPLICATION_JSON)
 	public Object listRole(HttpServletRequest request, HttpServletResponse response, AdminRole roleQueryForm, OrderBy orderBy, Pager pager) {
 		PagingList<AdminRole> roleList = adminRoleService.getRoleList(roleQueryForm, pager, orderBy);
 		return genSuccessPagingResult(roleList);
@@ -79,7 +81,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @param roleAddForm
 	 * @return
 	 */
-	@RequestMapping(value="/admin/role/add/submit", method=POST)
+	@RequestMapping(value="/admin/role/add/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object addRole(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminRole roleAddForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		roleAddForm.setCreateTime(DateTimeUtils.formatNow());
@@ -96,7 +98,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @param roleEditForm
 	 * @return
 	 */
-	@RequestMapping(value="/admin/role/edit/submit", method=POST)
+	@RequestMapping(value="/admin/role/edit/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object editRole(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminRole roleEditForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		roleEditForm.setUpdateTime(DateTimeUtils.formatNow());
@@ -112,7 +114,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value="/admin/role/del")
+	@RequestMapping(value="/admin/role/del", method=GET, produces=APPLICATION_JSON)
 	public Object delRole(HttpServletRequest request, HttpServletResponse response, Long id) {
 		adminRoleService.deleteRoleById(id);
 		return genSuccessResult("删除成功!", null);
@@ -126,7 +128,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/admin/role/resources")
+	@RequestMapping(value="/admin/role/resources", method=GET, produces=APPLICATION_JSON)
 	public Object loadRoleResources(HttpServletRequest request, HttpServletResponse response, Long roleId) throws Exception {
 		List<AdminResource> allResourceList = adminResourceService.getAllResourceList(null);
 		List<AdminResource> roleResourceList = adminRoleService.getResourceListByRoleId(roleId);
@@ -150,7 +152,7 @@ public class AdminRoleMgtController extends BaseController {
 	 * @param parameter
 	 * @return
 	 */
-	@RequestMapping(value="/admin/role/config/submit", method=POST)
+	@RequestMapping(value="/admin/role/config/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object configRoleResources(HttpServletRequest request, HttpServletResponse response,  @RequestBody Map<String,Object> parameter) {
 		List<Long> resourceIdList = new ArrayList<Long>();
 		String resourceIds = MapUtils.getString(parameter, "resourceIds");

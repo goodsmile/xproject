@@ -19,13 +19,9 @@
 						http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
 						http://www.springframework.org/schema/util
 						http://www.springframework.org/schema/util/spring-util-4.3.xsd">
-	
-	<mvc:resources location="/resources/css/" mapping="/resources/css/**"/>
-	<mvc:resources location="/resources/images/" mapping="/resources/images/**"/>
-	<mvc:resources location="/resources/js/" mapping="/resources/js/**"/>
-	<mvc:resources location="/resources/components/" mapping="/resources/components/**"/>
-	<mvc:resources location="/resources/scripts/" mapping="/resources/scripts/**"/>
-	<mvc:resources location="/upload/" mapping="/upload/**"/>
+						
+	<!-- 与web.xml配合过滤静态资源不走controller -->
+	<mvc:default-servlet-handler/>
 	
 	<!-- 扫描@Controller控制器类注解 -->
 	<context:component-scan base-package="com.certusnet.xproject" use-default-filters="false">
@@ -40,12 +36,16 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**"/>
-			<bean id="tokenInterceptor" class="com.certusnet.xproject.common.web.interceptor.TokenInterceptor"/>
+			<bean id="loggingInterceptor" class="com.certusnet.xproject.admin.web.interceptor.DefaultHttpAccessLoggingInterceptor"/>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean id="tokenInterceptor" class="com.certusnet.xproject.common.web.springmvc.interceptor.TokenInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>
 	
 	<!-- 后台管理默认的异常处理器 -->
-	<bean id="defaultApiHandlerExceptionResolver" class="com.certusnet.xproject.common.web.handler.DefaultMvcHandlerExceptionResolver">
+	<bean id="defaultApiHandlerExceptionResolver" class="com.certusnet.xproject.common.web.springmvc.handler.DefaultMvcHandlerExceptionResolver">
 		<property name="defaultExceptionView" value="/common/error/500.html"/>
 	</bean>
 	

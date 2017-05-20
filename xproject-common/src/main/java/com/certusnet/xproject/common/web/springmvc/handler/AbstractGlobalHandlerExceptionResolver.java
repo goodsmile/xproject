@@ -1,19 +1,16 @@
-package com.certusnet.xproject.common.web.handler;
+package com.certusnet.xproject.common.web.springmvc.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
 import com.certusnet.xproject.common.exception.SystemException;
-import com.certusnet.xproject.common.util.HttpUtils;
+import com.certusnet.xproject.common.util.SpringMvcUtils;
 /**
  * 全局异常处理器
  * 
@@ -62,19 +59,7 @@ public abstract class AbstractGlobalHandlerExceptionResolver extends AbstractHan
 	 * @return
 	 */
 	protected boolean isAsyncRequest(HttpServletRequest request, HttpServletResponse response, Object handler){
-		HandlerMethod handlerMethod = (HandlerMethod) handler;
-		boolean isAsync = handlerMethod.hasMethodAnnotation(ResponseBody.class);
-		if(!isAsync){
-			Class<?> controllerClass = handlerMethod.getBeanType();
-			isAsync = controllerClass.isAnnotationPresent(ResponseBody.class) || controllerClass.isAnnotationPresent(RestController.class);
-		}
-		if(!isAsync){
-			isAsync = ResponseEntity.class.equals(handlerMethod.getMethod().getReturnType());
-		}
-		if(!isAsync){
-			isAsync = HttpUtils.isAsynRequest(request);
-		}
-		return isAsync;
+		return SpringMvcUtils.isAsyncRequest(request, handler);
 	}
 	
 	/**

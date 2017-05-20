@@ -18,7 +18,7 @@ public class GlobalConstants extends AbstractConstants {
 	/**
 	 * 系统默认字符编码
 	 */
-	public static final String SYSTEM_DEFAULT_ENCODING = valueOf("UTF-8");
+	public static final String SYSTEM_DEFAULT_CHARSET = valueOf("UTF-8");
 	
 	/**
 	 * 系统默认Locale

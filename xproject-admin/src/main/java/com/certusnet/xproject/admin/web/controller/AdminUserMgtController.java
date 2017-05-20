@@ -1,5 +1,7 @@
 package com.certusnet.xproject.admin.web.controller;
 
+import static com.certusnet.xproject.common.consts.ContentType.APPLICATION_JSON;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.ArrayList;
@@ -63,7 +65,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param pager
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/list")
+	@RequestMapping(value="/admin/user/list", method=GET, produces=APPLICATION_JSON)
 	public Object listRole(HttpServletRequest request, HttpServletResponse response, AdminUser userQueryForm, OrderBy orderBy, Pager pager) {
 		PagingList<AdminUser> dataList = adminUserService.getUserList(userQueryForm, pager, orderBy);
 		return genSuccessPagingResult(dataList);
@@ -76,7 +78,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param userAddForm
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/add/submit", method=POST)
+	@RequestMapping(value="/admin/user/add/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object addUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userAddForm) throws Exception {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		userAddForm.setCreateTime(DateTimeUtils.formatNow());
@@ -108,7 +110,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param modelMap
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/edit/submit", method=POST)
+	@RequestMapping(value="/admin/user/edit/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object editUser(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser userEditForm) throws Exception {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		userEditForm.setUpdateBy(loginToken.getLoginId());
@@ -137,7 +139,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/del")
+	@RequestMapping(value="/admin/user/del", method=GET, produces=APPLICATION_JSON)
 	public Object delUser(HttpServletRequest request, HttpServletResponse response, Long id) {
 		AdminUser user = new AdminUser();
 		user.setUserId(id);
@@ -152,7 +154,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param passwdEditForm
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/changepwd/submit", method=POST)
+	@RequestMapping(value="/admin/user/changepwd/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object changeUserPasswd(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser passwdEditForm, Boolean forceUpdate) {
 		if(forceUpdate == null){
 			forceUpdate = false;
@@ -168,7 +170,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param userId
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/enable")
+	@RequestMapping(value="/admin/user/enable", method=GET, produces=APPLICATION_JSON)
 	public Object enableUser(HttpServletRequest request, HttpServletResponse response, Long userId) {
 		return updateUserStatus(request, response, userId, AdminUserStatusEnum.ADMIN_USER_STATUS_ENABLED);
 	}
@@ -180,7 +182,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param userId
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/disable")
+	@RequestMapping(value="/admin/user/disable", method=GET, produces=APPLICATION_JSON)
 	public Object disableUser(HttpServletRequest request, HttpServletResponse response, Long userId) {
 		return updateUserStatus(request, response, userId, AdminUserStatusEnum.ADMIN_USER_STATUS_DISABLED);
 	}
@@ -200,7 +202,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param userId
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/roles")
+	@RequestMapping(value="/admin/user/roles", method=GET, produces=APPLICATION_JSON)
 	public Object loadUserRoles(HttpServletRequest request, HttpServletResponse response, Long userId, AdminRole filterParam) {
 		List<AdminRole> roleList = adminUserService.getUserRoleList(userId, filterParam);
 		return genSuccessResult(roleList);
@@ -214,7 +216,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param roleIds
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/config/add", method=POST)
+	@RequestMapping(value="/admin/user/config/add", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object addUserRoles(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String,Object> parameter) {
 		Long userId = MapUtils.getLong(parameter, "userId");
 		String roleIds = MapUtils.getString(parameter, "roleIds");
@@ -243,7 +245,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param roleIds
 	 * @return
 	 */
-	@RequestMapping(value="/admin/user/config/del", method=POST)
+	@RequestMapping(value="/admin/user/config/del", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object delUserRoles(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String,Object> parameter) {
 		Long userId = MapUtils.getLong(parameter, "userId");
 		String roleIds = MapUtils.getString(parameter, "roleIds");
@@ -271,7 +273,7 @@ public class AdminUserMgtController extends BaseController {
 	 * @param orderBy
 	 * @return
 	 */
-	@RequestMapping("/admin/user/search")
+	@RequestMapping(value="/admin/user/search", method=GET, produces=APPLICATION_JSON)
 	public Object searchUsers(HttpServletRequest request, HttpServletResponse response, AdminUser userSearchForm, Pager pager, OrderBy orderBy) {
 		userSearchForm.setStatus(AdminUserStatusEnum.ADMIN_USER_STATUS_ENABLED.getStatusCode());
 		PagingList<AdminUser> dataList = adminUserService.getUserList(userSearchForm, pager, orderBy);

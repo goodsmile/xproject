@@ -1,5 +1,6 @@
 package com.certusnet.xproject.admin.web.controller;
 
+import static com.certusnet.xproject.common.consts.ContentType.APPLICATION_JSON;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -41,6 +42,7 @@ import com.certusnet.xproject.admin.web.LoginToken;
 import com.certusnet.xproject.admin.web.shiro.realm.AdminUserRealm;
 import com.certusnet.xproject.common.consts.GlobalConstants;
 import com.certusnet.xproject.common.support.AbstractXTreeBuilder;
+import com.certusnet.xproject.common.support.HttpAccessLogging;
 import com.certusnet.xproject.common.support.Result;
 import com.certusnet.xproject.common.support.TreeNodeConverter;
 import com.certusnet.xproject.common.util.DateTimeUtils;
@@ -79,8 +81,16 @@ public class AdminController extends BaseController {
 		return "login.html";
 	}
 	
+	/**
+	 * 用户登录
+	 * @param request
+	 * @param response
+	 * @param loginUser
+	 * @return
+	 */
 	@ResponseBody
-	@RequestMapping(value="/login/submit", method=POST)
+	@RequestMapping(value="/login/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
+	@HttpAccessLogging(title="用户登录", isLogin=true, excludeParamNames={"password"})
 	public Object submitLogin(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminUser loginUser) {
 		logger.info(">>> 执行用户登录, loginUser = " + loginUser.getUserName());
 		Result<Object> result = new Result<Object>();
@@ -171,7 +181,7 @@ public class AdminController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/login/user/current")
+	@RequestMapping(value="/login/user/current", method=GET, produces=APPLICATION_JSON)
 	public Object getLoginUserInfo(HttpServletRequest request, HttpServletResponse response) {
 		LoginToken<AdminUser> loginToken = (LoginToken<AdminUser>) ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		Map<String,Object> user = new HashMap<String,Object>();
@@ -192,7 +202,7 @@ public class AdminController extends BaseController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/login/user/menus")
+	@RequestMapping(value="/login/user/menus", method=GET, produces=APPLICATION_JSON)
 	public Object getLoginUserMenuList(HttpServletRequest request, HttpServletResponse response) {
 		List<Map<String,Object>> dataList = new ArrayList<Map<String,Object>>();
 		try {
@@ -223,7 +233,7 @@ public class AdminController extends BaseController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value="/logout")
+	@RequestMapping(value="/logout", method=GET)
 	public String logout(HttpServletRequest request, HttpServletResponse response) {
 		logger.info(">>> 用户退出系统");
 		if (SecurityUtils.getSubject().getSession() != null) {

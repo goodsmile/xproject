@@ -147,20 +147,20 @@
 			   (SELECT u.user_name FROM admin_user u WHERE u.user_id = a.create_by) createByName
 		  FROM admin_user a
 		 WHERE 1=1
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userName)">
-		   AND a.user_name like CONCAT('%', #{userName, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.userName)">
+		   AND a.user_name like CONCAT('%', #{condition.userName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(realName)">
-		   AND a.real_name like CONCAT('%', #{realName, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.realName)">
+		   AND a.real_name like CONCAT('%', #{condition.realName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userType)">
-		   AND a.user_type = #{userType, jdbcType=INTEGER}
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.userType)">
+		   AND a.user_type = #{condition.userType, jdbcType=INTEGER}
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(status)">
-		   AND a.status = #{status, jdbcType=INTEGER}
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.status)">
+		   AND a.status = #{condition.status, jdbcType=INTEGER}
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderby)">
-		 ORDER BY ${orderby} ${order}
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy)">
+		 ORDER BY ${orderBy.orderby} ${orderBy.order}
 		</if>
 	</select>
 	
@@ -168,17 +168,17 @@
 		SELECT count(*)
 		  FROM admin_user a
 		 WHERE 1=1
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userName)">
-		   AND a.user_name like CONCAT('%', #{userName, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.userName)">
+		   AND a.user_name like CONCAT('%', #{condition.userName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(realName)">
-		   AND a.real_name like CONCAT('%', #{realName, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.realName)">
+		   AND a.real_name like CONCAT('%', #{condition.realName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(userType)">
-		   AND a.user_type = #{userType, jdbcType=INTEGER}
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.userType)">
+		   AND a.user_type = #{condition.userType, jdbcType=INTEGER}
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(status)">
-		   AND a.status = #{status, jdbcType=INTEGER}
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.status)">
+		   AND a.status = #{condition.status, jdbcType=INTEGER}
 		</if>
 	</select>
 	

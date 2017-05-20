@@ -30,26 +30,26 @@ public class AdminResourceDAOImpl extends DefaultBaseMybatisDAO implements Admin
 	}
 
 	public AdminResource getResourceById(Long resourceId) {
-		return this.getSqlSessionTemplate().selectOne(getMapperKey("selectResourceById"), resourceId, new AdminResourceModelHandler());
+		return this.getSqlSessionTemplate().selectOne(getMapperKey("getResourceById"), resourceId, new AdminResourceModelHandler());
 	}
 	
 	public AdminResource getThinResourceById(Long resourceId, boolean fetchInuse) {
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		paramMap.put("resourceId", resourceId);
 		paramMap.put("fetchInuse", fetchInuse);
-		return this.getSqlSessionTemplate().selectOne(getMapperKey("selectThinResourceById"), paramMap);
+		return this.getSqlSessionTemplate().selectOne(getMapperKey("getThinResourceById"), paramMap);
 	}
 
 	public List<AdminResource> getAllResourceList(Integer actionType) {
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		paramMap.put("actionType", actionType);
-		return this.getSqlSessionTemplate().selectList(getMapperKey("selectAllResourceList"), paramMap, new AdminResourceModelHandler());
+		return this.getSqlSessionTemplate().selectList(getMapperKey("getAllResourceList"), paramMap, new AdminResourceModelHandler());
 	}
 	
 	public List<AdminResource> getAllThinResourceList(boolean fetchInuse) {
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		paramMap.put("fetchInuse", fetchInuse);
-		return this.getSqlSessionTemplate().selectList(getMapperKey("selectAllThinResourceList"), paramMap);
+		return this.getSqlSessionTemplate().selectList(getMapperKey("getAllThinResourceList"), paramMap);
 	}
 
 	protected Class<?> getBoundModelClass() {

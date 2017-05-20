@@ -1,5 +1,7 @@
 package com.certusnet.xproject.admin.web.controller;
 
+import static com.certusnet.xproject.common.consts.ContentType.APPLICATION_JSON;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.List;
@@ -50,7 +52,7 @@ public class AdminResourceMgtController extends BaseController {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value="/admin/resource/available")
+	@RequestMapping(value="/admin/resource/available", method=GET, produces=APPLICATION_JSON)
 	public Object getAvailableResources(HttpServletRequest request, HttpServletResponse response) {
 		List<AdminResource> allResourceList = adminResourceService.getAllResourceList(null);
 		List<Map<String,Object>> dataList = resourceTreeBuilder.buildObjectTree(GlobalConstants.DEFAULT_ADMIN_ROOT_RESOURCE_ID, allResourceList, resourceTreeNodeConverter);
@@ -64,7 +66,7 @@ public class AdminResourceMgtController extends BaseController {
 	 * @param resourceAddForm
 	 * @return
 	 */
-	@RequestMapping(value="/admin/resource/add/submit", method=POST)
+	@RequestMapping(value="/admin/resource/add/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object addResource(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminResource resourceAddForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		resourceAddForm.setCreateTime(DateTimeUtils.formatNow());
@@ -81,7 +83,7 @@ public class AdminResourceMgtController extends BaseController {
 	 * @param resourceEditForm
 	 * @return
 	 */
-	@RequestMapping(value="/admin/resource/edit/submit", method=POST)
+	@RequestMapping(value="/admin/resource/edit/submit", method=POST, consumes=APPLICATION_JSON, produces=APPLICATION_JSON)
 	public Object editResource(HttpServletRequest request, HttpServletResponse response, @RequestBody AdminResource resourceEditForm) {
 		LoginToken<AdminUser> loginToken = ShiroUtils.getSessionAttribute(LoginToken.LOGIN_TOKEN_SESSION_KEY);
 		resourceEditForm.setUpdateTime(DateTimeUtils.formatNow());
@@ -97,7 +99,7 @@ public class AdminResourceMgtController extends BaseController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value="/admin/resource/del")
+	@RequestMapping(value="/admin/resource/del", method=GET, produces=APPLICATION_JSON)
 	public Object delResource(HttpServletRequest request, HttpServletResponse response, Long id) {
 		adminResourceService.deleteResourceById(id, true);
 		return genSuccessResult("删除成功!", null);

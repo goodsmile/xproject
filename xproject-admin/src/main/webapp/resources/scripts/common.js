@@ -35,7 +35,7 @@ if(axios){
 	}, function (error) {
 		var statusCode = error.response.status;
 		if(statusCode == 401){
-			window.top.href = ADMIN_CONTEXT_PATH + '/login';
+			window.top.location.href = ADMIN_CONTEXT_PATH + '/login';
 			/*if(window.parent){
 				window.parent.location.href = ADMIN_CONTEXT_PATH + '/login';
 			}else{

@@ -37,7 +37,7 @@
 		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
 	</delete>
 	
-	<select id="selectThinRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+	<select id="getThinRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -47,7 +47,7 @@
 		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="selectRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+	<select id="getRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -64,7 +64,7 @@
 		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="selectRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
+	<select id="getRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -78,30 +78,30 @@
 			   (SELECT count(*) FROM admin_user_role b WHERE a.role_id = b.role_id) inuse
 		  FROM admin_role a
 		 WHERE 1=1
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleName)">
-		   AND a.role_name like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.roleName)">
+		   AND a.role_name like CONCAT('%', #{condition.roleName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleCode)">
-		   AND a.role_code like CONCAT('%', #{roleCode, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.roleCode)">
+		   AND a.role_code like CONCAT('%', #{condition.roleCode, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderby)">
-		 ORDER BY ${orderby} ${order}
+		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy)">
+		 ORDER BY ${orderBy.orderby} ${orderBy.order}
 		</if>
 	</select>
 	
-	<select id="selectRoleList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
+	<select id="getRoleList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
 		SELECT count(*)
 		  FROM admin_role a
 		 WHERE 1=1
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleName)">
-		   AND a.role_name like CONCAT('%', #{roleName, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.roleName)">
+		   AND a.role_name like CONCAT('%', #{condition.roleName, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(roleCode)">
-		   AND a.role_code like CONCAT('%', #{roleCode, jdbcType=VARCHAR}, '%')
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.roleCode)">
+		   AND a.role_code like CONCAT('%', #{condition.roleCode, jdbcType=VARCHAR}, '%')
 		</if>
 	</select>
 	
-	<select id="selectResourceListByRoleId" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
+	<select id="getResourceListByRoleId" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
 		SELECT a.resource_id			resourceId,
 			   a.resource_name			resourceName,
 			   a.parent_resource_id		parentResourceId,

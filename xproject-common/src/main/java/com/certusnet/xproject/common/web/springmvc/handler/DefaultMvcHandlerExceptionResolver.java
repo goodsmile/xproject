@@ -1,4 +1,4 @@
-package com.certusnet.xproject.common.web.handler;
+package com.certusnet.xproject.common.web.springmvc.handler;
 
 import java.util.HashMap;
 import java.util.Map;

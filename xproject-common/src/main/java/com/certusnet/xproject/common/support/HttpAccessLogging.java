@@ -17,10 +17,34 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
-public @interface HttpRequestLogging {
+public @interface HttpAccessLogging {
 
 	String title();
 	
-	boolean persistIntoDatabase() default true;
+	LoggingType loggingType() default LoggingType.DB;
+	
+	boolean isLogin() default false;
+	
+	String[] excludeParamNames() default {};
+	
+	public static enum LoggingType {
+		
+		DB("db"), FILE("file");
+		
+		private String type;
+
+		private LoggingType(String type) {
+			this.type = type;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
+		
+	}
 	
 }

@@ -23,7 +23,7 @@ import com.certusnet.xproject.common.util.StringUtils;
 public class AdminResourceServiceImpl implements AdminResourceService {
 
 	@Resource(name="adminResourceDAO")
-	private AdminResourceDAO resourceDAO;
+	private AdminResourceDAO adminResourceDAO;
 
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void createResource(AdminResource resource) {
@@ -31,7 +31,7 @@ public class AdminResourceServiceImpl implements AdminResourceService {
 		try {
 			resource.setPermissionExpression(StringUtils.defaultIfEmpty(resource.getPermissionExpression(), null));
 			resource.setResourceUrl(StringUtils.defaultIfEmpty(resource.getResourceUrl(), null));
-			resourceDAO.insertResource(resource);
+			adminResourceDAO.insertResource(resource);
 		} catch(DuplicateKeyException e) {
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("RESOURCE_NAME"), "新增资源失败,该资源名称已经存在!");
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("PERMISSION_EXPRESSION"), "新增资源失败,该权限表达式已经存在!");
@@ -45,10 +45,10 @@ public class AdminResourceServiceImpl implements AdminResourceService {
 		ValidationAssert.notNull(resource.getResourceId(), "资源id不能为空!");
 		resource.setPermissionExpression(StringUtils.defaultIfEmpty(resource.getPermissionExpression(), null));
 		resource.setResourceUrl(StringUtils.defaultIfEmpty(resource.getResourceUrl(), null));
-		AdminResource presource = resourceDAO.getThinResourceById(resource.getResourceId(), true);
+		AdminResource presource = adminResourceDAO.getThinResourceById(resource.getResourceId(), true);
 		ValidationAssert.notNull(presource, "该资源已经不存在了!");
 		try {
-			resourceDAO.updateResource(resource);
+			adminResourceDAO.updateResource(resource);
 		} catch(DuplicateKeyException e) {
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("RESOURCE_NAME"), "修改资源失败,该资源名称已经存在!");
 			BusinessAssert.isTrue(!e.getCause().getMessage().toUpperCase().contains("PERMISSION_EXPRESSION"), "修改资源失败,该权限表达式已经存在!");
@@ -59,12 +59,12 @@ public class AdminResourceServiceImpl implements AdminResourceService {
 	@Transactional(rollbackFor=Exception.class, propagation=Propagation.REQUIRED)
 	public void deleteResourceById(Long resourceId, boolean cascadeDelete) {
 		ValidationAssert.notNull(resourceId, "资源id不能为空!");
-		AdminResource delResource = resourceDAO.getThinResourceById(resourceId, true);
+		AdminResource delResource = adminResourceDAO.getThinResourceById(resourceId, true);
 		ValidationAssert.notNull(delResource, "该资源已经不存在了!");
 		BusinessAssert.isTrue(!AdminResourceTypeEnum.ADMIN_RESOURCE_TYPE_SYSTEM.getTypeCode().equals(delResource.getResourceType()), "删除资源失败,系统资源不允许删除!");
 		BusinessAssert.isTrue(!delResource.isInuse(), String.format("删除资源失败,资源[%s]已经在使用不允许删除!", delResource.getResourceName()));
 		if(cascadeDelete){
-			List<AdminResource> allThinResourceList = resourceDAO.getAllThinResourceList(true);
+			List<AdminResource> allThinResourceList = adminResourceDAO.getAllThinResourceList(true);
 			if(!CollectionUtils.isEmpty(allThinResourceList)){
 				List<AdminResource> childResourceList = new ArrayList<AdminResource>();
 				for(AdminResource resource : allThinResourceList){
@@ -81,10 +81,10 @@ public class AdminResourceServiceImpl implements AdminResourceService {
 				for(int i = 0, len = childResourceList.size(); i < len; i++){
 					delResourceIds[i] = childResourceList.get(i).getResourceId();
 				}
-				resourceDAO.deleteResourceByIds(delResourceIds);
+				adminResourceDAO.deleteResourceByIds(delResourceIds);
 			}
 		}else{
-			resourceDAO.deleteResourceByIds(resourceId);
+			adminResourceDAO.deleteResourceByIds(resourceId);
 		}
 	}
 	
@@ -124,19 +124,19 @@ public class AdminResourceServiceImpl implements AdminResourceService {
 	}
 
 	public AdminResource getResourceById(Long resourceId) {
-		return resourceDAO.getResourceById(resourceId);
+		return adminResourceDAO.getResourceById(resourceId);
 	}
 
 	public AdminResource getThinResourceById(Long resourceId, boolean fetchInuse) {
-		return resourceDAO.getThinResourceById(resourceId, fetchInuse);
+		return adminResourceDAO.getThinResourceById(resourceId, fetchInuse);
 	}
 
 	public List<AdminResource> getAllThinResourceList(boolean fetchInuse) {
-		return resourceDAO.getAllThinResourceList(fetchInuse);
+		return adminResourceDAO.getAllThinResourceList(fetchInuse);
 	}
 
 	public List<AdminResource> getAllResourceList(Integer actionType) {
-		return resourceDAO.getAllResourceList(actionType);
+		return adminResourceDAO.getAllResourceList(actionType);
 	}
 
 }

@@ -63,14 +63,10 @@ public class AdminUserDAOImpl extends DefaultBaseMybatisDAO implements AdminUser
         return getSqlSessionTemplate().selectOne(getMapperKey("getThinUserById"), userId);
     }
     
-    public List<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby) {
+    public List<AdminUser> getUserList(AdminUser condition, Pager pager, OrderBy orderBy) {
         Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("userName", user.getUserName());
-        paramMap.put("realName", user.getRealName());
-        paramMap.put("userType", user.getUserType());
-        paramMap.put("status", user.getStatus());
-        paramMap.put("orderby", orderby.getOrderby());
-        paramMap.put("order", orderby.getOrder());
+        paramMap.put("condition", condition);
+        paramMap.put("orderBy", orderBy);
         return getSqlSessionTemplate().selectList(getMapperKey("getUserList"), paramMap, new AdminUserModelHandler(), pager);
     }
     
