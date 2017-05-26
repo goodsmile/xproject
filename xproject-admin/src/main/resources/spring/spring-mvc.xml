@@ -30,7 +30,9 @@
 	</context:component-scan>
 	
 	<!-- mvc:annotation-driven自动注册DefaultAnnotationHandlerMapping、AnnotationMethodHandlerAdapter两个bean -->
-	<mvc:annotation-driven/>
+	<mvc:annotation-driven>
+		
+	</mvc:annotation-driven>
 	
 	<!-- 防表单重复提交拦截器 -->
 	<mvc:interceptors>

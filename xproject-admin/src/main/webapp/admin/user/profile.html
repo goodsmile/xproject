@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>用户资料信息</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="shortcut icon" href="../../resources/images/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.min.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.custom.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/font-awesome.min.css">
+		<style type="text/css">
+			.user-card {
+				background-color: #3E4255;
+			    border: 0 none;
+			    box-shadow: 0 0 3px rgba(0, 0, 0, 0.12);
+			    box-sizing: border-box;
+			    color: #d9e9f4;
+			    padding: 10px 10px 10px 5px;
+			    transition: all 0.3s ease-in-out 0s;
+			    margin-bottom: 15px;
+			}
+			.user-card .user-avatar {
+				display: block;
+				margin: 0 auto;
+				height: 60px;
+				width: 60px;
+				border-radius: 50%;
+				line-height: 60px;
+			}
+			.user-card .user-realname {
+				display: inline-block;
+				margin: 0 auto;
+				line-height: 30px;
+				color: #009BF7;
+				font-size: 14px;
+				font-family: "Microsoft YaHei";
+			}
+			.user-card .user-username {
+				color: #41b883;
+				font-size: 22px;
+				line-height: 30px;
+				font-weight: bold;
+				font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+			}
+			.user-card .user-roles {
+				font-size: 14px;
+				line-height: 20px;
+				font-weight: normal;
+			}
+			.user-card .user-stats {
+				display: block;
+				position: relative;
+				margin: 15px 0 20px 0;
+				padding: 0;
+			}
+			.user-card .user-stats > li {
+				display: inline-block;
+				float: left;
+				width: 25%;
+			}
+			.user-card .user-stats > li > h4 {
+				display: inline-block;
+				text-align: center;
+				font-size: 22px;
+    			font-weight: bold;
+				height: 42px;
+				line-height: 24px;
+				font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+			}
+			.user-card .user-stats > li > h4 > .sub-heading {
+				display: block;
+				font-weight: 300;
+			    font-size: 14px;
+			    line-height: 18px;
+			}
+			.user-card .user-edit {
+				display: block;
+				position: absolute;
+				width: 48px;
+    			height: 48px;
+    			border-radius: 50%;
+			    bottom: -22px;
+			    right: 24px;
+				background-color: #7cb342;
+				border: 0 none;
+				box-sizing: border-box;
+				box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+    			transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);
+    			text-align: center;
+    			cursor: pointer;
+    			z-index: 999;
+			}
+			.user-card .user-edit:hover {
+				box-shadow: 0 10px 20px rgba(0,0,0,.19), 0 6px 6px rgba(0,0,0,.23)
+			}
+			.user-card .user-edit .el-icon-fa-pencil {
+				display: block;
+				width: 48px;
+				height: 48px;
+				line-height: 48px;
+			    font-size: 24px;
+			    color: #fff;
+			    cursor: pointer;
+			}
+		</style>
+	</head>
+<body>
+	<div id="app" class="el-container el-container-noscroll el-vhidden">
+		<div class="el-container-inner el-container-inner-noscroll">
+			<el-breadcrumb class="el-breadcrumb-admin" separator="/">
+				<i class="el-icon-fa-home"></i>
+			  	<el-breadcrumb-item>首页</el-breadcrumb-item>
+			  	<el-breadcrumb-item>用户资料</el-breadcrumb-item>
+			</el-breadcrumb>
+			<div class="el-container-content">
+				<div class="el-row">
+					<div class="el-col el-col-24">
+						<div class="el-row user-card">
+							<div class="el-col el-col-4 el-align-center">
+								<img class="user-avatar" :src="currentUser.userIconUrl">
+								<label class="user-realname">{{currentUser.realName}}</label>
+							</div>
+							<div class="el-col el-col-20">
+								<h3 class="user-username el-ellipsis">{{currentUser.userName}}</h3>
+								<h5 class="user-roles el-ellipsis">{{currentUser.userRoleNames}}</h5>
+								<ul class="user-stats el-clearfix">
+									<li>
+										<h4>{{currentUser.roles}}<span class="sub-heading">Roles</span></h4>
+									</li>
+									<li>
+										<h4>{{currentUser.messages}}<span class="sub-heading">Messages</span></h4>
+									</li>
+									<li>
+										<h4>{{currentUser.notices}}<span class="sub-heading">Notices</span></h4>
+									</li>
+									<li>
+										<h4>{{currentUser.loginTimes}}<span class="sub-heading">LoginTimes</span></h4>
+									</li>
+								</ul>
+								<a class="user-edit" href="javascript:;" @click="goToUserSettings"><i class="el-icon-fa-pencil"></i></a>
+							</div>
+						</div>
+						<el-tabs v-model="userProfileActiveTabName">
+					    	<el-tab-pane label="基本信息" name="userBasicInfo">
+					    		<div>
+					    			<el-row>
+										<el-col :span="3" class="el-form-item-label">用户名：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.userName}}</el-col>
+										<el-col :span="3" class="el-form-item-label">姓 名：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.realName}}</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">手机号码：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.mobilePhone}}</el-col>
+										<el-col :span="3" class="el-form-item-label">EMAIL：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.email}}</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">用户类型：</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<el-tag class="el-tag-small" :type="getUserTypeTagType(currentUser.userType)">{{currentUser.userTypeName}}</el-tag>
+										</el-col>
+										<el-col :span="3" class="el-form-item-label">状 态：</el-col>
+										<el-col :span="9" class="el-form-item-content">
+											<el-tag class="el-tag-small" :type="getStatusTagType(currentUser.status)">{{currentUser.statusName}}</el-tag>
+										</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">最后登录时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.lastLoginTime}}</el-col>
+										<el-col :span="3" class="el-form-item-label">登录总次数：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.loginTimes}}</el-col>
+									</el-row>
+									<el-row>
+										<el-col :span="3" class="el-form-item-label">创建时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.createTime}}</el-col>
+										<el-col :span="3" class="el-form-item-label">修改时间：</el-col>
+										<el-col :span="9" class="el-form-item-content">{{currentUser.updateTime}}</el-col>
+									</el-row>
+					    		</div>
+					    	</el-tab-pane>
+					    	<el-tab-pane label="我的角色" name="userRoles">
+					    		<el-table ref="userRoleTable" :data="currentUserRoles" style="width:100%;" class="el-table el-table-primary2" empty-text="暂无配置">
+									<el-table-column label="#" type="index" width="40"></el-table-column>
+									<el-table-column label="角色名称" prop="roleName" width="170" sortable></el-table-column>
+									<el-table-column label="角色代码" prop="roleCode" width="170" sortable></el-table-column>
+									<el-table-column label="角色类型" prop="roleType" width="120" align="center" sortable>
+										<template scope="scope">
+											<el-tag class="el-tag-small" :type="getRoleTypeTagType(scope.row.roleType)">{{scope.row.roleTypeName}}</el-tag>
+										</template>
+									</el-table-column>
+									<el-table-column label="角色描述" prop="description"></el-table-column>
+									<el-table-column label="配置时间" prop="createTime" width="100" align="center" sortable></el-table-column>
+								</el-table>
+					    	</el-tab-pane>
+					    	<el-tab-pane label="我的足迹" name="userAccessLogs">
+					    		<div class="el-search-form el-padding-no">
+									<el-form ref="userAccessLogQueryForm" :model="userAccessLogQueryForm" style="padding: 5px 0 15px;">
+										<el-row :gutter="20">
+											<el-col :span="6">
+												<el-form-item prop="title">
+													<el-input v-model="userAccessLogQueryForm.title" :maxlength="100" placeholder="日志标题"></el-input>
+												</el-form-item>
+											</el-col>
+											<el-col :span="12">
+												<el-form-item class="el-inline-block el-align-right" prop="startAccessTime" style="width:40%;">
+													<el-date-picker v-model="userAccessLogQueryForm.startAccessTime" type="datetime" placeholder="访问时间(开始)"></el-date-picker>
+												</el-form-item>
+												<span class="el-inline-block" style="width:10%;text-align:center;line-height:32px;vertical-align:top;"> ~ </span>
+												<el-form-item class="el-inline-block el-align-left" prop="endAccessTime" style="width:40%;">
+													<el-date-picker v-model="userAccessLogQueryForm.endAccessTime" type="datetime" placeholder="访问时间(结束)" ></el-date-picker>
+												</el-form-item>
+											</el-col>
+											<el-col :span="6">
+												<el-form-item class="el-align-center">
+													<el-button @click="resetUserAccessLogQueryForm" icon="fa-undo">重 置</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+													<el-button type="primary" @click="queryUserAccessLogList(1000)" icon="fa-search">查 询</el-button>
+												</el-form-item>
+											</el-col>
+										</el-row>
+									</el-form>
+								</div>
+								<div class="el-search-list" style="padding:0;">
+						    		<el-table ref="userAccessLogTable" v-loading="userAccessLogLoading" element-loading-text="拼命加载中..." element-loading-class="el-loading-mask-opacity" :class="{loading: userAccessLogLoading}" :data="currentUserAccessLogs" :default-sort="userAccessLogQuerySort" @sort-change="onUserAccessLogQuerySortChange" style="width:100%;" class="el-table el-table-primary2" empty-text="暂无数据">
+										<el-table-column label="#" type="index" width="40"></el-table-column>
+										<el-table-column label="日志标题" prop="title" width="250" sortable></el-table-column>
+										<el-table-column label="请求URI" prop="uri" sortable></el-table-column>
+										<el-table-column label="请求方法" prop="method" width="100" sortable></el-table-column>
+										<el-table-column label="请求IP" prop="clientIpAddr" width="120" align="center" sortable></el-table-column>
+										<el-table-column label="访问耗时" prop="processTime1" width="100" align="center" :formatter="formatProcessTime" sortable></el-table-column>
+										<el-table-column label="访问时间" prop="accessTime" width="100" align="center" sortable></el-table-column>
+									</el-table>
+									<div class="el-search-list-pager">
+										<el-pagination v-show="showAccessLogQueryPager" class="el-pagination-small" @current-change="onUserAccessLogQueryCurrentPageChange" :current-page="userAccessLogQueryForm.currentPage" :page-size="userAccessLogQueryForm.pageSize" layout="prev, pager, next, total" :total="userAccessLogQueryTotal">
+									  	</el-pagination>
+									</div>
+								</div>
+					    	</el-tab-pane>
+					  	</el-tabs>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../resources/js/polyfill.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/moment.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue.pageloading.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue-router.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/axios.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.extensional.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/common.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/admin/user/profile.js"></script>
+</body>
+</html>

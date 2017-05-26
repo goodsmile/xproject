@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="keywords" content="">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>用户设置</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-cache">
+		<meta http-equiv="Pragma" content="no-cache">
+		<link rel="shortcut icon" href="../../resources/images/favicon.ico">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.min.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/element.custom.css">
+		<link rel="stylesheet" type="text/css" href="../../resources/components/element-ui/theme-default/font-awesome.min.css">
+		<style type="text/css">
+			.user-card {
+				background-color: #3E4255;
+			    border: 0 none;
+			    box-shadow: 0 0 3px rgba(0, 0, 0, 0.12);
+			    box-sizing: border-box;
+			    color: #d9e9f4;
+			    padding: 10px 10px 10px 5px;
+			    transition: all 0.3s ease-in-out 0s;
+			    margin-bottom: 15px;
+			}
+			.user-card .user-avatar {
+				display: block;
+				margin: 0 auto;
+				height: 60px;
+				width: 60px;
+				border-radius: 50%;
+				line-height: 60px;
+			}
+			.user-card .user-realname {
+				display: inline-block;
+				margin: 0 auto;
+				line-height: 30px;
+				color: #009BF7;
+				font-size: 14px;
+				font-family: "Microsoft YaHei";
+			}
+			.user-card .user-username {
+				color: #41b883;
+				font-size: 22px;
+				line-height: 30px;
+				font-weight: bold;
+				font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+			}
+			.user-card .user-roles {
+				font-size: 14px;
+				line-height: 20px;
+				font-weight: normal;
+			}
+			.user-card .user-stats {
+				display: block;
+				position: relative;
+				margin: 15px 0 20px 0;
+				padding: 0;
+			}
+			.user-card .user-stats > li {
+				display: inline-block;
+				float: left;
+				width: 25%;
+			}
+			.user-card .user-stats > li > h4 {
+				display: inline-block;
+				text-align: center;
+				font-size: 22px;
+    			font-weight: bold;
+				height: 42px;
+				line-height: 24px;
+				font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+			}
+			.user-card .user-stats > li > h4 > .sub-heading {
+				display: block;
+				font-weight: 300;
+			    font-size: 14px;
+			    line-height: 18px;
+			}
+			.user-card .user-edit .el-icon-fa-pencil {
+				display: block;
+				width: 48px;
+				height: 48px;
+				line-height: 48px;
+			    font-size: 24px;
+			    color: #fff;
+			    cursor: pointer;
+			}
+			.el-upload-plusuploader > .el-upload {
+				height: 100px;
+				line-height: 100px;
+				width: 100px;
+			}
+		</style>
+	</head>
+<body>
+	<div id="app" class="el-container el-container-noscroll el-vhidden">
+		<div class="el-container-inner el-container-inner-noscroll">
+			<el-breadcrumb class="el-breadcrumb-admin" separator="/">
+				<i class="el-icon-fa-home"></i>
+			  	<el-breadcrumb-item>首页</el-breadcrumb-item>
+			  	<el-breadcrumb-item>用户设置</el-breadcrumb-item>
+			</el-breadcrumb>
+			<div class="el-container-content">
+				<div class="el-row">
+					<div class="el-col el-col-24">
+						<div class="el-row user-card">
+							<div class="el-col el-col-4 el-align-center">
+								<img class="user-avatar" :src="currentUser.userIconUrl">
+								<label class="user-realname">{{currentUser.realName}}</label>
+							</div>
+							<div class="el-col el-col-20">
+								<h3 class="user-username el-ellipsis">{{currentUser.userName}}</h3>
+								<h5 class="user-roles el-ellipsis">{{currentUser.userRoleNames}}</h5>
+								<ul class="user-stats el-clearfix">
+									<li>
+										<h4>{{currentUser.roles}}<span class="sub-heading">Roles</span></h4>
+									</li>
+									<li>
+										<h4>{{currentUser.messages}}<span class="sub-heading">Messages</span></h4>
+									</li>
+									<li>
+										<h4>{{currentUser.notices}}<span class="sub-heading">Notices</span></h4>
+									</li>
+									<li>
+										<h4>{{currentUser.loginTimes}}<span class="sub-heading">LoginTimes</span></h4>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<el-tabs v-model="userEditActiveTabName">
+					    	<el-tab-pane label="修改基本信息" name="userEdit">
+					    		<div style="padding:15px 0;">
+					    			<el-form ref="userEditForm" :model="userEditForm" :rules="userEditRules" label-width="320px">
+										<el-row>
+											<el-col :span="24">
+												<el-form-item label="姓 名" prop="realName">
+													<el-col :span="12">
+														<el-input v-model="userEditForm.realName" :maxlength="10"></el-input>
+													</el-col>
+													<el-col :span="12">
+											      		<p class="el-form-item-tips">真实姓名.</p>
+											      	</el-col>
+												</el-form-item>
+											</el-col>
+										</el-row>
+										<el-row>
+											<el-col :span="24">
+												<el-form-item label="手机号码" prop="mobilePhone">
+													<el-col :span="12">
+														<el-input v-model="userEditForm.mobilePhone" :maxlength="11"></el-input>
+													</el-col>
+													<el-col :span="12">
+											      		<p class="el-form-item-tips"></p>
+											      	</el-col>
+												</el-form-item>
+											</el-col>
+										</el-row>
+										<el-row>
+											<el-col :span="24">
+												<el-form-item label="EMAIL" prop="email">
+													<el-col :span="12">
+														<el-input v-model="userEditForm.email" :maxlength="100"></el-input>
+													</el-col>
+													<el-col :span="12">
+											      		<p class="el-form-item-tips"></p>
+											      	</el-col>
+												</el-form-item>
+											</el-col>
+										</el-row>
+										<el-row>
+											<el-col :span="24">
+												<el-form-item label="上传头像" prop="userIcon">
+													<el-col :span="24">
+														<el-upload class="el-upload-plusuploader" :headers="uploadHeaders" :action="userIconUploadUrl" :data="userIconUploadParam" :show-file-list="false" :before-upload="beforeUserIconUpload" :on-remove="handleUserIconRemove" :on-success="handleUserIconUploadSuccess" :on-error="handleUploadError">
+															<img v-if="userEditForm.userIcon" :src="userEditForm.userIconUrl" title="点击原图片可以重新上传新图片!">
+						  									<i v-else class="el-icon-plus"></i>
+						  									<div class="el-upload__tip" slot="tip">只能上传jpg|png文件，大小不超过50kb，图片像素限90x90像素附近(长宽误差不超过10个像素)，点击原图片可以重新上传新图片!</div>
+														</el-upload>
+													</el-col>
+												</el-form-item>
+											</el-col>
+										</el-row>
+										<el-row>
+											<el-col :span="24">
+												<el-form-item>
+					    							<el-button type="primary" icon="fa-save" @click="saveUser" :loading="submiting">立即保存</el-button>
+												</el-form-item>
+											</el-col>
+										</el-row>
+									</el-form>
+					    		</div>
+					    	</el-tab-pane>
+					    	<el-tab-pane label="修改登录密码" name="changePwd">
+					    		<div style="padding:15px 0;">
+					    			<el-form ref="changePwdForm" :model="changePwdForm" :rules="changePwdRules" label-width="320px">
+					    				<el-row>
+											<el-col :span="24">
+												<el-form-item label="原密码" prop="oldpassword">
+													<el-col :span="12">
+														<el-input v-model="changePwdForm.oldpassword" :maxlength="20" type="password"></el-input>
+													</el-col>
+													<el-col :span="12">
+											      		<p class="el-form-item-tips">请输入原来密码.</p>
+											      	</el-col>
+												</el-form-item>
+											</el-col>
+										</el-row>
+										<el-row>
+											<el-col :span="24">
+												<el-form-item label="新密码" prop="password">
+													<el-col :span="12">
+														<el-input v-model="changePwdForm.password" :maxlength="20" type="password"></el-input>
+													</el-col>
+													<el-col :span="12">
+											      		<p class="el-form-item-tips">由6~20位个字母或数字组成.</p>
+											      	</el-col>
+												</el-form-item>
+											</el-col>
+										</el-row>
+										<el-row>
+											<el-col :span="24">
+												<el-form-item label="重复密码" prop="repassword">
+													<el-col :span="12">
+														<el-input v-model="changePwdForm.repassword" :maxlength="20" type="password"></el-input>
+													</el-col>
+													<el-col :span="12">
+											      		<p class="el-form-item-tips">请再次确认您输入的新密码.</p>
+											      	</el-col>
+												</el-form-item>
+											</el-col>
+										</el-row>
+										<el-row>
+											<el-col :span="24">
+												<el-form-item>
+					    							<el-button type="primary" icon="fa-save" @click="changePasswd" :loading="submiting">立即修改</el-button>
+												</el-form-item>
+											</el-col>
+										</el-row>
+									</el-form>
+					    		</div>
+					    	</el-tab-pane>
+					  	</el-tabs>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../resources/js/polyfill.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/moment.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue.pageloading.js"></script>
+	<script type="text/javascript" src="../../resources/js/vue-router.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/axios.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.min.js"></script>
+	<script type="text/javascript" src="../../resources/components/element-ui/element.extensional.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/common.js"></script>
+	<script type="text/javascript" src="../../resources/scripts/admin/user/settings.js"></script>
+</body>
+</html>

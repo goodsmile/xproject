@@ -32,8 +32,7 @@
 	
 	<update id="updateUser" parameterType="AdminUser" statementType="PREPARED">
 		UPDATE admin_user a
-		   SET a.user_name 		= #{userName, jdbcType=VARCHAR},
-		   	   a.real_name		= #{realName, jdbcType=VARCHAR},
+		   SET a.real_name		= #{realName, jdbcType=VARCHAR},
 		   	   a.mobile_phone	= #{mobilePhone, jdbcType=VARCHAR},
 		   	   a.email			= #{email, jdbcType=VARCHAR},
 		   	   a.user_icon		= #{userIcon, jdbcType=VARCHAR},
@@ -159,7 +158,7 @@
 		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.status)">
 		   AND a.status = #{condition.status, jdbcType=INTEGER}
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy)">
+		<if test="orderBy != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy.orderby)">
 		 ORDER BY ${orderBy.orderby} ${orderBy.order}
 		</if>
 	</select>

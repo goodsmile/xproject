@@ -74,12 +74,12 @@ public class AdminUserAccessLog {
 	/**
 	 * 日志记录是否结束
 	 */
-	private Boolean loggingCompleted = false;
+	private Boolean loggingCompleted;
 
 	/**
 	 * 请求是否是异步的
 	 */
-	private Boolean asynRequest = false;
+	private Boolean asynRequest;
 	
 	/**
 	 * 响应体类型

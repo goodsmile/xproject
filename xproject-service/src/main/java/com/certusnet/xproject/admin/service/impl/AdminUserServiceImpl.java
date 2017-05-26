@@ -45,7 +45,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
     
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void updateUser(AdminUser user) {
+    public void updateUser(AdminUser user, boolean clearShiroCache) {
         ValidationAssert.notNull(user, "参数不能为空!");
         ValidationAssert.notNull(user.getUserId(), "用户id不能为空!");
         try {
@@ -58,7 +58,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
     
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
-    public void updatePassword(AdminUser user, boolean forceUpdate) {
+    public void updatePassword(AdminUser user, boolean forceUpdate, boolean clearShiroCache) {
         ValidationAssert.notNull(user, "参数不能为空!");
         ValidationAssert.notNull(user.getUserId(), "用户id不能为空!");
         ValidationAssert.notEmpty(user.getPassword(), "新密码不能为空!");

@@ -35,17 +35,21 @@ public class AdminUserFacadeServiceImpl implements AdminUserService, PrincipalSe
         delegate.createUser(user);
     }
     
-    public void updateUser(AdminUser user) {
-        delegate.updateUser(user);
-        shiroCacheService.crearCachedSessionInfo(user.getUserName()); // 清除会话缓存,迫使其重新登录
-        shiroCacheService.clearCachedAuthenticationInfo(user.getUserName()); // 清除认证缓存
-        shiroCacheService.clearCachedAuthorizationInfo(user.getUserName()); // 此处最好加上清除逻辑
+    public void updateUser(AdminUser user, boolean clearShiroCache) {
+        delegate.updateUser(user, clearShiroCache);
+        if(clearShiroCache){
+        	shiroCacheService.crearCachedSessionInfo(user.getUserName()); // 清除会话缓存,迫使其重新登录
+            shiroCacheService.clearCachedAuthenticationInfo(user.getUserName()); // 清除认证缓存
+            shiroCacheService.clearCachedAuthorizationInfo(user.getUserName()); // 此处最好加上清除逻辑
+        }
     }
     
-    public void updatePassword(AdminUser user, boolean forceUpdate) {
-        delegate.updatePassword(user, forceUpdate);
-        shiroCacheService.crearCachedSessionInfo(user.getUserName()); // 清除会话缓存,迫使其重新登录
-        shiroCacheService.clearCachedAuthenticationInfo(user.getUserName()); // 密码变更涉及到了登录认证,需要重新登录
+    public void updatePassword(AdminUser user, boolean forceUpdate, boolean clearShiroCache) {
+        delegate.updatePassword(user, forceUpdate, clearShiroCache);
+        if(clearShiroCache){
+        	shiroCacheService.crearCachedSessionInfo(user.getUserName()); // 清除会话缓存,迫使其重新登录
+            shiroCacheService.clearCachedAuthenticationInfo(user.getUserName()); // 密码变更涉及到了登录认证,需要重新登录
+        }
     }
     
     public void deleteUserById(AdminUser user) {

@@ -118,7 +118,7 @@ public class AdminController extends BaseController {
 				loginToken.setLoginTime(DateTimeUtils.formatNow());
 				loginToken.setLoginTimes(user.getLoginTimes());
 				loginToken.setLastLoginTime(StringUtils.defaultIfEmpty(user.getLastLoginTime(), nowTime));
-				loginToken.setLoginUserIcon(user.getUserIcon());
+				loginToken.setLoginUserIcon(user.getUserIconUrl());
 				loginToken.setLoginRoleNames(loginRoleNames.toString());
 				user.setLastLoginTime(nowTime);
 				
@@ -187,11 +187,11 @@ public class AdminController extends BaseController {
 		Map<String,Object> user = new HashMap<String,Object>();
 		user.put("userId", loginToken.getLoginId());
 		user.put("userName", loginToken.getLoginName());
-		user.put("userIconUrl", request.getContextPath() + loginToken.getLoginUserIcon());
+		user.put("userIconUrl", loginToken.getLoginUserIcon());
 		user.put("userRoleNames", loginToken.getLoginRoleNames());
 		user.put("lastLoginTime", loginToken.getLastLoginTime());
 		user.put("messages", new ArrayList<Object>()); //TODO
-		user.put("notifications", new ArrayList<Object>()); //TODO
+		user.put("notices", new ArrayList<Object>()); //TODO
 		return genSuccessResult(user);
 	}
 	

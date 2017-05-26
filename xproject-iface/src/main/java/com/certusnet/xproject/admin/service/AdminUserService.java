@@ -29,16 +29,18 @@ public interface AdminUserService
      * 更新用户
      * 
      * @param user
+     * @param clearShiroCache - 是否清除shiro中的缓存信息(session, auth)
      */
-    public void updateUser(AdminUser user);
+    public void updateUser(AdminUser user, boolean clearShiroCache);
     
     /**
      * 用户修改密码
      * 
      * @param user
-     * @param forceUpdate - 是否强制更新
+     * @param forceUpdate - 是否强制更新密码
+     * @param clearShiroCache - 是否清除shiro中的缓存信息(session, auth)
      */
-    public void updatePassword(AdminUser user, boolean forceUpdate);
+    public void updatePassword(AdminUser user, boolean forceUpdate, boolean clearShiroCache);
     
     /**
      * 删除用户

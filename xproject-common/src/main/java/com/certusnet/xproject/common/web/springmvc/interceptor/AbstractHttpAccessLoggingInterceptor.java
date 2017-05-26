@@ -98,7 +98,7 @@ public abstract class AbstractHttpAccessLoggingInterceptor extends AbstractSprin
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		try {
 			String requestURI = request.getRequestURI();
-			logger.debug(requestURI);
+			//logger.debug(requestURI);
 			if(handler != null && handler instanceof HandlerMethod){
 				HandlerMethod handlerMethod = (HandlerMethod) handler;
 				HttpAccessLogging httpAccessLogging = handlerMethod.getMethodAnnotation(HttpAccessLogging.class);
@@ -143,6 +143,8 @@ public abstract class AbstractHttpAccessLoggingInterceptor extends AbstractSprin
 			if(httpAccessLog != null){
 				httpAccessLog.setAccessEndMillis(System.currentTimeMillis());
 				httpAccessLog.setProcessTime1(httpAccessLog.getAccessEndMillis() - httpAccessLog.getAccessBeginMillis());
+				httpAccessLog.setRequestParameter(extractRequestParameter(request, loggingContext));
+				httpAccessLog.setAccessUser(getAccessUser(request, loggingContext));
 				//logger.debug(">>> access logging [postHandle] : " + httpAccessLog);
 			}
 		}
@@ -480,8 +482,6 @@ public abstract class AbstractHttpAccessLoggingInterceptor extends AbstractSprin
 			try {
 				HttpAccessLog<?> httpAccessLog = loggingContext.getHttpAccessLog();
 				if (httpAccessLog != null) {
-					httpAccessLog.setRequestParameter(extractRequestParameter(request, loggingContext));
-					httpAccessLog.setAccessUser(getAccessUser(request, loggingContext));
 					logger.debug(">>> http access log : " + httpAccessLog);
 					httpAccessLogDAO.saveLog((HttpAccessLog<?>) httpAccessLog);
 				} 

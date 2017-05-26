@@ -224,7 +224,7 @@
 											<el-upload class="el-upload-plusuploader" :headers="uploadHeaders" :action="userIconUploadUrl" :data="userIconUploadParam" :show-file-list="false" :before-upload="beforeUserIconUpload" :on-remove="handleUserIconRemove" :on-success="handleUserIconUploadSuccess" :on-error="handleUploadError">
 												<img v-if="userEditForm.userIcon" :src="userEditForm.userIconUrl" title="点击原图片可以重新上传新图片!">
 			  									<i v-else class="el-icon-plus"></i>
-			  									<div class="el-upload__tip" slot="tip">只能上传jpg|png文件，大小不超过50kb，图片像素限100x100像素附近(长宽误差不超过10个像素)，点击原图片可以重新上传新图片!</div>
+			  									<div class="el-upload__tip" slot="tip">只能上传jpg|png文件，大小不超过50kb，图片像素限90x90像素附近(长宽误差不超过10个像素)，点击原图片可以重新上传新图片!</div>
 											</el-upload>
 										</el-col>
 									</el-form-item>

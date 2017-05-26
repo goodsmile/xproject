@@ -90,6 +90,9 @@
 			   b.user_name			userName
 		  FROM admin_user_access_log a LEFT JOIN admin_user b ON (a.access_user_id = b.user_id)
 		 WHERE 1=1
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.accessUserId)">
+		   AND a.access_user_id = #{condition.accessUserId, jdbcType=BIGINT}
+		</if>
 		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.title)">
 		   AND a.title like CONCAT('%', #{condition.title, jdbcType=VARCHAR}, '%')
 		</if>
@@ -111,7 +114,17 @@
 		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.asynRequest)">
 		   AND a.asyn_request = #{condition.asynRequest, jdbcType=VARCHAR}
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy)">
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.startAccessTime)">
+		<![CDATA[
+		   AND a.access_time >= #{condition.startAccessTime, jdbcType=VARCHAR}
+		]]>
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.endAccessTime)">
+		<![CDATA[
+		   AND a.access_time <= #{condition.endAccessTime, jdbcType=VARCHAR}
+		]]>
+		</if>
+		<if test="orderBy != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy.orderby)">
 		 ORDER BY ${orderBy.orderby} ${orderBy.order}
 		</if>
 	</select>
@@ -120,6 +133,9 @@
 		SELECT COUNT(*)
 		  FROM admin_user_access_log a
 		 WHERE 1=1
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.accessUserId)">
+		   AND a.access_user_id = #{condition.accessUserId, jdbcType=BIGINT}
+		</if>
 		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.title)">
 		   AND a.title like CONCAT('%', #{condition.title, jdbcType=VARCHAR}, '%')
 		</if>
@@ -140,6 +156,16 @@
 		</if>
 		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.asynRequest)">
 		   AND a.asyn_request = #{condition.asynRequest, jdbcType=VARCHAR}
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.startAccessTime)">
+		<![CDATA[
+		   AND a.access_time >= #{condition.startAccessTime, jdbcType=VARCHAR}
+		]]>
+		</if>
+		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.endAccessTime)">
+		<![CDATA[
+		   AND a.access_time <= #{condition.endAccessTime, jdbcType=VARCHAR}
+		]]>
 		</if>
 	</select>
 	

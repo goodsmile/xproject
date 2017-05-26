@@ -1,8 +1,6 @@
 package com.certusnet.xproject.common.web.filter;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -11,11 +9,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.handler.AbstractHandlerMethodMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import com.certusnet.xproject.common.consts.ApplicationConstants;
+import com.certusnet.xproject.common.support.HttpAccessLogging;
 import com.certusnet.xproject.common.util.StringUtils;
 
 /**
@@ -29,16 +33,14 @@ import com.certusnet.xproject.common.util.StringUtils;
  */
 public class HttpAccessLoggingServletStreamFilter extends OncePerRequestFilter {
 
-	private static final MediaType DEFAULT_SUPPORTED_REQ_CONTENTTYPE = MediaType.APPLICATION_JSON;
+	private final Object mutex = new Object();
 	
-	/**
-	 * 对于支持的请求体类型进行请求Wrapper
-	 */
-	private final Set<MediaType> supportedReqContentTypes = new HashSet<MediaType>();
+	private volatile boolean initialized = false;
+	
+	private AbstractHandlerMethodMapping<?> springMvcHandlerMethodMapping;
 	
 	public HttpAccessLoggingServletStreamFilter() {
 		super();
-		supportedReqContentTypes.add(DEFAULT_SUPPORTED_REQ_CONTENTTYPE);
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class HttpAccessLoggingServletStreamFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		HttpServletRequest requestToUse = request;
 		HttpServletResponse responseToUse = response;
-		if(isRequestBodySupport(request)){
+		if(isRequestSupport(request)){
 			requestToUse = new ContentCachingRequestWrapper(request);
 			responseToUse = new ContentCachingResponseWrapper(response);
 		}
@@ -57,43 +59,25 @@ public class HttpAccessLoggingServletStreamFilter extends OncePerRequestFilter {
 		}
 	}
 
-	public Set<MediaType> getSupportedReqContentTypes() {
-		return supportedReqContentTypes;
-	}
-
-	public void setSupportedReqContentTypes(String supportedReqContentTypes) {
-		addSupportedContentTypes(this.supportedReqContentTypes, supportedReqContentTypes);
-	}
-	
-	protected void addSupportedContentTypes(Set<MediaType> supportedContentTypes,String supportedContentTypeValues) {
-		if(!StringUtils.isEmpty(supportedContentTypeValues)){
-			String[] contentTypes = supportedContentTypeValues.split(",");
-			for(String contentType : contentTypes){
-				if(!StringUtils.isEmpty(contentType)){
-					supportedContentTypes.add(MediaType.valueOf(contentType.trim()));
+	/**
+	 * 请求是否支持访问日志记录
+	 * @param request
+	 * @return
+	 */
+	protected boolean isRequestSupport(HttpServletRequest request) {
+		try {
+			if(!this.isAsyncDispatch(request) && !this.isAsyncStarted(request)){
+				HandlerExecutionChain handlerExecutionChain = this.getSpringMvcHandlerMethodMapping().getHandler(request);
+				if(handlerExecutionChain != null && handlerExecutionChain.getHandler() != null && handlerExecutionChain.getHandler() instanceof HandlerMethod){
+					HandlerMethod handlerMethod = (HandlerMethod) handlerExecutionChain.getHandler();
+					HttpAccessLogging httpAccessLogging = handlerMethod.getMethodAnnotation(HttpAccessLogging.class);
+					return httpAccessLogging != null;
 				}
 			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 		}
-	}
-	
-	protected boolean isRequestBodySupport(HttpServletRequest request) {
-		boolean asyncRequest = !isAsyncDispatch(request) && !isAsyncStarted(request);
-		String contentTypeValue = request.getContentType();
-		MediaType contentType = getContentType(contentTypeValue);
-		boolean supported = false;
-		if(asyncRequest && contentType != null){
-			if(supportedReqContentTypes.isEmpty()){
-				supported = false;
-			}else{
-				for(MediaType mediaType : supportedReqContentTypes){
-					if(mediaType.getType().equals(contentType.getType())){ //主类型相同即可
-						supported = true;
-						break;
-					}
-				}
-			}
-		}
-		return supported;
+		return false;
 	}
 	
 	/**
@@ -120,6 +104,25 @@ public class HttpAccessLoggingServletStreamFilter extends OncePerRequestFilter {
 		} catch (Exception e) {
 		}
 		return null;
+	}
+
+	public AbstractHandlerMethodMapping<?> getSpringMvcHandlerMethodMapping() {
+		if(!this.initialized){
+			initSpringMvcHandlerMethodMapping();
+		}
+		return springMvcHandlerMethodMapping;
+	}
+
+	protected void initSpringMvcHandlerMethodMapping() {
+		if(!this.initialized){
+			synchronized (mutex) {
+				if(!this.initialized){
+					ApplicationContext mvcApplicationContext = ApplicationConstants.MVC_APPLICATION_CONTEXT;
+					this.springMvcHandlerMethodMapping = mvcApplicationContext.getBean(AbstractHandlerMethodMapping.class);
+					this.initialized = true;
+				}
+			}
+		}
 	}
 	
 }

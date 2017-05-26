@@ -194,7 +194,7 @@ Vue.component('admin-sidemenu', AdminSideMenu); //注册全局组件
 var router = new VueRouter({
 	mode: 'abstract', //在abstract模式下浏览器地址栏不变
 	routes: [{
-		path: '/admin/user/profile', //用户资料
+		path: '/admin/user/profile.html', //用户资料
 		components: {
 			sideMenuView: AdminSideMenu,
 			mainContentView: AdminMainContent
@@ -204,7 +204,7 @@ var router = new VueRouter({
 			next();
 		}
 	},{
-		path: '/admin/user/settings', //用户设置
+		path: '/admin/user/settings.html', //用户设置
 		components: {
 			sideMenuView: AdminSideMenu,
 			mainContentView: AdminMainContent

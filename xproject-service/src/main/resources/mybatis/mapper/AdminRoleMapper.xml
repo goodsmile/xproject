@@ -84,7 +84,7 @@
 		<if test="condition != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(condition.roleCode)">
 		   AND a.role_code like CONCAT('%', #{condition.roleCode, jdbcType=VARCHAR}, '%')
 		</if>
-		<if test="@com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy)">
+		<if test="orderBy != null and @com.certusnet.xproject.common.mybatis.MybatisUtils@isNotEmpty(orderBy.orderby)">
 		 ORDER BY ${orderBy.orderby} ${orderBy.order}
 		</if>
 	</select>

@@ -69,10 +69,6 @@
 	<filter>
 		<filter-name>httpAccessLoggingStreamFilter</filter-name>
 		<filter-class>com.certusnet.xproject.common.web.filter.HttpAccessLoggingServletStreamFilter</filter-class>
-		<init-param>
-			<param-name>supportedReqContentTypes</param-name>
-			<param-value>application/json</param-value>
-		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>httpAccessLoggingStreamFilter</filter-name>
@@ -80,6 +76,10 @@
 	</filter-mapping>
 	
 	<!-- 对客户端请求的静态资源如图片、JS文件等的请求交由默认的Servlet进行处理,不经过DispatcherServlet -->
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>/resources/*</url-pattern>
+	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>default</servlet-name>
 		<url-pattern>*.jpg</url-pattern>
