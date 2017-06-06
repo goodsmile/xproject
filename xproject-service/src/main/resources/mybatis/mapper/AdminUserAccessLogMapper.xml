@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.certusnet.xproject.admin.model.AdminUserAccessLogMapper">
+<mapper namespace="com.certusnet.xproject.admin.mapper.AdminUserAccessLogMapper">
 	
 	<insert id="insertUserAccessLog" parameterType="AdminUserAccessLog" statementType="PREPARED" keyProperty="id" useGeneratedKeys="true">
 		INSERT INTO admin_user_access_log (
@@ -44,7 +44,7 @@
 		)
 	</insert>
 	
-	<select id="getUserAccessLogById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUserAccessLog">
+	<select id="selectUserAccessLogById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUserAccessLog">
 		SELECT a.id					id,
 			   a.title				title,
 			   a.uri				uri,
@@ -68,7 +68,7 @@
 		 WHERE a.id = #{id, jdbcType=BIGINT}
 	</select>
 	
-	<select id="getUserAccessLogList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminUserAccessLog">
+	<select id="selectUserAccessLogList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminUserAccessLog">
 		SELECT a.id					id,
 			   a.title				title,
 			   a.uri				uri,
@@ -129,7 +129,7 @@
 		</if>
 	</select>
 	
-	<select id="getUserAccessLogList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
+	<select id="countUserAccessLogList" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
 		SELECT COUNT(*)
 		  FROM admin_user_access_log a
 		 WHERE 1=1

@@ -33,13 +33,6 @@ public interface AdminResourceService {
 	public void deleteResourceById(Long resourceId, boolean cascadeDelete);
 	
 	/**
-	 * 通过递归处理treeList然后将结果
-	 * @param objTreeList		- 对象树结构的资源列表
-	 * @param resultList		- 一个新的空的结果列表,用于接收结果
-	 */
-	public void loadTreeResources(List<AdminResource> objTreeList, List<AdminResource> resultList);
-	
-	/**
 	 * 根据资源id获取资源详情
 	 * @param resourceId
 	 */

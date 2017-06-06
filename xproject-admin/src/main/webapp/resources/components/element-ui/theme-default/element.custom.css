@@ -463,7 +463,7 @@ a {
 	color: #fff;
 }
 .el-select-dropdown__wrap, .el-picker-panel__content {
-	overflow: auto;
+	/* overflow: auto; */
 }
 .el-select-dropdown__wrap {
 	margin-right: 0 !important;
@@ -589,7 +589,7 @@ a {
 .el-date-table td.today {
 	color: #7196db;
 }
-.el-date-table td.current, .el-date-table td.end-date, .el-date-table td.start-date, .el-month-table td.current .cell, .el-year-table td.current .cell {
+.el-date-table td.current:not(.disabled), .el-date-table td.end-date, .el-date-table td.start-date, .el-month-table td.current:not(.disabled) .cell, .el-year-table td.current:not(.disabled) .cell {
 	background-color: #7196db !important;
 	color: #fff;
 }

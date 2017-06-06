@@ -41,14 +41,18 @@
 
     <tx:annotation-driven transaction-manager="defaultJdbcTransactionManager" proxy-target-class="true"/>
 
-    <bean id="defaultSqlSessionFactory" class="com.penglecode.mybatis.ex.spring.SimpleExSqlSessionFactoryBean">
-        <property name="configLocation" value="classpath:/mybatis/mybatis-config.xml"/>
+	<bean id="defaultSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="defaultDataSource"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+        <property name="typeAliasesPackage" value="com.certusnet.xproject"/>
+        <property name="typeAliasesSuperType" value="com.certusnet.xproject.common.support.BaseModel"/>
+        <property name="mapperLocations" value="classpath:mybatis/mapper/*Mapper.xml"/>
     </bean>
-
-	<bean id="defaultSqlSessionTemplate" class="com.certusnet.xproject.common.mybatis.EnhancedExSqlSessionTemplate">
-		<constructor-arg index="0" ref="defaultSqlSessionFactory"/>
-		<constructor-arg index="1" value="SIMPLE"/>
-	</bean>
+    
+    <bean id="defaultMapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    	<property name="basePackage" value="com.certusnet.xproject"/>
+        <property name="annotationClass" value="com.certusnet.xproject.common.support.DefaultDatabase"/>
+        <property name="sqlSessionFactoryBeanName" value="defaultSqlSessionFactory"></property>
+    </bean>
 	
 </beans>

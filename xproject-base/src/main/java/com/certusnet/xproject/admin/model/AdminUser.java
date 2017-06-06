@@ -1,6 +1,6 @@
 package com.certusnet.xproject.admin.model;
 
-import java.io.Serializable;
+import com.certusnet.xproject.common.support.BaseModel;
 
 /**
  * 后台管理-用户模型
@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @date	  	2015年10月28日 下午5:06:42
  * @version  	1.0
  */
-public class AdminUser implements Serializable {
+public class AdminUser implements BaseModel {
 
 	private static final long serialVersionUID = 1L;
 

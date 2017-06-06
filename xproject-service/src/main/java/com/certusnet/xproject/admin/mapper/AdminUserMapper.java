@@ -1,22 +1,25 @@
-package com.certusnet.xproject.admin.dao;
+package com.certusnet.xproject.admin.mapper;
 
 import java.util.List;
 
-import com.certusnet.xproject.admin.consts.em.AdminUserStatusEnum;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.RowBounds;
+
 import com.certusnet.xproject.admin.model.AdminResource;
 import com.certusnet.xproject.admin.model.AdminRole;
 import com.certusnet.xproject.admin.model.AdminUser;
+import com.certusnet.xproject.common.support.DefaultDatabase;
 import com.certusnet.xproject.common.support.OrderBy;
-import com.certusnet.xproject.common.support.Pager;
 
 /**
  * 后台管理用户DAO
  * 
- * @author pengpeng
- * @date 2015年12月10日 下午1:49:33
- * @version 1.0
+ * @author 	pengpeng
+ * @date   		2017年6月6日 下午3:02:16
+ * @version 	1.0
  */
-public interface AdminUserDAO {
+@DefaultDatabase
+public interface AdminUserMapper {
     /**
      * 新增用户
      * 
@@ -44,7 +47,7 @@ public interface AdminUserDAO {
      * @param userId
      * @param status
      */
-    public void updateUserStatus(Long userId, AdminUserStatusEnum status);
+    public void updateUserStatus(@Param("userId")Long userId, @Param("status")Integer status);
     
     /**
      * 用户修改密码
@@ -59,7 +62,7 @@ public interface AdminUserDAO {
      * @param userId
      * @param lastLoginTime
      */
-    public void updateLoginTime(Long userId, String lastLoginTime);
+    public void updateLoginTime(@Param("userId")Long userId, @Param("lastLoginTime")String lastLoginTime);
     
     /**
      * 根据用户id获取用户信息
@@ -67,7 +70,7 @@ public interface AdminUserDAO {
      * @param userId
      * @return
      */
-    public AdminUser getUserById(Long userId);
+    public AdminUser selectUserById(Long userId);
     
     /**
      * 根据用户id获取用户信息[仅userId,userName,password,createTime有值]
@@ -75,17 +78,19 @@ public interface AdminUserDAO {
      * @param userId
      * @return
      */
-    public AdminUser getThinUserById(Long userId);
+    public AdminUser selectThinUserById(Long userId);
     
     /**
      * 根据[用户名、用户状态、用户类型]查询用户列表(分页、排序)
      * 
      * @param condition
-     * @param pager
      * @param orderBy
+     * @param rowBounds
      * @return
      */
-    public List<AdminUser> getUserList(AdminUser condition, Pager pager, OrderBy orderBy);
+    public List<AdminUser> selectUserList(@Param("condition")AdminUser condition, @Param("orderBy")OrderBy orderBy, RowBounds rowBounds);
+    
+    public int countUserList(@Param("condition")AdminUser condition);
     
     /**
      * 获取用户所拥有的角色
@@ -94,7 +99,7 @@ public interface AdminUserDAO {
      * @param filterParam
      * @return
      */
-    public List<AdminRole> getUserRoleList(Long userId, AdminRole filterParam);
+    public List<AdminRole> selectUserRoleList(@Param("userId")Long userId, @Param("filterParam")AdminRole filterParam);
     
     /**
      * 获取用户所能访问的URL资源
@@ -102,7 +107,7 @@ public interface AdminUserDAO {
      * @param userId
      * @return
      */
-    public List<AdminResource> getUserResourceList(Long userId);
+    public List<AdminResource> selectUserResourceList(Long userId);
     
     /**
      * 添加用户-角色关系
@@ -112,7 +117,7 @@ public interface AdminUserDAO {
      * @param optUserId - 操作人id
      * @param optTime - 操作时间
      */
-    public void insertUserRoles(Long userId, List<Long> roleIdList, Long optUserId, String optTime);
+    public void insertUserRoles(@Param("userId")Long userId, @Param("roleIdList")List<Long> roleIdList, @Param("optUserId")Long optUserId, @Param("optTime")String optTime);
     
     /**
      * 删除用户-角色关系
@@ -120,7 +125,7 @@ public interface AdminUserDAO {
      * @param userId
      * @param roleIdList
      */
-    public void deleteUserRoles(Long userId, List<Long> roleIdList);
+    public void deleteUserRoles(@Param("userId")Long userId, @Param("roleIdList")List<Long> roleIdList);
     
     /**
      * 删除用户的所有角色
@@ -139,5 +144,5 @@ public interface AdminUserDAO {
      *            status,createTime]
      * @return
      */
-    public AdminUser getUserByUserName(String userName, boolean fatUser);
+    public AdminUser selectUserByUserName(@Param("userName")String userName, @Param("fatUser")boolean fatUser);
 }

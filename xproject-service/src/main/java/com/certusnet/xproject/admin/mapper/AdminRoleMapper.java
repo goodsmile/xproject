@@ -1,20 +1,24 @@
-package com.certusnet.xproject.admin.dao;
+package com.certusnet.xproject.admin.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.session.RowBounds;
+
 import com.certusnet.xproject.admin.model.AdminResource;
 import com.certusnet.xproject.admin.model.AdminRole;
+import com.certusnet.xproject.common.support.DefaultDatabase;
 import com.certusnet.xproject.common.support.OrderBy;
-import com.certusnet.xproject.common.support.Pager;
 
 /**
  * 系统角色DAO
  * 
- * @author	  	pengpeng
- * @date	  	2015年11月3日 上午10:33:16
- * @version  	1.0
+ * @author 	pengpeng
+ * @date   		2017年6月6日 下午2:44:19
+ * @version 	1.0
  */
-public interface AdminRoleDAO {
+@DefaultDatabase
+public interface AdminRoleMapper {
 
 	/**
 	 * 插入角色
@@ -39,29 +43,31 @@ public interface AdminRoleDAO {
 	 * @param roleId
 	 * @return
 	 */
-	public AdminRole getThinRoleById(Long roleId);
+	public AdminRole selectThinRoleById(Long roleId);
 	
 	/**
 	 * 根据角色id获取角色详情
 	 * @param roleId
 	 */
-	public AdminRole getRoleById(Long roleId);
+	public AdminRole selectRoleById(Long roleId);
 	
 	/**
-	 * 根据【角色名称、角色代码】查询角色列表(分页)
-	 * @param condition
-	 * @param pager
-	 * @param orderBy
+	 * 根据【角色名称、角色代码】查询角色列表(分页、排序)
+     * @param condition
+     * @param orderBy
+     * @param rowBounds
 	 * @return
 	 */
-	public List<AdminRole> getRoleList(AdminRole condition, Pager pager, OrderBy orderBy);
+	public List<AdminRole> selectRoleList(@Param("condition")AdminRole condition, @Param("orderBy")OrderBy orderBy, RowBounds rowBounds);
+	
+	public int countRoleList(@Param("condition")AdminRole condition);
 	
 	/**
 	 * 获取该角色的看见资源
 	 * @param roleId
 	 * @return
 	 */
-	public List<AdminResource> getResourceListByRoleId(Long roleId);
+	public List<AdminResource> selectResourceListByRoleId(Long roleId);
 	
 	/**
 	 * 根据角色id删除该角色下的所有资源
@@ -76,6 +82,6 @@ public interface AdminRoleDAO {
 	 * @param optUserId
 	 * @param optTime
 	 */
-	public void insertRoleResources(Long roleId, List<Long> resourceIdList, Long optUserId, String optTime);
+	public void insertRoleResources(@Param("roleId")Long roleId, @Param("resourceIdList")List<Long> resourceIdList, @Param("optUserId")Long optUserId, @Param("optTime")String optTime);
 	
 }

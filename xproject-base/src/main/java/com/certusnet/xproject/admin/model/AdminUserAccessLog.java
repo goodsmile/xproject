@@ -1,5 +1,7 @@
 package com.certusnet.xproject.admin.model;
 
+import com.certusnet.xproject.common.support.BaseModel;
+
 /**
  * 后天管理用户操作日志
  * 
@@ -7,7 +9,9 @@ package com.certusnet.xproject.admin.model;
  * @date   		2017年5月13日 下午12:19:28
  * @version 	1.0
  */
-public class AdminUserAccessLog {
+public class AdminUserAccessLog implements BaseModel {
+
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	

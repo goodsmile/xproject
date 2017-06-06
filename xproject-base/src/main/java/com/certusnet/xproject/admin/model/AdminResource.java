@@ -1,7 +1,8 @@
 package com.certusnet.xproject.admin.model;
 
-import java.io.Serializable;
 import java.util.List;
+
+import com.certusnet.xproject.common.support.BaseModel;
 /**
  * 后台管理-资源模型
  * 
@@ -9,7 +10,7 @@ import java.util.List;
  * @date	  	2014年10月28日 下午6:27:46
  * @version  	1.0
  */
-public class AdminResource implements Serializable, Comparable<AdminResource> {
+public class AdminResource implements BaseModel, Comparable<AdminResource> {
 
 	private static final long serialVersionUID = 1L;
 	

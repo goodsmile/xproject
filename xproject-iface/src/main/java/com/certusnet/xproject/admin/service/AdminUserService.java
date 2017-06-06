@@ -76,12 +76,12 @@ public interface AdminUserService
     /**
      * 根据[用户名、用户状态、用户类型]查询用户列表(分页、排序)
      * 
-     * @param user
+     * @param condition
      * @param pager
-     * @param orderby
+     * @param orderBy
      * @return
      */
-    public PagingList<AdminUser> getUserList(AdminUser user, Pager pager, OrderBy orderby);
+    public PagingList<AdminUser> getUserList(AdminUser condition, Pager pager, OrderBy orderBy);
     
     /**
      * 获取用户所拥有的角色

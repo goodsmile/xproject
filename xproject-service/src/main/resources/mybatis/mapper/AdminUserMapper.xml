@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.certusnet.xproject.admin.model.AdminUserMapper">
+<mapper namespace="com.certusnet.xproject.admin.mapper.AdminUserMapper">
 	
 	<insert id="insertUser" parameterType="AdminUser" statementType="PREPARED" keyProperty="userId" useGeneratedKeys="true">
 		INSERT INTO admin_user(
@@ -64,7 +64,7 @@
 		DELETE a FROM admin_user a WHERE a.user_id = #{userId, jdbcType=BIGINT}
 	</delete>
 	
-	<select id="getUserById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUser">
+	<select id="selectUserById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUser">
 		SELECT a.user_id		userId,
 			   a.user_name		userName,
 			   a.password		password,
@@ -86,7 +86,7 @@
 		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="getThinUserById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUser">
+	<select id="selectThinUserById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminUser">
 		SELECT a.user_id		userId,
 			   a.user_name		userName,
 			   a.password		password,
@@ -95,7 +95,7 @@
 		 WHERE a.user_id = #{userId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="getThinUserByUserName" parameterType="java.lang.String" statementType="PREPARED" resultType="AdminUser">
+	<select id="selectThinUserByUserName" parameterType="java.lang.String" statementType="PREPARED" resultType="AdminUser">
 		SELECT a.user_id		userId,
 			   a.user_name		userName,
 			   a.password		password,
@@ -105,7 +105,7 @@
 		 WHERE a.user_name = #{userName, jdbcType=VARCHAR}
 	</select>
 	
-	<select id="getUserByUserName" parameterType="java.lang.String" statementType="PREPARED" resultType="AdminUser">
+	<select id="selectUserByUserName" parameterType="java.lang.String" statementType="PREPARED" resultType="AdminUser">
 		SELECT a.user_id		userId,
 			   a.user_name		userName,
 			   a.password		password,
@@ -127,7 +127,7 @@
 		 WHERE a.user_name = #{userName, jdbcType=VARCHAR}
 	</select>
 	
-	<select id="getUserList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminUser">
+	<select id="selectUserList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminUser">
 		SELECT a.user_id		userId,
 			   a.user_name		userName,
 			   a.password		password,
@@ -163,7 +163,7 @@
 		</if>
 	</select>
 	
-	<select id="getUserList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
+	<select id="countUserList" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
 		SELECT count(*)
 		  FROM admin_user a
 		 WHERE 1=1
@@ -181,7 +181,7 @@
 		</if>
 	</select>
 	
-	<select id="getUserRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
+	<select id="selectUserRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -228,7 +228,7 @@
         </foreach>
 	</delete>
 	
-	<select id="getUserResourceList" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
+	<select id="selectUserResourceList" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
 		SELECT DISTINCT r.resource_id	resourceId,
 			   r.resource_name			resourceName,
 			   r.parent_resource_id		parentResourceId,

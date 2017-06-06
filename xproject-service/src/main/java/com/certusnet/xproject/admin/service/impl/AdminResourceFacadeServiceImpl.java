@@ -65,10 +65,6 @@ public class AdminResourceFacadeServiceImpl implements AdminResourceService, Url
 		}).start();
 	}
 
-	public void loadTreeResources(List<AdminResource> objTreeList, List<AdminResource> resultList) {
-		delegate.loadTreeResources(objTreeList, resultList);
-	}
-
 	public AdminResource getResourceById(Long resourceId) {
 		return delegate.getResourceById(resourceId);
 	}

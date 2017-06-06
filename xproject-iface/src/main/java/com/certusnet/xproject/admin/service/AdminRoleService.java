@@ -43,12 +43,12 @@ public interface AdminRoleService {
 	
 	/**
 	 * 根据【角色名称、角色代码】查询角色列表(分页、排序)
-	 * @param role
+	 * @param condition
 	 * @param pager
 	 * @param orderby
 	 * @return
 	 */
-	public PagingList<AdminRole> getRoleList(AdminRole role, Pager pager, OrderBy orderby);
+	public PagingList<AdminRole> getRoleList(AdminRole condition, Pager pager, OrderBy orderby);
 	
 	/**
 	 * 获取该角色的看见资源

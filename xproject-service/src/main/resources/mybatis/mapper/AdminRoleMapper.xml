@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.certusnet.xproject.admin.model.AdminRoleMapper">
+<mapper namespace="com.certusnet.xproject.admin.mapper.AdminRoleMapper">
 	
 	<insert id="insertRole" parameterType="AdminRole" statementType="PREPARED">
 		INSERT INTO admin_role(
@@ -37,7 +37,7 @@
 		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
 	</delete>
 	
-	<select id="getThinRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+	<select id="selectThinRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -47,7 +47,7 @@
 		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="getRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
+	<select id="selectRoleById" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -64,7 +64,7 @@
 		 WHERE a.role_id = #{roleId, jdbcType=BIGINT}
 	</select>
 	
-	<select id="getRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
+	<select id="selectRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="AdminRole">
 		SELECT a.role_id			roleId,
 			   a.role_name			roleName,
 			   a.role_code			roleCode,
@@ -89,7 +89,7 @@
 		</if>
 	</select>
 	
-	<select id="getRoleList_count" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
+	<select id="countRoleList" parameterType="java.util.Map" statementType="PREPARED" resultType="java.lang.Integer">
 		SELECT count(*)
 		  FROM admin_role a
 		 WHERE 1=1
@@ -101,7 +101,7 @@
 		</if>
 	</select>
 	
-	<select id="getResourceListByRoleId" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
+	<select id="selectResourceListByRoleId" parameterType="java.lang.Long" statementType="PREPARED" resultType="AdminResource">
 		SELECT a.resource_id			resourceId,
 			   a.resource_name			resourceName,
 			   a.parent_resource_id		parentResourceId,

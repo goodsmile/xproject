@@ -73,6 +73,7 @@ html, body {
     padding-left: 230px;
     margin-left: -230px;
     background-color: #6886B7;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 .admin-header .admin-navbar .sidebar-toggle {
 	display: block;
@@ -297,6 +298,7 @@ html, body {
 	line-height: 24px;
 	margin: 0;
 	padding: 0;
+	color: #41b883;
 }
 .admin-sidebar .user-panel .user-panel-info label {
 	display: block;
