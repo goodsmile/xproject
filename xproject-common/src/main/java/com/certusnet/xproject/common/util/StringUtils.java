@@ -500,4 +500,21 @@ public class StringUtils {
         return new StringBuilder(str).reverse().toString();
     }
     
+    /**
+     * 字符串拼接
+     * @param values
+     * @param delimiter
+     * @return
+     */
+    public static String join(String[] strs, String delimiter) {
+    	StringBuilder sb = new StringBuilder();
+		for(int i = 0, len = strs.length; i < len; i++){
+			sb.append(strs[i]);
+			if(i < len - 1){
+				sb.append(delimiter);
+			}
+		}
+		return sb.toString();
+    }
+    
 }

@@ -202,10 +202,6 @@
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis-spring</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.github.penggle</groupId>
-			<artifactId>mybatis-ex</artifactId>
-		</dependency>
 
 		<!-- spring-data-redis -->
 		<dependency>

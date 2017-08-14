@@ -13,7 +13,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.SmartFactoryBean;
 import org.springframework.util.Assert;
 
-import com.certusnet.xproject.common.util.StringUtils;
 import com.certusnet.xproject.common.web.shiro.service.UrlPermissionService;
 /**
  * 系统全局url=perms[xxx:yyy]URL与权限配置定义
@@ -37,9 +36,7 @@ public class GlobalUrlPermissionFilterChainDefinition implements SmartFactoryBea
 	public Section getObject() throws Exception {
 		String urlPermissions = filterChainDefinitions;
 		String dynamicUrlPermissions = getDynamicUrlPermissions();
-		if(!StringUtils.isEmpty(dynamicUrlPermissions)){
-			urlPermissions = urlPermissions.replace(buildPlaceHolder(), dynamicUrlPermissions);
-		}
+		urlPermissions = urlPermissions.replace(buildPlaceHolder(), dynamicUrlPermissions);
 		urlPermissions = beautifyUrlPermissionExpression(urlPermissions);
 		logger.info(">>> Global URL based permission configuration :\n{}", urlPermissions);
 		Ini ini = new Ini();
